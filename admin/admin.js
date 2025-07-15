@@ -39,9 +39,12 @@ const presetFeatures = [
     '长寿命'
 ];
 
-// 初始化
+// 初始化 - 添加延迟避免竞态条件
 document.addEventListener('DOMContentLoaded', function() {
-    checkAuthStatus();
+    // 🔧 添加500ms延迟，确保Cookie完全设置
+    setTimeout(() => {
+        checkAuthStatus();
+    }, 500);
 });
 
 // 检查认证状态 - 增强版本，支持重试和更好的错误处理
