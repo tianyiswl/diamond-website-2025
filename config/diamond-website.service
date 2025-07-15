@@ -1,0 +1,61 @@
+[Unit]
+Description=Diamond Website CMS - 无锡皇德国际贸易有限公司官网
+Documentation=https://github.com/tianyiswl/diamond-website-2025
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=diamond
+Group=diamond
+WorkingDirectory=/opt/diamond-website
+ExecStart=/usr/bin/node server.js
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGINT
+TimeoutStopSec=30
+Restart=always
+RestartSec=10
+
+# 环境变量
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOST=0.0.0.0
+
+# 安全设置
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/diamond-website
+ReadWritePaths=/opt/diamond-website/data
+ReadWritePaths=/opt/diamond-website/uploads
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+# 资源限制
+LimitNOFILE=65536
+LimitNPROC=4096
+MemoryMax=1G
+CPUQuota=200%
+
+# 日志设置
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=diamond-website
+SyslogFacility=daemon
+SyslogLevel=info
+
+# 健康检查
+ExecStartPre=/bin/bash -c 'until nc -z localhost 3000; do sleep 1; done'
+
+[Install]
+WantedBy=multi-user.target
