@@ -668,8 +668,8 @@
       }
     },
     "2025-07-15": {
-      "page_views": 28,
-      "unique_visitors": 5,
+      "page_views": 29,
+      "unique_visitors": 6,
       "product_clicks": 6,
       "inquiries": 0,
       "conversion_rate": "0.00",
@@ -693,7 +693,7 @@
         }
       ],
       "traffic_sources": {
-        "direct": 11,
+        "direct": 12,
         "search": 0,
         "social": 0,
         "referral": 17
@@ -806,7 +806,7 @@
         },
         {
           "hour": 21,
-          "views": 5,
+          "views": 6,
           "clicks": 0
         },
         {
@@ -822,9 +822,9 @@
       ],
       "geo_stats": {
         "China": {
-          "total": 23,
+          "total": 24,
           "regions": {
-            "Beijing": 23
+            "Beijing": 24
           }
         },
         "United States": {
@@ -864,7 +864,8 @@
       "user_1752033348488_wqsg0ojhy",
       "user_1752579116165_4vvzt7e5p",
       "user_1752586091307_ptdqm9pfk",
-      "user_1751434119057_mr9k499t0"
+      "user_1751434119057_mr9k499t0",
+      "user_1752587981465_3jpmngel9"
     ]
   },
   "user_records": {
@@ -1142,6 +1143,29 @@
         "city": "Los Angeles",
         "latitude": 34.066,
         "longitude": -118.474
+      }
+    },
+    "user_1752587981465_3jpmngel9": {
+      "first_visit": "2025-07-15",
+      "last_visit": "2025-07-15",
+      "total_visits": 1,
+      "total_page_views": 1,
+      "total_product_clicks": 0,
+      "fingerprint": {
+        "user_id": "user_1752587981465_3jpmngel9",
+        "screen": "1920x1080",
+        "timezone": "Asia/Shanghai",
+        "language": "zh-CN",
+        "platform": "Win32",
+        "created": "2025-07-15T13:59:41.479Z"
+      },
+      "geo_info": {
+        "ip": "240e:352:5d3e:8816:5c30:ffe6:f9a3:7a93",
+        "country": "China",
+        "region": "Beijing",
+        "city": "Beijing",
+        "latitude": 39.9075,
+        "longitude": 116.39723
       }
     }
   }

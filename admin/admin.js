@@ -47,22 +47,31 @@ document.addEventListener('DOMContentLoaded', function() {
 // 检查认证状态
 async function checkAuthStatus() {
     try {
+        console.log('🔍 开始检查认证状态...');
+
         const response = await fetch('/api/auth/check', {
             method: 'GET',
-            credentials: 'include'
+            credentials: 'include',
+            cache: 'no-cache' // 🔧 禁用缓存，确保获取最新状态
         });
 
+        console.log('📡 认证检查响应:', response.status, response.statusText);
+
         if (response.ok) {
+            const result = await response.json();
+            console.log('✅ 认证成功，用户信息:', result.user);
+
             // 已登录，初始化应用
             initializeApp();
             initFeatureTags();
             setupSEOGenerators();
         } else {
+            console.log('❌ 认证失败，状态码:', response.status);
             // 未登录，重定向到登录页
             window.location.href = '/admin/login.html';
         }
     } catch (error) {
-        console.error('认证检查失败:', error);
+        console.error('💥 认证检查失败:', error);
         // 网络错误也重定向到登录页
         window.location.href = '/admin/login.html';
     }

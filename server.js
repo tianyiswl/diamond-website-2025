@@ -716,7 +716,16 @@ const saveAdminConfig = (config) => {
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.auth_token || req.headers.authorization?.split(' ')[1];
 
+    // 🔧 添加调试日志
+    console.log('🔍 认证检查:', {
+        hasCookie: !!req.cookies.auth_token,
+        hasHeader: !!req.headers.authorization,
+        userAgent: req.headers['user-agent'],
+        ip: req.ip || req.connection.remoteAddress
+    });
+
     if (!token) {
+        console.log('❌ 未找到认证令牌');
         return res.status(401).json({
             success: false,
             message: '未提供认证令牌'
@@ -725,6 +734,7 @@ const authenticateToken = (req, res, next) => {
 
     const config = loadAdminConfig();
     if (!config) {
+        console.log('❌ 系统配置加载失败');
         return res.status(500).json({
             success: false,
             message: '系统配置错误'
@@ -733,9 +743,11 @@ const authenticateToken = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, config.security.jwt_secret);
+        console.log('✅ 令牌验证成功:', decoded.username);
         req.user = decoded;
         next();
     } catch (error) {
+        console.log('❌ 令牌验证失败:', error.message);
         return res.status(403).json({
             success: false,
             message: '无效的认证令牌'
@@ -935,15 +947,25 @@ app.post('/api/auth/login', async (req, res) => {
 
         const token = jwt.sign(tokenPayload, config.security.jwt_secret, tokenOptions);
 
-        // 设置Cookie
+        // 设置Cookie - 针对服务器环境优化
         const cookieOptions = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: false, // 🔧 修复：禁用secure，因为可能没有HTTPS
             maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 60 * 60 * 1000, // 7天或1小时
-            sameSite: 'strict'
+            sameSite: 'lax', // 🔧 修复：lax模式，平衡安全性和兼容性
+            path: '/', // 🔧 确保cookie在整个域下有效
+            domain: undefined // 🔧 不设置domain，使用当前域
         };
 
         res.cookie('auth_token', token, cookieOptions);
+
+        // 🔧 添加调试日志
+        console.log('🍪 Cookie设置成功:', {
+            username: admin.username,
+            tokenLength: token.length,
+            cookieOptions,
+            rememberMe
+        });
 
         // 记录登录日志
         addLog('login', `管理员登录: ${admin.username}`, req);
@@ -3241,7 +3263,15 @@ app.get('/admin', (req, res) => {
     // 检查是否有认证令牌
     const token = req.cookies.auth_token;
 
+    // 🔧 添加调试日志
+    console.log('🏠 访问管理后台:', {
+        hasCookie: !!token,
+        userAgent: req.headers['user-agent'],
+        referer: req.headers.referer
+    });
+
     if (!token) {
+        console.log('❌ 未找到认证令牌，重定向到登录页');
         // 未登录，重定向到登录页
         res.redirect('/admin/login.html');
         return;
@@ -3250,16 +3280,20 @@ app.get('/admin', (req, res) => {
     // 验证令牌
     const config = loadAdminConfig();
     if (!config) {
+        console.log('❌ 配置加载失败，重定向到登录页');
         res.redirect('/admin/login.html');
         return;
     }
 
     try {
-        jwt.verify(token, config.security.jwt_secret);
+        const decoded = jwt.verify(token, config.security.jwt_secret);
+        console.log('✅ 令牌验证成功，重定向到管理后台:', decoded.username);
         // 令牌有效，重定向到管理后台
         res.redirect('/admin/index.html');
     } catch (error) {
-        // 令牌无效，重定向到登录页
+        console.log('❌ 令牌验证失败，重定向到登录页:', error.message);
+        // 令牌无效，清除cookie并重定向到登录页
+        res.clearCookie('auth_token');
         res.redirect('/admin/login.html');
     }
 });
