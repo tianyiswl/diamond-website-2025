@@ -779,8 +779,13 @@ const authenticateToken = (req, res, next) => {
             timeDiff: now - tokenExp
         });
 
-        if (decoded.exp && decoded.exp < now) {
+        // 🕐 增加时间容差，防止时区问题导致的误判
+        const TIME_TOLERANCE = 300; // 5分钟容差
+        if (decoded.exp && (decoded.exp + TIME_TOLERANCE) < now) {
+            console.log('⚠️  令牌真正过期，时间差:', now - decoded.exp, '秒');
             throw new Error('Token expired');
+        } else if (decoded.exp && decoded.exp < now) {
+            console.log('⚠️  令牌在容差范围内，允许通过，时间差:', now - decoded.exp, '秒');
         }
 
         console.log('✅ 令牌验证成功:', decoded.username);
