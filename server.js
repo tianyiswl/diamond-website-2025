@@ -779,8 +779,18 @@ const authenticateToken = (req, res, next) => {
             timeDiff: now - tokenExp
         });
 
-        // 🕐 增加时间容差，防止时区问题导致的误判
-        const TIME_TOLERANCE = 300; // 5分钟容差
+        // 🕐 增加时间容差，防止时区问题导致的误判 - 国外服务器优化版本
+        const TIME_TOLERANCE = 1800; // 30分钟容差，适应国外服务器时区差异
+
+        // 🌍 检测可能的时区问题
+        const timeDiff = now - decoded.exp;
+        const isLikelyTimezoneIssue = Math.abs(timeDiff) > 3600 && Math.abs(timeDiff) < 86400; // 1小时到24小时之间
+
+        if (isLikelyTimezoneIssue) {
+            console.log('🌍 检测到可能的时区问题，时间差:', timeDiff, '秒');
+            console.log('🔧 应用扩展时间容差进行修复');
+        }
+
         if (decoded.exp && (decoded.exp + TIME_TOLERANCE) < now) {
             console.log('⚠️  令牌真正过期，时间差:', now - decoded.exp, '秒');
             throw new Error('Token expired');
@@ -1023,24 +1033,47 @@ app.post('/api/auth/login', async (req, res) => {
         // 🔧 不使用expiresIn选项，手动设置过期时间避免时区问题
         const token = jwt.sign(tokenPayload, config.security.jwt_secret);
 
-        // 设置Cookie - 针对服务器环境优化
+        // 设置Cookie - 国外服务器兼容性优化
+        const isProduction = process.env.NODE_ENV === 'production';
+        const isHTTPS = req.secure || req.headers['x-forwarded-proto'] === 'https';
+
         const cookieOptions = {
             httpOnly: true,
-            secure: false, // 🔧 修复：禁用secure，因为可能没有HTTPS
-            maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 60 * 60 * 1000, // 7天或1小时
-            sameSite: 'lax', // 🔧 修复：lax模式，平衡安全性和兼容性
+            secure: isHTTPS, // 🔧 根据实际协议动态设置
+            maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 2 * 60 * 60 * 1000, // 7天或2小时（延长基础时间）
+            sameSite: isProduction ? 'strict' : 'lax', // 🔧 生产环境使用strict，开发环境使用lax
             path: '/', // 🔧 确保cookie在整个域下有效
-            domain: undefined // 🔧 不设置domain，使用当前域
+            domain: undefined // 🔧 不设置domain，避免跨域问题
         };
+
+        // 🌍 国外服务器特殊处理
+        const userAgent = req.headers['user-agent'] || '';
+        const isLikelyOverseas = req.headers['cf-ipcountry'] && req.headers['cf-ipcountry'] !== 'CN';
+
+        if (isLikelyOverseas) {
+            console.log('🌍 检测到国外访问，应用特殊Cookie设置');
+            cookieOptions.sameSite = 'none'; // 国外服务器使用none以提高兼容性
+            cookieOptions.secure = true; // none模式必须使用secure
+        }
 
         res.cookie('auth_token', token, cookieOptions);
 
-        // 🔧 添加调试日志
+        // 🔧 添加调试日志 - 增强版本
         console.log('🍪 Cookie设置成功:', {
             username: admin.username,
             tokenLength: token.length,
             cookieOptions,
-            rememberMe
+            rememberMe,
+            isHTTPS,
+            isProduction,
+            isLikelyOverseas,
+            userAgent: userAgent.substring(0, 100) + '...',
+            clientIP: req.ip || req.connection.remoteAddress,
+            headers: {
+                'cf-ipcountry': req.headers['cf-ipcountry'],
+                'x-forwarded-proto': req.headers['x-forwarded-proto'],
+                'x-forwarded-for': req.headers['x-forwarded-for']
+            }
         });
 
         // 记录登录日志

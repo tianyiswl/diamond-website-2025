@@ -39,21 +39,59 @@ const presetFeatures = [
     '长寿命'
 ];
 
-// 初始化 - 添加延迟避免竞态条件
+// 初始化 - 国外服务器优化版本，避免竞态条件
 document.addEventListener('DOMContentLoaded', function() {
-    // 🔧 添加500ms延迟，确保Cookie完全设置
+    // 🌍 检测是否为国外访问，调整延迟时间
+    const isLikelyOverseas = detectOverseasAccess();
+    const delay = isLikelyOverseas ? 2000 : 500; // 国外服务器使用更长延迟
+
+    console.log('🔍 初始化认证检查，延迟:', delay, 'ms', isLikelyOverseas ? '(国外访问)' : '(国内访问)');
+
+    // 🔧 根据环境调整延迟，确保Cookie完全设置
     setTimeout(() => {
         checkAuthStatus();
-    }, 500);
+    }, delay);
 });
 
-// 检查认证状态 - 增强版本，支持重试和更好的错误处理
+// 检测是否为国外访问
+function detectOverseasAccess() {
+    // 检查时区
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const isAsiaTimezone = timezone.includes('Asia') || timezone.includes('Shanghai') || timezone.includes('Beijing');
+
+    // 检查语言
+    const language = navigator.language || navigator.userLanguage;
+    const isChineseLanguage = language.includes('zh');
+
+    // 检查时区偏移
+    const timezoneOffset = new Date().getTimezoneOffset();
+    const isChinaOffset = timezoneOffset === -480; // UTC+8
+
+    const isLikelyOverseas = !isAsiaTimezone || !isChineseLanguage || !isChinaOffset;
+
+    console.log('🌍 访问环境检测:', {
+        timezone,
+        language,
+        timezoneOffset,
+        isAsiaTimezone,
+        isChineseLanguage,
+        isChinaOffset,
+        isLikelyOverseas
+    });
+
+    return isLikelyOverseas;
+}
+
+// 检查认证状态 - 国外服务器优化版本，支持重试和更好的错误处理
 async function checkAuthStatus(retryCount = 0) {
-    const maxRetries = 3;
-    const retryDelay = 1000; // 1秒延迟
+    const maxRetries = 5; // 增加重试次数
+    const isOverseas = detectOverseasAccess();
+    const baseDelay = isOverseas ? 2000 : 1000; // 国外服务器使用更长延迟
+    const retryDelay = baseDelay * (retryCount + 1); // 递增延迟
 
     try {
         console.log(`🔍 开始检查认证状态... (尝试 ${retryCount + 1}/${maxRetries + 1})`);
+        console.log(`🌍 环境: ${isOverseas ? '国外' : '国内'}, 延迟: ${retryDelay}ms`);
 
         // 添加延迟，确保Cookie已经设置完成
         if (retryCount > 0) {
