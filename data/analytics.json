@@ -668,8 +668,8 @@
       }
     },
     "2025-07-15": {
-      "page_views": 23,
-      "unique_visitors": 3,
+      "page_views": 28,
+      "unique_visitors": 5,
       "product_clicks": 6,
       "inquiries": 0,
       "conversion_rate": "0.00",
@@ -693,10 +693,10 @@
         }
       ],
       "traffic_sources": {
-        "direct": 7,
+        "direct": 11,
         "search": 0,
         "social": 0,
-        "referral": 16
+        "referral": 17
       },
       "hourly_data": [
         {
@@ -806,7 +806,7 @@
         },
         {
           "hour": 21,
-          "views": 0,
+          "views": 5,
           "clicks": 0
         },
         {
@@ -825,6 +825,12 @@
           "total": 23,
           "regions": {
             "Beijing": 23
+          }
+        },
+        "United States": {
+          "total": 5,
+          "regions": {
+            "California": 5
           }
         }
       }
@@ -856,7 +862,9 @@
     "2025-07-15": [
       "user_1751017730741_slw08ssar",
       "user_1752033348488_wqsg0ojhy",
-      "user_1752579116165_4vvzt7e5p"
+      "user_1752579116165_4vvzt7e5p",
+      "user_1752586091307_ptdqm9pfk",
+      "user_1751434119057_mr9k499t0"
     ]
   },
   "user_records": {
@@ -887,7 +895,7 @@
       "first_visit": "2025-07-10",
       "last_visit": "2025-07-15",
       "total_visits": 2,
-      "total_page_views": 36,
+      "total_page_views": 37,
       "total_product_clicks": 9,
       "fingerprint": {
         "user_id": "user_1751017730741_slw08ssar",
@@ -1046,9 +1054,9 @@
     },
     "user_1751434119057_mr9k499t0": {
       "first_visit": "2025-07-14",
-      "last_visit": "2025-07-14",
-      "total_visits": 1,
-      "total_page_views": 1,
+      "last_visit": "2025-07-15",
+      "total_visits": 2,
+      "total_page_views": 2,
       "total_product_clicks": 0,
       "fingerprint": {
         "user_id": "user_1751434119057_mr9k499t0",
@@ -1071,7 +1079,7 @@
       "first_visit": "2025-07-15",
       "last_visit": "2025-07-15",
       "total_visits": 1,
-      "total_page_views": 6,
+      "total_page_views": 7,
       "total_product_clicks": 3,
       "fingerprint": {
         "user_id": "user_1752033348488_wqsg0ojhy",
@@ -1111,6 +1119,29 @@
         "city": "Beijing",
         "latitude": 39.9075,
         "longitude": 116.39723
+      }
+    },
+    "user_1752586091307_ptdqm9pfk": {
+      "first_visit": "2025-07-15",
+      "last_visit": "2025-07-15",
+      "total_visits": 1,
+      "total_page_views": 2,
+      "total_product_clicks": 0,
+      "fingerprint": {
+        "user_id": "user_1752586091307_ptdqm9pfk",
+        "screen": "1920x1080",
+        "timezone": "Asia/Shanghai",
+        "language": "zh-CN",
+        "platform": "Win32",
+        "created": "2025-07-15T13:28:11.316Z"
+      },
+      "geo_info": {
+        "ip": "31.57.200.67",
+        "country": "United States",
+        "region": "California",
+        "city": "Los Angeles",
+        "latitude": 34.066,
+        "longitude": -118.474
       }
     }
   }
