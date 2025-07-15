@@ -1,0 +1,37 @@
+{
+  "name": "diamond-website-cms",
+  "version": "1.0.0",
+  "description": "无锡皇德国际贸易有限公司 - 专业产品管理系统",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:4000": "PORT=4000 node server.js",
+    "start:5000": "PORT=5000 node server.js",
+    "start:8080": "PORT=8080 node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cms",
+    "产品管理",
+    "涡轮增压器",
+    "共轨喷油器"
+  ],
+  "author": "无锡皇德国际贸易有限公司",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^1.20.2",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^2.7.0",
+    "path": "^0.12.7",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+  }
+}

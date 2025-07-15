@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="products.page_title">产品展示 - 无锡皇德国际贸易有限公司</title>
+    <meta name="description" data-i18n-attr="content" data-i18n="products.page_description" content="无锡皇德国际贸易有限公司专业提供涡轮增压器、执行器、柴油喷射系统等产品">
+    <meta name="keywords" data-i18n-attr="content" data-i18n="products.page_keywords" content="涡轮增压器,执行器,柴油喷射系统,共轨喷油器,无锡皇德">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 主要样式文件 -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    
+    <!-- 国际化样式 -->
+    <link rel="stylesheet" href="../assets/css/i18n-styles.css">
+    
+    <style>
+        /* 加载屏幕样式 */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #002e5f 0%, #001a3a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: all 0.5s ease;
+        }
+        
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .loading-logo {
+            margin-bottom: 20px;
+        }
+        
+        .loading-logo-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .loading-company-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .loading-subtitle {
+            font-size: 16px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* 产品页面专用样式 */
+        .products-hero {
+            background: linear-gradient(135deg, #002e5f 0%, #001a3a 100%);
+            color: white;
+            padding: 120px 0 60px;
+            text-align: center;
+            margin-top: 90px; /* 为固定导航栏留出空间 */
+        }
+        
+        .products-hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .products-hero p {
+            font-size: 20px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .products-filters {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 25px 0;
+            box-shadow: 0 4px 20px rgba(0,46,95,0.1);
+            position: sticky;
+            top: 140px; /* 增加到140px，为固定的header和产品标签栏留出空间 */
+            z-index: 100;
+            border-bottom: 1px solid rgba(0,46,95,0.1);
+        }
+        
+        .filters-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: row; /* 改为行方向 */
+            align-items: center; /* 垂直居中对齐 */
+            gap: 15px; /* 增加间距 */
+            position: relative;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            color: #002e5f;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            margin: 0; /* 移除默认边距 */
+        }
+        
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 150px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 15px rgba(0,123,255,0.2);
+            transform: translateY(-1px);
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1), 0 4px 15px rgba(0,123,255,0.2);
+            transform: translateY(-1px);
+        }
+        
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0,46,95,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .search-container:hover {
+            box-shadow: 0 4px 15px rgba(0,123,255,0.2);
+            transform: translateY(-1px);
+        }
+        
+        .search-input {
+            border: 2px solid #e9ecef;
+            border-radius: 25px 0 0 25px;
+            padding: 12px 50px 12px 20px;
+            font-size: 14px;
+            width: 250px;
+            background: transparent;
+            transition: all 0.3s ease;
+            border-right: none;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+        
+        /* 产品筛选区域的搜索按钮样式 */
+        .products-filters .search-btn {
+            position: absolute;
+            right: 105px; /* 精确定位在搜索框右边缘 */
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .products-filters .search-btn:hover {
+            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .search-results-count {
+            padding: 12px 20px;
+            background: #f8fafc;
+            border: 2px solid #e9ecef;
+            border-left: none;
+            border-radius: 0 25px 25px 0;
+            min-width: 100px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .count-text {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .products-main {
+            padding: 50px 0;
+            background: #f8f9fa;
+        }
+        
+        /* 产品网格布局 */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 30px 0;
+        }
+        
+        /* 产品标签样式 */
+        .product-badges {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 2;
+        }
+
+        /* 产品特性样式 */
+        .product-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .feature-tag {
+            background: linear-gradient(135deg, #00DC82 0%, #00b76c 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 220, 130, 0.25);
+            letter-spacing: 0.2px;
+            border: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 0;
+            cursor: default;
+        }
+
+        .feature-tag:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 220, 130, 0.3);
+            background: linear-gradient(135deg, #00b76c 0%, #009c5a 100%);
+        }
+
+        .feature-tag i {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 11px;
+            margin-right: 2px;
+        }
+
+        .feature-tag .feature-text {
+            font-weight: 500;
+            letter-spacing: 0.1px;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .no-results i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        
+        .no-results h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .no-results p {
+            font-size: 16px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .products-hero h1 {
+                font-size: 36px;
+            }
+            
+            .products-hero p {
+                font-size: 18px;
+            }
+            
+            .filters-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .search-input {
+                width: 180px;
+            }
+            
+            .products-filters .search-btn {
+                right: 85px; /* 在移动端调整搜索按钮位置 */
+            }
+            
+            .search-results-count {
+                min-width: 80px;
+                padding: 12px 15px;
+            }
+            
+            .count-text {
+                font-size: 13px;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+                padding: 20px 0;
+            }
+            .filter-group {
+                flex-direction: row; /* 保持行方向 */
+                width: 100%; /* 在移动端占满宽度 */
+                justify-content: space-between; /* 两端对齐 */
+            }
+            
+            .filter-select {
+                flex: 1; /* 让选择框占据剩余空间 */
+                min-width: 0; /* 允许收缩 */
+            }
+
+            .feature-tag {
+                padding: 5px 12px;
+                font-size: 11px;
+                border-radius: 18px;
+            }
+
+            .feature-tag i {
+                font-size: 10px;
+            }
+            
+            .product-name {
+                font-size: 16px;
+            }
+            
+            .product-description {
+                font-size: 13px;
+            }
+            
+            .product-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 页头组件容器 -->
+    <div id="header-container"></div>
+
+    <!-- 主要内容 -->
+    <main>
+        <!-- 产品页面标题区域 -->
+        <section class="products-hero">
+            <div class="container">
+                <h1 data-i18n="products.title">产品展示</h1>
+                <p data-i18n="products.subtitle">专业的涡轮增压器和共轨喷油器配件，为您的设备提供最佳性能保障</p>
+            </div>
+        </section>
+
+        <!-- 产品筛选区域 -->
+        <section class="products-filters">
+            <div class="container">
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label for="categoryFilter" data-i18n="products.category_filter">产品分类:</label>
+                        <select id="categoryFilter" class="filter-select" onchange="filterByCategory(this.value)">
+                            <option value="all" data-i18n="categories.all">全部产品</option>
+                            <!-- 分类选项将从API动态加载 -->
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="brandFilter" data-i18n="products.brand_filter">品牌筛选:</label>
+                        <select id="brandFilter" class="filter-select" onchange="filterByBrand(this.value)">
+                            <option value="all" data-i18n="products.all_brands">全部品牌</option>
+                            <option value="Garrett">Garrett</option>
+                            <option value="Bosch">Bosch</option>
+                            <option value="Pierburg">Pierburg</option>
+                            <option value="Continental">Continental</option>
+                            <option value="Delphi">Delphi</option>
+                            <option value="Johnson Matthey">Johnson Matthey</option>
+                            <option value="Diamond-Auto">Diamond-Auto</option>
+                        </select>
+                    </div>
+                    
+                    <div class="search-container">
+                        <input type="text" id="productSearch" class="search-input" data-i18n-attr="placeholder" data-i18n="products.search_placeholder" placeholder="搜索产品名称或型号..." oninput="searchProducts(this.value)">
+                        <button class="search-btn" onclick="searchProducts(document.getElementById('productSearch').value)">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <div class="search-results-count" id="searchResultsCount">
+                            <span class="count-text" data-i18n="products.total_products" data-i18n-params='{"count": "0"}'>共0个产品</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 产品展示区域 -->
+        <section class="products-main">
+            <div class="container">
+                <div class="products-grid" id="productsGrid">
+                    <!-- 产品卡片将通过JavaScript动态加载 -->
+                </div>
+                
+                <!-- 分页控制器 -->
+                <div class="pagination-controls">
+                    <div class="page-size-control">
+                        <label for="pageSize" data-i18n="pagination.items_per_page">每页显示：</label>
+                        <select id="pageSize" class="page-size-select">
+                            <option value="12" data-i18n="pagination.items_12">12条</option>
+                            <option value="24" data-i18n="pagination.items_24">24条</option>
+                            <option value="36" data-i18n="pagination.items_36">36条</option>
+                            <option value="48" data-i18n="pagination.items_48">48条</option>
+                        </select>
+                    </div>
+                    <div class="page-jump-control">
+                        <label for="pageNumber" data-i18n="pagination.jump_to">跳转到：</label>
+                        <input type="number" id="pageNumber" class="page-jump-input" min="1" data-i18n-attr="placeholder" data-i18n="pagination.page_number_placeholder" placeholder="页码">
+                        <button class="page-jump-button" onclick="jumpToPage()">
+                            <i class="fas fa-arrow-right"></i>
+                            <span data-i18n="pagination.jump">跳转</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 分页容器 -->
+                <div class="pagination-container" id="pagination">
+                    <!-- 分页按钮将通过JavaScript动态生成 -->
+                </div>
+                
+                <!-- 无结果提示 -->
+                <div id="noResults" class="no-results" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3 data-i18n="products.no_results_title">未找到相关产品</h3>
+                    <p data-i18n="products.no_results_message">请尝试调整筛选条件或搜索关键词</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚组件容器 -->
+    <div id="footer-container"></div>
+
+    <!-- 分析脚本 -->
+    <script src="../assets/js/analytics.js"></script>
+    
+    <!-- 🆕 统一组件管理器 - 替代旧的组件管理器 -->
+    <script src="../assets/js/modules/components/component-manager.js"></script>
+
+    <!-- 🆕 统一产品卡片管理器 - 替代旧的产品卡组件 -->
+    <script src="../assets/js/modules/components/product-card-manager.js"></script>
+
+    <!-- 组件管理器（兼容版本） -->
+    <!-- 🔧 统一组件管理系统 -->
+    <script src="../assets/js/modules/services/company-service.js"></script>
+    <script src="../assets/js/modules/components/component-manager.js"></script>
+    <script src="../assets/js/unified-component-loader.js"></script>
+
+    <!-- 分类管理器 -->
+    <script src="../assets/js/category-manager.js"></script>
+    
+    <!-- 产品卡组件（兼容版本） -->
+    <script src="../assets/js/product-card-component.js"></script>
+
+    <script>
+        // 全局变量
+        let allProducts = [];
+        let currentProducts = [];
+        let isRendering = false; // 添加渲染标志位
+
+        // 获取URL参数
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 监听分类数据加载完成事件
+        document.addEventListener('categoriesLoaded', function(event) {
+            const { categories, brands } = event.detail;
+            console.log('✅ 产品页面接收到分类数据:', categories.length, '个分类');
+            
+            // 只有在产品数据也已加载的情况下才更新筛选器
+            if (allProducts.length > 0) {
+                updateFiltersWithProductData(categories, brands);
+            } else {
+                console.log('⏳ 产品数据尚未加载，等待产品数据加载完成后再更新筛选器');
+            }
+        });
+        
+        // 更新筛选器（包含产品数量计算）
+        function updateFiltersWithProductData(categories, brands) {
+            if (window.categoryManager && !window.categoryManager.isFiltersUpdated) {
+                console.log('🔄 更新分类和品牌筛选器（基于产品数据）');
+                
+                // 更新分类下拉框（包含产品数量）
+                updateCategoryFilterWithCounts(categories);
+                
+                // 更新品牌筛选器
+                updateBrandFilter(brands);
+                
+                // 标记筛选器已更新
+                window.categoryManager.isFiltersUpdated = true;
+                
+                // 检查URL参数并自动筛选
+                const categoryParam = getUrlParameter('category');
+                if (categoryParam) {
+                    console.log('📍 检测到分类参数:', categoryParam);
+                    
+                    // 更新筛选器
+                    const categoryFilter = document.getElementById('categoryFilter');
+                    if (categoryFilter) {
+                        categoryFilter.value = categoryParam;
+                    }
+                    
+                    // 执行筛选
+                    filterByCategory(categoryParam);
+                    
+                    // 更新标签按钮状态
+                    document.querySelectorAll('.tag-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.dataset.category === categoryParam) {
+                            btn.classList.add('active');
+                        }
+                    });
+                }
+            } else {
+                console.log('⏭️ 筛选器已更新，跳过重复更新');
+            }
+        }
+
+        // 更新分类筛选器选项（包含产品数量）
+        function updateCategoryFilterWithCounts(categories) {
+            const categoryFilter = document.getElementById('categoryFilter');
+            if (categoryFilter && categories) {
+                // 计算每个分类的产品数量
+                const categoryCountMap = {};
+                allProducts.forEach(product => {
+                    categoryCountMap[product.category] = (categoryCountMap[product.category] || 0) + 1;
+                });
+                
+                // 添加"全部产品"选项，然后添加其他分类
+                const allText = window.i18nManager && window.i18nManager.t ?
+                    window.i18nManager.t('categories.all') : '全部产品';
+                const allOption = `<option value="all" data-i18n="categories.all">${allText} (${allProducts.length})</option>`;
+                const categoryOptions = categories
+                    .filter(category => category.id !== 'all') // 避免重复
+                    .map(category => {
+                        const count = categoryCountMap[category.id] || 0;
+                        const categoryText = window.i18nManager && window.i18nManager.t ?
+                            window.i18nManager.t(`categories.${category.id}`) : category.name;
+                        return `<option value="${category.id}" data-i18n="categories.${category.id}">${categoryText} (${count})</option>`;
+                    }).join('');
+
+                categoryFilter.innerHTML = allOption + categoryOptions;
+
+                // 触发翻译处理
+                if (window.i18nManager) {
+                    window.i18nManager.processElements(categoryFilter);
+                }
+                console.log('✅ 分类筛选器已更新，包含', categories.length, '个分类，带产品数量');
+            }
+        }
+        
+        // 更新品牌筛选器选项
+        function updateBrandFilter(brands) {
+            const brandFilter = document.getElementById('brandFilter');
+            if (brandFilter && brands) {
+                // 计算每个品牌的产品数量
+                const brandCountMap = {};
+                const unknownBrandText = window.i18nManager && window.i18nManager.t ?
+                    window.i18nManager.t('products.unknown_brand') : '未知品牌';
+
+                allProducts.forEach(product => {
+                    const brand = product.brand || unknownBrandText;
+                    brandCountMap[brand] = (brandCountMap[brand] || 0) + 1;
+        });
+
+                // 从实际产品数据中提取品牌列表
+                const actualBrands = [...new Set(allProducts.map(p => p.brand || unknownBrandText))].sort();
+                
+                const allBrandsText = window.i18nManager && window.i18nManager.t ?
+                    window.i18nManager.t('products.all_brands') : '全部品牌';
+                const allOption = `<option value="all" data-i18n="products.all_brands">${allBrandsText}</option>`;
+                const brandOptions = actualBrands.map(brand =>
+                    `<option value="${brand}">${brand}</option>`
+                ).join('');
+
+                brandFilter.innerHTML = allOption + brandOptions;
+
+                // 触发翻译处理
+                if (window.i18nManager) {
+                    window.i18nManager.processElements(brandFilter);
+                }
+                console.log('✅ 品牌筛选器已更新，包含', actualBrands.length, '个品牌');
+            }
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('📄 页面加载完成，开始初始化');
+            
+            // 等待分类数据加载完成
+            if (!window.categoryManager || !window.categoryManager.isLoaded) {
+                console.log('⏳ 等待分类数据加载...');
+                await window.waitForCategories();
+            }
+            
+            // 加载产品数据
+            await loadProductData();
+            
+            // 快速隐藏加载屏幕
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading');
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                    }, 300);
+                }
+                
+                // 检查搜索参数
+                const searchParam = getUrlParameter('search');
+                if (searchParam) {
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput) {
+                        searchInput.value = searchParam;
+                        searchProducts(searchParam);
+                    }
+                }
+            }, 200);
+        });
+
+        // 从API加载产品数据
+        async function loadProductData() {
+            console.log('📦 开始加载产品数据');
+            
+            try {
+                // 检查是否已经加载过数据
+                if (allProducts.length > 0) {
+                    console.log('⏭️ 产品数据已存在，跳过加载');
+                    return;
+                }
+                
+                const response = await fetch('/api/public/products?limit=1000'); // 🌐 使用公开API接口获取产品数据
+                if (!response.ok) {
+                    throw new Error('产品数据加载失败');
+                }
+                
+                const data = await response.json();
+                // 从分页响应中提取产品数组，向后兼容直接数组格式
+                const products = data.data || data.products || data || [];
+                console.log('✅ 成功获取产品数据:', products.length, '个产品');
+                
+                // 更新全局产品数据
+                allProducts = products;
+                currentProducts = [...allProducts];
+                
+                // 渲染产品列表
+                renderProducts(currentProducts);
+                
+                // 如果分类数据已加载，更新筛选器（现在有产品数据了）
+                if (window.categoryManager && window.categoryManager.isLoaded) {
+                    console.log('🔄 产品数据加载完成，更新筛选器');
+                    updateFiltersWithProductData(window.categoryManager.categories, window.categoryManager.brands);
+                }
+                
+                // 检查并应用URL参数筛选
+                checkAndApplyUrlFilters();
+                
+            } catch (error) {
+                console.error('❌ 加载产品数据时出错:', error);
+                // 显示错误提示
+                const grid = document.querySelector('.products-grid');
+                if (grid) {
+                    grid.innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>加载产品数据时出错，请刷新页面重试</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        // 注意：getProductFeatures 函数已迁移到 product-card-component.js 统一管理
+        
+        // 注意：产品卡片相关函数已迁移到 product-card-component.js 统一管理
+
+        // 检查URL参数并应用筛选
+        function checkAndApplyUrlFilters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryParam = urlParams.get('category');
+            const searchParam = urlParams.get('search');
+            
+            console.log('🎯 检查URL参数 - 分类:', categoryParam, '搜索:', searchParam);
+            
+            // 处理分类参数
+            if (categoryParam) {
+                console.log('🔍 应用分类筛选:', categoryParam);
+                filterByCategory(categoryParam);
+                
+                // 更新下拉框选择
+                const categoryFilter = document.getElementById('categoryFilter');
+                if (categoryFilter) {
+                    // 使用翻译系统映射URL参数到下拉框选项
+                    const getCategoryDisplayName = (category) => {
+                        const categoryKey = `categories.${category}`;
+                        const i18n = window.i18nManager || window.i18n;
+
+                        if (i18n && i18n.t) {
+                            const translatedName = i18n.t(categoryKey);
+                            if (translatedName && translatedName !== categoryKey) {
+                                return translatedName;
+                            }
+                        }
+
+                        // 回退到硬编码映射（兼容性保证）
+                        const categoryMap = {
+                            'turbocharger': '涡轮增压器',
+                            'actuator': '执行器',
+                            'injector': '共轨喷油器',
+                            'turbo-parts': '涡轮配件',
+                            'others': '其他'
+                        };
+                        return categoryMap[category] || category;
+                    };
+
+                    const displayName = getCategoryDisplayName(categoryParam);
+                    if (displayName) {
+                        // 查找对应的选项
+                        for (let option of categoryFilter.options) {
+                            if (option.text.includes(displayName)) {
+                                categoryFilter.value = option.value;
+                                console.log('✅ 更新下拉框选择:', option.text);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // 处理搜索参数
+            if (searchParam) {
+                console.log('🔍 应用搜索筛选:', searchParam);
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.value = searchParam;
+                    searchProducts(searchParam);
+                }
+            }
+        }
+
+        // 备用产品数据
+        function loadFallbackData() {
+            allProducts = [
+                {
+                    id: 'GT1749V',
+                    name: 'GT1749V 涡轮增压器总成',
+                    brand: 'Garrett',
+                    category: 'turbocharger',
+                    model: 'GT1749V-724930',
+                    description: '适用于大众、奥迪1.9L TDI发动机，原厂品质，性能稳定',
+                    features: ['原厂品质', '性能稳定', '质保1年'],
+                    badge: 'hot',
+                    image: '../assets/images/carousel/img1.jpg'
+                },
+                {
+                    id: '0445120123',
+                    name: '0445120123 共轨喷油器',
+                    brand: 'Bosch',
+                    category: 'diesel-injection',
+                    model: '0445120123',
+                    description: 'Bosch原厂共轨喷油器，适用于多种柴油发动机',
+                    features: ['原厂正品', '高精度', '长寿命'],
+                    badge: 'new',
+                    image: '../assets/images/carousel/img2.jpg'
+                }
+            ];
+            currentProducts = [...allProducts];
+            renderProducts(currentProducts);
+        }
+
+        // 更新产品计数显示
+        function updateProductCount(count) {
+            console.log('📊 更新产品计数:', count);
+            
+            // 更新搜索框后面的产品计数显示
+            const searchResultsCount = document.getElementById('searchResultsCount');
+            if (searchResultsCount && count !== undefined) {
+                const countText = searchResultsCount.querySelector('.count-text');
+                if (countText) {
+                    // 使用翻译系统更新产品计数
+                    if (window.i18nManager && window.i18nManager.t) {
+                        countText.textContent = window.i18nManager.t('products.total_products', {count: count});
+                    } else {
+                        countText.textContent = `共${count}个产品`;
+                    }
+                    // 更新data-i18n-params属性以便后续语言切换
+                    countText.setAttribute('data-i18n-params', JSON.stringify({count: count}));
+                }
+            }
+            
+            // 显示/隐藏无结果提示
+            const noResults = document.getElementById('noResults');
+            const productsGrid = document.getElementById('productsGrid');
+            
+            if (count === 0) {
+                if (noResults) noResults.style.display = 'block';
+                if (productsGrid) productsGrid.style.display = 'none';
+            } else {
+                if (noResults) noResults.style.display = 'none';
+                if (productsGrid) productsGrid.style.display = 'grid';
+            }
+        }
+
+        // 渲染产品列表
+        function renderProducts(products) {
+            if (isRendering) {
+                console.log('🚫 渲染正在进行中，跳过重复渲染');
+                return;
+            }
+
+            isRendering = true;
+            console.log('🎨 开始渲染产品列表:', products.length, '个产品');
+
+            // 保存当前显示的产品列表，供语言切换时重新渲染使用
+            window.currentDisplayProducts = products;
+            
+            try {
+                // 确保产品卡组件已加载
+                if (!window.productCardComponent) {
+                    console.error('❌ 产品卡组件未加载，尝试初始化...');
+                    window.productCardComponent = new ProductCardComponent();
+                }
+                
+                // 使用统一的产品卡组件渲染
+                window.productCardComponent.renderToGrid(products, {
+                    showDescription: false,
+                    imagePath: '../'
+                });
+                
+                // 更新产品计数
+                updateProductCount(products.length);
+                
+            } catch (error) {
+                console.error('❌ 渲染产品列表时出错:', error);
+                
+                // 如果组件渲染失败，使用备用渲染方式
+                const grid = document.querySelector('.products-grid');
+                if (grid) {
+                    grid.innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>产品渲染出错: ${error.message}</p>
+                            <p>请刷新页面重试</p>
+                        </div>
+                    `;
+                }
+            } finally {
+                isRendering = false;
+                console.log('✅ 产品列表渲染完成');
+            }
+        }
+
+        // 按分类筛选
+        function filterByCategory(category) {
+            if (category === 'all') {
+                currentProducts = [...allProducts];
+            } else {
+                currentProducts = allProducts.filter(product => product.category === category);
+            }
+            renderProducts(currentProducts);
+            
+            // 更新标签栏状态
+            document.querySelectorAll('.tag-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.category === category) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // 按品牌筛选
+        function filterByBrand(brand) {
+            if (brand === 'all') {
+                currentProducts = [...allProducts];
+            } else {
+                currentProducts = allProducts.filter(product => product.brand === brand);
+            }
+            renderProducts(currentProducts);
+        }
+
+        // 搜索产品 - 扩展搜索范围包含OE号码和适配信息
+        function searchProducts(searchTerm) {
+            if (!searchTerm || !searchTerm.trim()) {
+                currentProducts = [...allProducts];
+            } else {
+                const term = searchTerm.toLowerCase().trim();
+                currentProducts = allProducts.filter(product => {
+                    const nameMatch = product.name && product.name.toLowerCase().includes(term);
+                    const brandMatch = product.brand && product.brand.toLowerCase().includes(term);
+                    const modelMatch = product.model && product.model.toLowerCase().includes(term);
+                    const descMatch = product.description && product.description.toLowerCase().includes(term);
+                    const skuMatch = product.sku && product.sku.toLowerCase().includes(term);
+                    const oeMatch = product.oe_number && product.oe_number.toLowerCase().includes(term);
+                    const compatibilityMatch = product.compatibility && product.compatibility.toLowerCase().includes(term);
+                    const notesMatch = product.notes && product.notes.toLowerCase().includes(term);
+                    const featuresMatch = product.features && product.features.toLowerCase().includes(term);
+
+                    return nameMatch || brandMatch || modelMatch || descMatch || skuMatch || oeMatch || compatibilityMatch || notesMatch || featuresMatch;
+                });
+            }
+
+            renderProducts(currentProducts);
+        }
+
+        // 产品筛选（兼容主页调用）
+        function filterProducts(category) {
+            filterByCategory(category);
+        }
+
+        // 标签栏筛选产品
+        function filterProductsByTag(category) {
+            // 更新下拉框选择
+            const categoryFilter = document.getElementById('categoryFilter');
+            if (categoryFilter) {
+                categoryFilter.value = category;
+            }
+            
+            // 执行筛选
+            filterByCategory(category);
+            
+            // 更新标签按钮状态
+            document.querySelectorAll('.tag-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.category === category) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // 导航栏搜索功能
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                return;
+            }
+            
+            searchProducts(searchTerm);
+        }
+
+        // 移动端菜单切换
+        function toggleMobileMenu() {
+            const navMenu = document.querySelector('.nav-menu');
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (navMenu && mobileMenuBtn) {
+                navMenu.classList.toggle('active');
+                mobileMenuBtn.classList.toggle('active');
+            }
+        }
+
+        // 搜索框回车事件
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+            }
+
+            const productSearch = document.getElementById('productSearch');
+            if (productSearch) {
+                productSearch.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchProducts(this.value);
+                    }
+                });
+            }
+        });
+
+        // 初始化页面特定功能（延迟执行，等待组件渲染完成）
+        function initPageSpecificFeatures() {
+            // 返回顶部功能
+            const backToTopBtn = document.getElementById('backToTop');
+            if (backToTopBtn) {
+                window.addEventListener('scroll', function() {
+                    if (window.pageYOffset > 300) {
+                        backToTopBtn.classList.add('visible');
+                    } else {
+                        backToTopBtn.classList.remove('visible');
+                    }
+                });
+
+                backToTopBtn.addEventListener('click', function() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+                console.log('✅ 返回顶部按钮已初始化');
+            } else {
+                console.warn('⚠️ 未找到返回顶部按钮，将在1秒后重试');
+                setTimeout(initPageSpecificFeatures, 1000);
+                return;
+            }
+
+            // 页码跳转功能
+            const pageNumberInput = document.getElementById('pageNumber');
+            if (pageNumberInput) {
+                pageNumberInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        jumpToPage();
+                    }
+                });
+                console.log('✅ 页码跳转功能已初始化');
+            }
+        }
+
+        // 全局跳转函数
+        window.jumpToPage = function() {
+            if (window.productCardComponent) {
+                window.productCardComponent.jumpToPage();
+            } else {
+                console.error('❌ 产品卡组件未加载');
+            }
+        };
+
+        // 🌍 监听语言切换事件，重新渲染产品卡片
+        document.addEventListener('i18n:changed', function(event) {
+            console.log('🌍 产品页面监听到语言切换事件:', event.detail);
+
+            // 重新渲染当前显示的产品
+            if (window.currentDisplayProducts && window.currentDisplayProducts.length > 0) {
+                console.log('🏷️ 重新渲染产品卡片以更新特性标签翻译...');
+                setTimeout(() => {
+                    renderProducts(window.currentDisplayProducts);
+                    console.log('✅ 产品卡片翻译已更新');
+                }, 200);
+            }
+        });
+
+        // 等待组件渲染完成后初始化功能
+        setTimeout(initPageSpecificFeatures, 500);
+    </script>
+
+    <!-- 🎨 WebP图片优化加载器 -->
+    <script src="../assets/js/webp-loader.js"></script>
+    
+    <!-- 🌍 国际化管理器 -->
+    <script src="../assets/js/i18n-manager.js"></script>
+    
+    <!-- 🔍 SEO结构化数据管理器 -->
+    <script src="../assets/js/seo-structured-data.js"></script>
+    
+    <!-- 🔧 统一组件管理系统 -->
+    <script src="../assets/js/modules/services/company-service.js"></script>
+    <script src="../assets/js/modules/components/component-manager.js"></script>
+    <script src="../assets/js/unified-component-loader.js"></script>
+
+    <!-- 🆕 统一产品卡片管理器 -->
+    <script src="../assets/js/modules/components/product-card-manager.js"></script>
+
+    <!-- 产品卡组件（兼容版本） -->
+    <script src="../assets/js/product-card-component.js"></script>
+
+    <!-- 🔧 页头搜索功能修复模块 -->
+    <script src="../assets/js/search-fix.js"></script>
+    
+    <!-- 🔧 产品页面搜索功能修复模块 -->
+    <script src="../assets/js/product-search-fix.js"></script>
+    
+    <!-- 主要JavaScript文件 -->
+    <script src="../assets/js/main.js"></script>
+</body>
+</html> 

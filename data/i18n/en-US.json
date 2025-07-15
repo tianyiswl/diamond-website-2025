@@ -1,0 +1,573 @@
+{
+  "site": {
+    "title": "Wuxi Huangde International Trading Co., Ltd. - Professional Turbocharger and Common Rail Injector Parts Supplier",
+    "description": "Wuxi Huangde International Trading Co., Ltd. specializes in supplying turbocharger parts and common rail injector components with 15 years of industry experience, global supply network, and quality assurance.",
+    "keywords": "turbocharger,common rail injector,automotive parts,Wuxi Huangde,Diamond Auto"
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "about": "About Us",
+    "contact": "Contact"
+  },
+  "categories": {
+    "all": "All Products",
+    "turbocharger": "Turbochargers",
+    "actuator": "Actuators",
+    "injector": "Common Rail Injectors",
+    "turbo-parts": "Turbo Parts",
+    "others": "Others"
+  },
+  "products": {
+    "title": "Products",
+    "subtitle": "Professional turbocharger and common rail injector parts, providing optimal performance for your equipment",
+    "page_title": "Products - Wuxi Huangde International Trading Co., Ltd.",
+    "page_description": "Wuxi Huangde International Trading Co., Ltd. specializes in providing turbochargers, actuators, diesel injection systems and other products",
+    "page_keywords": "turbocharger,actuator,diesel injection system,common rail injector,Wuxi Huangde",
+    "category_filter": "Type:",
+    "brand_filter": "Brand:",
+    "all_brands": "All Brands",
+    "unknown_brand": "Unknown Brand",
+    "search_placeholder": "Search products...",
+    "total_products": "{{count}} products",
+    "no_results_title": "No Products Found",
+    "no_results_message": "Please try adjusting your filters or search keywords",
+    "section_title": "Main Products",
+    "section_subtitle": "Carefully selected premium products, providing you with the latest product choices",
+    "loading": "Loading latest products...",
+    "view_all": "View All Products",
+    "view_all_hint": "Browse complete product catalog with detailed technical specifications and application scope",
+    "modal": {
+      "close": "Close",
+      "inquiry": "Inquiry Now",
+      "specs": "Technical Specifications",
+      "brand": "Brand",
+      "model": "Model",
+      "category": "Category",
+      "warranty": "Warranty",
+      "stock": "Stock",
+      "features": "Features",
+      "oe_number": "OE Number",
+      "compatibility": "Compatibility",
+      "applications": "Applications",
+      "notes": "Notes"
+    },
+    "features": {
+      "original_quality": "OEM Quality",
+      "high_performance": "High Power",
+      "high_precision": "Precision",
+      "long_life": "Durable",
+      "german_craft": "German Tech",
+      "diamond_quality": "Diamond",
+      "precise_control": "Precision",
+      "precision_injection": "Precise Fuel",
+      "complete_parts": "Complete Kit",
+      "professional_tools": "Pro Tools",
+      "premium_product": "Premium",
+      "in_stock": "In Stock",
+      "original_genuine": "OEM Quality",
+      "stable_performance": "Reliable",
+      "one_year_warranty": "1Yr Warranty",
+      "borgwarner": "BorgWarner",
+      "continental": "Continental",
+      "delphi": "Delphi",
+      "denso": "Denso",
+      "skf_bearing": "SKF Bearing",
+      "pierburg": "Pierburg",
+      "high_quality": "Quality",
+      "durability": "Durable",
+      "reliability": "Reliable",
+      "eco_friendly": "Eco-Friendly",
+      "quick_response": "Fast Response",
+      "low_noise": "Quiet",
+      "easy_install": "Easy Setup",
+      "global_warranty": "Global Cover"
+    },
+    "warranty_unit": " months warranty",
+    "view_details": "View Details",
+    "quick_inquiry": "Inquiry Now"
+  },
+  "company": {
+    "name": "Wuxi Huangde International Trading Co., Ltd.",
+    "description": "Professional Turbocharger and Common Rail Injector Parts Supplier",
+    "location": "China",
+    "section_title": "About Us",
+    "intro_title": "「Company Profile」",
+    "intro_main": "Wuxi Huangde International Trading Co., Ltd. is a professional service company specializing in turbocharger parts and common rail injector components supply.",
+    "intro_detail_1": "Our professional team is dedicated to sourcing and providing high-quality turbocharger components and injector parts for global customers.",
+    "intro_detail_2": "Providing high-performance automotive parts solutions for multiple industries.",
+    "intro_detail_3": "With over 15 years of agency experience, ensuring every product meets the highest quality standards.",
+    "features": [
+      {
+        "icon": "fas fa-trophy",
+        "title": "15 Years Professional Experience",
+        "description": "Over 15 years of industry agency experience with deep understanding of market demands"
+      },
+      {
+        "icon": "fas fa-globe",
+        "title": "Global Supply Network",
+        "description": "Established long-term partnerships with top global manufacturers"
+      },
+      {
+        "icon": "fas fa-shield-alt",
+        "title": "Quality Assurance",
+        "description": "Every product undergoes strict quality testing to ensure the highest standards"
+      }
+    ]
+  },
+  "contact": {
+    "section_title": "Contact Us",
+    "section_subtitle": "Contact us immediately for professional product consultation and quotation services",
+    "form_title": "Send Inquiry Information",
+    "form_description": "Please fill in the following information, we will reply within 24 hours",
+    "fields": {
+      "name": "Your Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "company": "Company Name",
+      "message": "Detailed Requirements",
+      "message_placeholder": "Detailed Requirements * - Please describe your requirements in detail, including product models, quantities, etc."
+    },
+    "submit": "Submit Inquiry",
+    "info": {
+      "address": "Address",
+      "postal": "Postal Code",
+      "phone": "Phone",
+      "wechat": "WeChat",
+      "whatsapp": "WhatsApp",
+      "email": "Email"
+    },
+    "actions": {
+      "call": "Call Now",
+      "whatsapp": "WhatsApp Contact",
+      "email": "Send Email"
+    },
+    "company_name": "Wuxi Huangde International Trading Co., Ltd.",
+    "address_full": "No. 107 Chuangye Road, Industrial Park Donggang Town, Xishan District Wuxi City",
+    "postal_code": "214196"
+  },
+
+  "product": {
+    "brand": "Brand",
+    "part_number": "Part Number",
+    "price": "Price",
+    "view_details": "View Details",
+    "quick_inquiry": "Quick Inquiry",
+    "no_products": "No Products",
+    "no_products_desc": "No products available in this category at the moment. Please try again later or contact us for more information.",
+    "default_brand": "Diamond Auto",
+    "unknown_brand": "Unknown Brand",
+    "price_negotiable": "Negotiable",
+    "no_model": "No Model",
+    "no_description": "No Description",
+    "badges": {
+      "new": "New",
+      "hot": "Hot",
+      "recommend": "Recommended",
+      "sale": "Sale",
+      "limited": "Limited",
+      "tech": "Tech",
+      "parts": "Parts",
+      "precision": "Precision",
+      "pro": "Professional"
+    },
+    "features": {
+      "original_quality": "OEM Quality",
+      "german_craft": "German Tech",
+      "borgwarner": "BorgWarner",
+      "continental": "Continental",
+      "delphi": "Delphi",
+      "denso": "Denso",
+      "skf_bearing": "SKF Bearing",
+      "pierburg": "Pierburg",
+      "diamond_quality": "Diamond",
+      "high_performance": "High Power",
+      "precise_control": "Precision",
+      "precision_injection": "Precise Fuel",
+      "complete_parts": "Complete Kit",
+      "professional_tools": "Pro Tools",
+      "premium_product": "Premium",
+      "in_stock": "In Stock",
+      "original_genuine": "OEM Quality",
+      "stable_performance": "Reliable",
+      "one_year_warranty": "1Yr Warranty",
+      "long_life": "Durable",
+      "high_precision": "Precision",
+      "high_quality": "Quality",
+      "durability": "Durable",
+      "reliability": "Reliable",
+      "eco_friendly": "Eco-Friendly",
+      "quick_response": "Fast Response",
+      "low_noise": "Quiet",
+      "easy_install": "Easy Setup",
+      "global_warranty": "Global Cover",
+      "warranty_unit": "mo warranty"
+    }
+  },
+  "search": {
+    "placeholder": "Search product models, brands..."
+  },
+  "test": {
+    "title": "Product Card Multilingual Test",
+    "description": "Test whether feature tags and buttons in product cards are correctly translated",
+    "language_label": "Select Language:",
+    "features_title": "Feature Tags Test",
+    "features_desc": "The following are common feature tags in product cards:",
+    "buttons_title": "Button Text Test",
+    "buttons_desc": "The following are buttons in product cards:",
+    "product_info_title": "Product Information Test",
+    "product_info_desc": "The following is basic information in product cards:",
+    "status_title": "System Status"
+  },
+  "hero": {
+    "slides": {
+      "0": {
+        "title": "Turbochargers",
+        "description": "Various turbocharger assemblies for automotive, truck, and construction machinery applications",
+        "button": "Learn More"
+      },
+      "1": {
+        "title": "Actuators",
+        "description": "Turbocharger actuators that control the operating state of turbochargers",
+        "button": "Learn More"
+      },
+      "2": {
+        "title": "Common Rail Injectors",
+        "description": "Common rail injectors, nozzles, high-pressure pumps and other diesel injection system components",
+        "button": "Learn More"
+      },
+      "3": {
+        "title": "Turbo Parts",
+        "description": "Turbocharger related parts including seals, bearings, impellers and other precision components",
+        "button": "Learn More"
+      }
+    }
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "loading": "Loading",
+    "error": "Error"
+  },
+  "pagination": {
+    "items_per_page": "Items per page:",
+    "items_12": "12 items",
+    "items_24": "24 items",
+    "items_36": "36 items",
+    "items_48": "48 items",
+    "jump_to": "Jump to:",
+    "page_number_placeholder": "Page number",
+    "jump": "Go",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "common": {
+    "loading": "Loading...",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "view_details": "View Details",
+    "back": "Back",
+    "next": "Next",
+    "prev": "Previous",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "not_specified": "Not Specified"
+  },
+  "product_detail": {
+    "labels": {
+      "model": "Model",
+      "brand": "Brand",
+      "product_code": "SKU",
+      "origin": "Origin",
+      "warranty": "Warranty"
+    },
+    "buttons": {
+      "email_inquiry": "EMAIL",
+      "instant_inquiry": "INQUIRY",
+      "share_product": "SHARE"
+    },
+    "inquiry_modal": {
+      "title": "Product Inquiry",
+      "subtitle": "Please fill in the following information, we will contact you as soon as possible",
+      "form": {
+        "name_label": "Your Name",
+        "name_required": "*",
+        "name_placeholder": "Please enter your name",
+        "email_label": "Email Address",
+        "email_required": "*",
+        "email_placeholder": "Please enter your email",
+        "phone_label": "Phone Number",
+        "phone_placeholder": "Please enter your phone number",
+        "quantity_label": "Purchase Quantity",
+        "quantity_placeholder": "Please enter purchase quantity",
+        "message_label": "Inquiry Message",
+        "message_required": "*",
+        "message_placeholder": "Please describe your purchase requirements in detail, including specifications, delivery time, etc.",
+        "submit_button": "Send Inquiry"
+      },
+      "prefill_template": {
+        "intro": "I am interested in the following product:",
+        "product_name": "Product Name: {{name}}",
+        "product_model": "Product Model: {{model}}",
+        "product_code": "Product Code: {{code}}",
+        "request_info": "Please provide more detailed information and quotation."
+      }
+    },
+    "tabs": {
+      "specs": "Technical Specs",
+      "description": "Product Description",
+      "packaging": "Packaging Info"
+    },
+    "specs": {
+      "category": "Category",
+      "brand": "Brand",
+      "model": "Model",
+      "oe_number": "OE Number",
+      "compatible_system": "Application",
+      "notes": "Notes",
+      "origin": "Origin",
+      "warranty": "Warranty"
+    },
+    "packaging": {
+      "title": "Packaging Info",
+      "method": "Packaging Method:",
+      "method_desc": "Professional shock-proof packaging to ensure product safety",
+      "shipping_time": "Shipping Time:",
+      "shipping_time_desc": "In-stock products shipped within 24 hours",
+      "logistics": "Logistics Method:",
+      "logistics_desc": "Global express delivery, safe and reliable",
+      "warranty": "Warranty Period:",
+      "warranty_desc": " months quality guarantee"
+    },
+    "description": {
+      "title": "Product Description"
+    },
+    "share": {
+      "title": "Share Product",
+      "facebook": "Share on Facebook",
+      "twitter": "Share on Twitter",
+      "linkedin": "Share on LinkedIn",
+      "copy_link": "Copy Link"
+    },
+    "related_products": {
+      "title": "Related Products",
+      "subtitle": "Carefully selected quality products for you"
+    }
+  },
+  "footer": {
+    "navigation": "Quick Navigation",
+    "products": "Main Products",
+    "quick_inquiry": "Quick Inquiry",
+    "submit": "Quick Inquiry",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "company": "Wuxi Huangde International Trading Co., Ltd.",
+    "copyright": "All Rights Reserved",
+    "links": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    }
+  },
+  "social": {
+    "facebook": "Follow us on Facebook",
+    "instagram": "Follow us on Instagram",
+    "whatsapp": "Contact us on WhatsApp"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "subtitle": "This privacy policy outlines how Wuxi Huangde International Trading Co., Ltd. collects, uses, maintains and discloses information collected from users of our turbocharger supply website.",
+    "back_home": "Back to Home",
+    "effective_date": "Effective Date",
+    "effective_date_value": "January 1, 2024",
+    "last_updated": "Last Updated",
+    "last_updated_value": "December 15, 2024",
+    "applies_to": "This privacy policy applies to all business activities and online services of Wuxi Huangde International Trading Co., Ltd.",
+    "section1": {
+      "title": "1. Information Collection Scope",
+      "subtitle1": "1.1 Personal Information Collection",
+      "intro": "We may collect your personal information in the following situations:",
+      "inquiry": "Product Inquiry: Name, company name, position, contact phone, email, mailing address",
+      "consultation": "Technical Consultation: Vehicle information, engine model, fault description, repair requirements",
+      "order": "Order Processing: Delivery address, payment information, invoice information",
+      "service": "After-sales Service: Product usage, feedback, service evaluation",
+      "website_usage": "Website Usage:",
+      "website_usage_details": "IP address, browser type, access time, page browsing records",
+      "subtitle2": "1.2 Business-Related Information",
+      "business_intro": "As a professional turbocharger supplier, we may also collect:",
+      "business_type": "Your business type (auto repair shops, parts dealers, individual users, etc.)",
+      "purchase_needs": "Procurement needs and budget range",
+      "technical_specs": "Technical specification requirements and compatibility information",
+      "logistics_preferences": "Logistics delivery preferences and time requirements"
+    },
+    "section2": {
+      "title": "2. Information Usage Purpose",
+      "intro": "We collect and use your personal information only for the following legitimate purposes:",
+      "purpose1": "Product Service Provision: Process your inquiries, quotations, order confirmations and product delivery",
+      "purpose2": "Customer Service: Provide technical support, after-sales service and problem resolution",
+      "purpose3": "Business Communication: Send product information, price updates, technical notifications",
+      "purpose4": "Quality Improvement: Analyze customer feedback to improve product and service quality",
+      "purpose5": "Legal Compliance:",
+      "purpose5_details": "Complying with tax, customs and other legal and regulatory requirements",
+      "purpose6": "Security Protection:",
+      "purpose6_details": "Preventing fraud, cyber attacks and other security threats"
+    },
+    "section3": {
+      "title": "3. Information Sharing and Disclosure",
+      "subtitle1": "3.1 No Sale of Personal Information",
+      "no_sale": "We will never sell, lease or otherwise provide your personal information to third parties for commercial purposes.",
+      "subtitle2": "3.2 Limited Sharing Situations",
+      "limited_sharing_intro": "We may share your information in the following situations:",
+      "logistics": "Logistics Delivery:",
+      "logistics_details": "Sharing necessary delivery information with courier companies",
+      "payment": "Payment Processing:",
+      "payment_details": "Sharing transaction-related information with banks or payment institutions",
+      "technical": "Technical Services:",
+      "technical_details": "Sharing necessary technical data with IT service providers",
+      "legal": "Legal Requirements:",
+      "legal_details": "Upon legitimate requests from government departments or judicial authorities",
+      "business_transfer": "Business Transfer:",
+      "business_transfer_details": "During company mergers, acquisitions or asset transfers"
+    },
+    "section4": {
+      "title": "4. Data Security Protection",
+      "subtitle1": "4.1 Technical Security Measures",
+      "intro": "We take the following measures to protect your personal information:",
+      "measure1": "Data Encryption: Use SSL/TLS encryption to transmit sensitive information",
+      "measure2": "Access Control: Strictly limit employee access to personal information",
+      "measure3": "Firewall Protection: Deploy enterprise-level firewalls and intrusion detection systems",
+      "measure4": "Regular Backup: Establish data backup and disaster recovery mechanisms",
+      "measure5": "Security Audit:",
+      "measure5_details": "Regular security assessments and vulnerability scans",
+      "subtitle2": "4.2 Management Security Measures",
+      "staff_training": "Staff Training:",
+      "staff_training_details": "Regular data protection and security awareness training",
+      "confidentiality": "Confidentiality Agreement:",
+      "confidentiality_details": "All employees sign confidentiality agreements",
+      "access_control": "Permission Management:",
+      "access_control_details": "Implementing minimum privilege principle and regular permission reviews",
+      "incident_response": "Incident Response:",
+      "incident_response_details": "Establishing data breach emergency response mechanisms"
+    },
+    "section5": {
+      "title": "5. Data Retention Period",
+      "retention_title": "Retention Period Description",
+      "customer_info": "Customer Information:",
+      "customer_info_details": "Retained for 3 years after business relationship termination (tax requirements)",
+      "transaction_records": "Transaction Records:",
+      "transaction_records_details": "Retained for 7 years after transaction completion (accounting law requirements)",
+      "website_logs": "Website Logs:",
+      "website_logs_details": "Automatically deleted after 12 months of retention",
+      "marketing_info": "Marketing Information:",
+      "marketing_info_details": "You can request to stop receiving and delete at any time",
+      "dispute_handling": "Dispute Handling:",
+      "dispute_handling_details": "Related records deleted within 1 year after dispute resolution"
+    },
+    "section6": {
+      "title": "6. Your Rights",
+      "intro": "According to relevant laws and regulations, you have the following rights:",
+      "right1_title": "📋 Right to Access",
+      "right1_desc": "You have the right to know what personal information we have collected about you",
+      "right2_title": "✏️ Right to Rectification",
+      "right2_desc": "You have the right to request us to correct inaccurate or incomplete personal information",
+      "right3_title": "🗑️ Right to Erasure",
+      "right3_desc": "Under certain circumstances, you have the right to request us to delete your personal information",
+      "right4_title": "🚫 Right to Restrict Processing",
+      "right4_desc": "You have the right to request us to restrict the processing of your personal information"
+    },
+    "contact": {
+      "title": "7. Contact Us",
+      "intro": "If you have any questions about this privacy policy or need to exercise your rights, please contact us through the following methods:",
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address",
+      "whatsapp": "WhatsApp"
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "subtitle": "Welcome to the turbocharger supply services of Wuxi Huangde International Trading Co., Ltd. By using our services, you agree to comply with the following terms and conditions.",
+    "back_home": "Back to Home",
+    "effective_date": "Effective Date",
+    "effective_date_value": "January 1, 2024",
+    "last_updated": "Last Updated",
+    "last_updated_value": "December 15, 2024",
+    "applies_to": "These terms of service apply to all commercial activities conducted through our website, phone, email and other channels.",
+    "section1": {
+      "title": "Service Scope",
+      "subtitle1": "Product Sales Service",
+      "item1": "Turbocharger Assemblies: New and remanufactured products from various brands",
+      "item2": "Turbocharger Parts: Impellers, housings, actuators, sensors and other precision components",
+      "item3": "Common Rail Injectors: Bosch, Delphi, Denso and other brand injectors and parts",
+      "item4": "Repair Tools: Professional repair equipment and testing tools",
+      "item5": "Technical Documentation: Repair manuals, technical drawings, training materials",
+      "subtitle2": "Technical Consulting Service",
+      "service1": "Product selection and compatibility consultation",
+      "service2": "Fault diagnosis and repair guidance",
+      "service3": "Installation and commissioning technical support",
+      "service4": "Product usage training services"
+    },
+    "section2": {
+      "title": "5. Quality Assurance and After-sales Service",
+      "subtitle1": "5.1 Quality Assurance",
+      "intro": "Our Quality Commitment",
+      "warranty1": "Genuine Guarantee: All products are genuine with brand authorization certificates",
+      "warranty2": "Quality Testing: Strict quality testing before shipment",
+      "warranty3": "Packaging Protection: Professional packaging to ensure transportation safety",
+      "warranty4": "Quality Traceability: Complete product quality traceability system established",
+      "warranty5": "Continuous Improvement:",
+      "warranty5_details": "Continuously improving product quality and service levels"
+    },
+    "section3": {
+      "title": "2. User Qualification and Registration",
+      "subtitle1": "2.1 User Qualification Requirements",
+      "user1": "Corporate Users: Auto repair companies, parts dealers, trading companies with legal business qualifications",
+      "user2": "Professional Technicians: Repair technicians and engineers with relevant technical knowledge and experience",
+      "user3": "Individual Users: Natural persons over 18 years old with full civil capacity",
+      "user4": "International Users: Overseas customers who comply with local laws and regulations"
+    },
+    "section_product": {
+      "title": "3. Products and Pricing",
+      "subtitle1": "3.1 Product Information",
+      "intro": "We strive to ensure the accuracy of product information on our website, but due to technical limitations and frequent product updates, the following situations may occur:",
+      "tech_params": "Technical Parameters:",
+      "tech_params_details": "Subject to actual products and official technical documentation",
+      "product_images": "Product Images:",
+      "product_images_details": "For reference only, actual products may vary slightly",
+      "stock_status": "Stock Status:",
+      "stock_status_details": "Updated in real-time, but may have delays",
+      "compatibility": "Compatibility Information:",
+      "compatibility_details": "Recommend confirming vehicle compatibility before purchase"
+    },
+    "section_order": {
+      "title": "4. Orders and Payment",
+      "subtitle1": "4.1 Order Process",
+      "step1_title": "1️⃣ Product Inquiry",
+      "step1_desc": "Submit product requirements and get detailed quotations",
+      "step2_title": "2️⃣ Order Confirmation",
+      "step2_desc": "Confirm product specifications, quantity, price and delivery time",
+      "step3_title": "3️⃣ Contract Signing",
+      "step3_desc": "Sign formal purchase contract or order agreement",
+      "step4_title": "4️⃣ Payment Arrangement",
+      "step4_desc": "Complete payment according to agreed method and schedule",
+      "step5_title": "5️⃣ Shipping and Delivery",
+      "step5_desc": "Arrange shipment and provide logistics tracking information"
+    },
+    "contact": {
+      "title": "Contact Us",
+      "intro": "If you have any questions about these terms of service, please contact us through the following methods:",
+      "company": "Company Name",
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address",
+      "whatsapp": "WhatsApp",
+      "hours": "Business Hours",
+      "hours_value": "Monday to Saturday 8:00-18:00"
+    }
+  }
+}

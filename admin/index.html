@@ -1,0 +1,2657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钻石CMS - 产品管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #475569;
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+            flex-grow: 1;
+        }
+
+        .menu-item {
+            color: #cbd5e1;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        .menu-item.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-left: 4px solid #60a5fa;
+        }
+
+        .menu-item i {
+            font-size: 1.25rem;
+        }
+
+        .company-info {
+            padding: 1rem 1.5rem;
+            color: #cbd5e1;
+            font-size: 0.875rem;
+            border-top: 1px solid #475569;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.2s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .product-image-container {
+            position: relative;
+            width: 100%;
+            padding-top: 100%; /* 1:1 aspect ratio */
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card .card-header {
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .product-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #f8f9fa;
+        }
+
+        .product-checkbox {
+            transform: scale(1.2);
+        }
+
+        .product-card.selected {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: #eff6ff;
+        }
+
+        .upload-area:hover .text-muted {
+            color: var(--primary-color) !important;
+        }
+
+        .upload-area.drag-over {
+            border-color: #10b981;
+            background: #f0fdf4;
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+        }
+
+        .upload-area.drag-over .text-muted {
+            color: #10b981 !important;
+        }
+
+        .upload-area.drag-over::before {
+            content: '';
+            position: absolute;
+            top: 0;
+        }
+
+        .hot-products-column {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .hot-product-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #e9ecef;
+            transition: all 0.3s ease;
+            height: 70px;
+        }
+
+        .hot-product-item:hover {
+            background: #e3f2fd;
+            border-left-color: #2196f3;
+            transform: translateX(4px);
+        }
+
+        .hot-product-rank {
+            font-size: 18px;
+            font-weight: bold;
+            color: #666;
+            margin-right: 12px;
+            min-width: 30px;
+        }
+
+        .hot-product-rank.top-1 { color: #ffd700; }
+        .hot-product-rank.top-2 { color: #c0c0c0; }
+        .hot-product-rank.top-3 { color: #cd7f32; }
+
+        .hot-product-info {
+            flex-grow: 1;
+        }
+
+        .hot-product-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+            font-size: 14px;
+        }
+
+        .hot-product-model {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .hot-product-clicks {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .upload-area.drag-over::before {
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        /* 图片拖拽排序样式 */
+        .current-image-card, .image-preview-card {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .current-image-card:hover, .image-preview-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .current-image-card[draggable="true"], .image-preview-card[draggable="true"] {
+            cursor: move;
+        }
+
+        .current-image-card[style*="opacity: 0.5"], .image-preview-card[style*="opacity: 0.5"] {
+            transform: rotate(5deg) scale(0.95);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            position: relative;
+        }
+
+        .image-order-badge {
+            font-weight: bold;
+            font-size: 10px;
+            z-index: 10;
+        }
+
+        /* 拖拽指示样式 */
+        .current-image-card.drag-over-left {
+            border-left: 4px solid #28a745;
+            margin-left: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .current-image-card.drag-over-right {
+            border-right: 4px solid #28a745;
+            margin-right: 8px;
+            transition: all 0.2s ease;
+        }
+
+        #currentImageContainer, #editImageContainer {
+            gap: 15px;
+            min-height: 60px;
+        }
+
+        .current-image-card img, .image-preview-card img {
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .current-image-card:hover img, .image-preview-card:hover img {
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+        }
+
+        .alert-dismissible {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .log-item {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .log-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .log-item.create {
+            border-left-color: #10b981;
+        }
+
+        .log-item.update {
+            border-left-color: #f59e0b;
+        }
+
+        .log-item.delete {
+            border-left-color: #ef4444;
+        }
+
+        .log-timestamp {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .log-user {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .log-action {
+            font-weight: 500;
+        }
+
+        .table-responsive {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th {
+            background-color: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        /* 询价管理专用样式 */
+        .inquiry-stats {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group .form-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .inquiry-table-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8fafc;
+            transform: translateX(2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .inquiry-status-badge {
+            font-size: 0.75rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .inquiry-customer-info {
+            line-height: 1.3;
+        }
+
+        .inquiry-customer-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .inquiry-customer-email {
+            color: #6b7280;
+            font-size: 0.8rem;
+        }
+
+        .inquiry-customer-phone {
+            color: #059669;
+            font-size: 0.8rem;
+        }
+
+        .inquiry-product-info {
+            line-height: 1.3;
+        }
+
+        .inquiry-product-name {
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .inquiry-product-model {
+            color: #6b7280;
+            font-size: 0.8rem;
+        }
+
+        .inquiry-message-preview {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #4b5563;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .inquiry-date-info {
+            line-height: 1.3;
+        }
+
+        .inquiry-date {
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .inquiry-time {
+            color: #6b7280;
+            font-size: 0.8rem;
+        }
+
+        .inquiry-actions {
+            white-space: nowrap;
+        }
+
+        .btn-inquiry-detail {
+            font-size: 0.8rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+        }
+
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* 图片预览卡片样式 */
+        .image-preview-card {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: move;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-preview-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .image-preview-card.dragging {
+            opacity: 0.8;
+            transform: rotate(5deg) scale(1.05);
+            z-index: 1000;
+            border-color: var(--primary-color);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .image-preview-card.drag-over {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+            transform: scale(1.02);
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .image-preview-card:hover .preview-image {
+            transform: scale(1.05);
+        }
+
+        .image-order-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: var(--primary-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .main-image-badge {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: linear-gradient(45deg, #f59e0b, #f97316);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .image-remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-preview-card:hover .image-remove-btn {
+            opacity: 1;
+        }
+
+        .drag-over {
+            border-color: var(--primary-color) !important;
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        /* 图表卡片样式 */
+        .chart-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-card .card-header {
+            background: transparent;
+            border: none;
+            padding: 1.25rem 1.5rem 0.75rem;
+        }
+
+        .chart-card .card-body {
+            padding: 0.75rem 1.5rem 1.5rem;
+        }
+
+        .chart-card h6 {
+            font-weight: 600;
+            color: #1f2937;
+            letter-spacing: -0.025em;
+        }
+
+        .chart-card .bi {
+            font-size: 1.1em;
+        }
+
+        /* 特性标签样式 */
+        .feature-tag-btn {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .feature-tag-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .feature-tag-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        /* 分页组件样式 */
+        .pagination {
+            --bs-pagination-padding-x: 0.75rem;
+            --bs-pagination-padding-y: 0.5rem;
+            --bs-pagination-font-size: 1rem;
+            --bs-pagination-color: var(--primary-color);
+            --bs-pagination-bg: #fff;
+            --bs-pagination-border-width: 1px;
+            --bs-pagination-border-color: #dee2e6;
+            --bs-pagination-border-radius: 0.375rem;
+            --bs-pagination-hover-color: #fff;
+            --bs-pagination-hover-bg: var(--primary-color);
+            --bs-pagination-hover-border-color: var(--primary-color);
+            --bs-pagination-focus-color: #fff;
+            --bs-pagination-focus-bg: var(--primary-color);
+            --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
+            --bs-pagination-active-color: #fff;
+            --bs-pagination-active-bg: var(--primary-color);
+            --bs-pagination-active-border-color: var(--primary-color);
+            --bs-pagination-disabled-color: #6c757d;
+            --bs-pagination-disabled-bg: #fff;
+            --bs-pagination-disabled-border-color: #dee2e6;
+        }
+
+        .pagination .page-link {
+            transition: all 0.2s ease;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+        }
+
+        .pagination .page-item:not(.disabled) .page-link:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="../assets/images/logo/diamond-logo.png" alt="Diamond Auto" class="sidebar-logo">
+            <div class="text-center">
+                <div class="fw-bold text-white">钻石CMS</div>
+                <div class="small opacity-75">产品管理系统</div>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="#dashboard" class="menu-item active" data-page="dashboard">
+                <i class="bi bi-speedometer2"></i>
+                <span>控制台</span>
+            </a>
+            <a href="#products" class="menu-item" data-page="products">
+                <i class="bi bi-box-seam"></i>
+                <span>产品管理</span>
+            </a>
+            <a href="#add-product" class="menu-item" data-page="add-product">
+                <i class="bi bi-plus-circle"></i>
+                <span>添加产品</span>
+            </a>
+            <a href="#categories" class="menu-item" data-page="categories">
+                <i class="bi bi-tags"></i>
+                <span>分类管理</span>
+            </a>
+            <a href="#logs" class="menu-item" data-page="logs">
+                <i class="bi bi-clock-history"></i>
+                <span>操作记录</span>
+            </a>
+            <a href="#inquiries" class="menu-item" data-page="inquiries">
+                <i class="bi bi-chat-dots"></i>
+                <span>询价管理</span>
+                <span class="badge bg-danger rounded-pill ms-auto" id="pending-inquiries-count">0</span>
+            </a>
+            <a href="#company" class="menu-item" data-page="company">
+                <i class="bi bi-building"></i>
+                <span>公司信息</span>
+            </a>
+            <a href="#admins" class="menu-item" data-page="admins" id="admin-menu-item" style="display: none;">
+                <i class="bi bi-people"></i>
+                <span>管理员管理</span>
+            </a>
+        </div>
+
+        <div class="company-info">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div>
+                    <div class="fw-bold">管理员</div>
+                    <div class="small opacity-75">admin</div>
+                </div>
+                <button class="btn btn-sm btn-outline-light me-1" onclick="showChangePasswordModal()" title="修改密码">
+                    <i class="bi bi-key"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-light" onclick="logout()" title="登出">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </div>
+            <div class="small opacity-75">
+                © 2025 Diamond-Auto
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <!-- 控制台页面 -->
+        <div id="dashboard-page" class="page-content active">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">控制台</h1>
+            </div>
+
+            <!-- 数据概览卡片 - 预留给未来的点击和咨询数据 -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <div class="text-muted">今日访问</div>
+                                <div class="stats-number">-</div>
+                            </div>
+                            <div class="text-primary fs-1">
+                                <i class="bi bi-eye"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <div class="text-muted">产品点击</div>
+                                <div class="stats-number">-</div>
+                            </div>
+                            <div class="text-success fs-1">
+                                <i class="bi bi-cursor"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <div class="text-muted">咨询数量</div>
+                                <div class="stats-number">-</div>
+                            </div>
+                            <div class="text-warning fs-1">
+                                <i class="bi bi-chat-dots"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <div class="text-muted">转化率</div>
+                                <div class="stats-number">-</div>
+                            </div>
+                            <div class="text-info fs-1">
+                                <i class="bi bi-graph-up"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 热门产品展示区域 -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-fire me-2"></i>热门产品排行
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="hot-products-overview">
+                                <div class="col-md-6">
+                                    <h6 class="mb-3 text-primary">TOP 1-5</h6>
+                                    <div id="hot-products-left" class="hot-products-column">
+                                        <div class="text-center text-muted py-3">
+                                            <i class="spinner-border spinner-border-sm me-2"></i>加载中...
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="mb-3 text-success">TOP 6-10</h6>
+                                    <div id="hot-products-right" class="hot-products-column">
+                                        <div class="text-center text-muted py-3">
+                                            <i class="spinner-border spinner-border-sm me-2"></i>加载中...
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据分析概览 -->
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-graph-up me-2"></i>访问趋势分析
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <!-- 历史数据查询控件 -->
+                                    <select class="form-select form-select-sm" id="period-selector" style="width: auto;" onchange="loadHistoricalData()">
+                                        <option value="today">今日数据</option>
+                                        <option value="year">按年查看</option>
+                                        <option value="month">按月查看</option>
+                                        <option value="day">按日查看</option>
+                                    </select>
+                                    <select class="form-select form-select-sm" id="value-selector" style="width: auto; display: none;" onchange="loadHistoricalData()">
+                                        <!-- 动态填充选项 -->
+                                    </select>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="refreshCurrentData()" title="刷新当前数据">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding: 20px;">
+                            <!-- 数据总览卡片 -->
+                            <div class="row mb-4">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="bg-primary text-white rounded p-3 text-center shadow-sm">
+                                        <div class="h4 mb-1" id="overview-page-views">0</div>
+                                        <small class="opacity-75">页面访问量</small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="bg-success text-white rounded p-3 text-center shadow-sm">
+                                        <div class="h4 mb-1" id="overview-unique-visitors">0</div>
+                                        <small class="opacity-75">独立用户</small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="bg-warning text-white rounded p-3 text-center shadow-sm">
+                                        <div class="h4 mb-1" id="overview-product-clicks">0</div>
+                                        <small class="opacity-75">产品点击</small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="bg-info text-white rounded p-3 text-center shadow-sm">
+                                        <div class="h4 mb-1" id="overview-conversion-rate">0%</div>
+                                        <small class="opacity-75">转化率</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 24小时趋势图表和咨询来源 -->
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="card chart-card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-graph-up me-2 text-primary"></i>24小时访问趋势
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="hourly-chart" style="height: 320px; width: 100%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card chart-card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-pie-chart me-2 text-warning"></i>咨询来源统计
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="inquiry-sources-chart" style="height: 320px; width: 100%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 地理位置统计卡片 -->
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-globe me-2"></i>访问地理分布
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div id="geo-chart" style="width: 100%; height: 300px;"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="mb-3">地区排名</h6>
+                                    <div id="geo-list" class="overflow-auto" style="max-height: 250px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+        <!-- 产品管理页面 -->
+        <div id="products-page" class="page-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">产品管理</h1>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-success" onclick="autoAssignProductTags()" title="根据上架时间和点击率自动分配产品标签">
+                        <i class="bi bi-tags me-2"></i>自动分配标签
+                    </button>
+                    <button class="btn btn-info" onclick="showProductStats()" title="查看产品点击统计">
+                        <i class="bi bi-graph-up me-2"></i>产品统计
+                    </button>
+                    <button class="btn btn-warning" onclick="batchUpdateProductFields()" title="为现有产品批量生成缺失的字段">
+                        <i class="bi bi-arrow-repeat me-2"></i>批量更新字段
+                    </button>
+                    <button class="btn btn-primary" onclick="showPage('add-product')">
+                        <i class="bi bi-plus-lg me-2"></i>添加产品
+                    </button>
+                </div>
+            </div>
+
+            <!-- 产品统计卡片 -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <div class="text-muted">总产品数</div>
+                                <div class="stats-number" id="total-products">0</div>
+                            </div>
+                            <div class="text-primary fs-1">
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <div class="text-muted">活跃产品</div>
+                                <div class="stats-number" id="active-products">0</div>
+                            </div>
+                            <div class="text-success fs-1">
+                                <i class="bi bi-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <div class="text-muted">产品分类</div>
+                                <div class="stats-number" id="total-categories">0</div>
+                            </div>
+                            <div class="text-warning fs-1">
+                                <i class="bi bi-tags"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <div class="text-muted">上传图片</div>
+                                <div class="stats-number" id="total-images">0</div>
+                            </div>
+                            <div class="text-info fs-1">
+                                <i class="bi bi-image"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 搜索和筛选 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="search-products" 
+                                   placeholder="搜索产品名称、型号、SKU或详情..." onkeyup="filterProducts()">
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="filter-category" onchange="filterProducts()">
+                                <option value="">所有分类</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="filter-status" onchange="filterProducts()">
+                                <option value="">所有状态</option>
+                                <option value="active">在售</option>
+                                <option value="inactive">停售</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="d-flex justify-content-end gap-2">
+                                <!-- 批量操作按钮组 -->
+                                <div id="batch-actions" class="d-none">
+                                    <div class="btn-group me-2">
+                                        <button class="btn btn-outline-warning btn-sm" onclick="showBatchEditModal()">
+                                            <i class="bi bi-pencil-square me-1"></i>批量编辑
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm" onclick="batchDeleteProducts()">
+                                            <i class="bi bi-trash me-1"></i>批量删除
+                                        </button>
+                                    </div>
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="clearAllSelections()">
+                                        <i class="bi bi-x-lg me-1"></i>取消选择
+                                    </button>
+                                </div>
+                                <!-- 全选按钮 -->
+                                <button class="btn btn-outline-secondary btn-sm" onclick="toggleSelectAll()" id="select-all-btn">
+                                    <i class="bi bi-check-all me-1"></i>全选
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品列表顶部控制栏 -->
+            <div class="card mb-3">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-muted">排序方式:</span>
+                            <select class="form-select form-select-sm" style="width: auto;" id="sort-by" onchange="loadProductsWithPagination()">
+                                <option value="id-desc">最新产品</option>
+                                <option value="id-asc">最早产品</option>
+                                <option value="name-asc">名称 A-Z</option>
+                                <option value="name-desc">名称 Z-A</option>
+                                <option value="price-asc">价格低到高</option>
+                                <option value="price-desc">价格高到低</option>
+                                <option value="stock-asc">库存低到高</option>
+                                <option value="stock-desc">库存高到低</option>
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-muted">每页显示:</span>
+                            <select class="form-select form-select-sm" style="width: auto;" id="page-size" onchange="loadProductsWithPagination()">
+                                <option value="12">12 个</option>
+                                <option value="24" selected>24 个</option>
+                                <option value="48">48 个</option>
+                                <option value="96">96 个</option>
+                            </select>
+                            <span class="text-muted" id="products-info">显示 0 个产品</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品列表 -->
+            <div class="row" id="products-list">
+                <!-- 产品卡片将在这里动态生成 -->
+            </div>
+
+            <!-- 分页组件 -->
+            <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="产品分页" id="pagination-container" style="display: none;">
+                    <ul class="pagination pagination-lg" id="pagination">
+                        <!-- 分页按钮将在这里动态生成 -->
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- 加载状态 -->
+            <div class="text-center py-5" id="products-loading" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">加载中...</span>
+                </div>
+                <div class="mt-2 text-muted">正在加载产品数据...</div>
+            </div>
+        </div>
+
+        <!-- 添加产品页面 -->
+        <div id="add-product-page" class="page-content">
+            <div class="d-flex justify-content-between align-items-center mb-4 page-title">
+                <h2 class="h3 mb-0">添加产品</h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" onclick="generateAllContent()" title="填写产品名称和型号后，一键生成所有内容">
+                        <i class="bi bi-magic me-2"></i>一键生成所有内容
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="showPage('products')">
+                        <i class="bi bi-arrow-left me-2"></i>返回列表
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form id="addProductForm" enctype="multipart/form-data" onsubmit="submitAddProductForm(event)">
+                        <!-- 基本信息 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">基本信息</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- 产品名称输入组 -->
+                                    <div class="mb-3">
+                                        <label for="product-name" class="form-label">产品名称 <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="product-name" name="name" required maxlength="120">
+                                            <span class="input-group-text" id="name-char-count">0/120</span>
+                                        </div>
+                                        <div class="form-text">请输入产品名称，最多120个字符</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="product-category" class="form-label">产品分类 <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="product-category" name="category" required tabindex="10">
+                                            <option value="turbocharger" selected>涡轮增压器</option>
+                                            <option value="actuator">执行器</option>
+                                            <option value="injector">共轨喷油器</option>
+                                            <option value="turbo-parts">涡轮配件</option>
+                                            <option value="others">其他</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="product-model" class="form-label">产品型号 <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="product-model" name="model" required tabindex="2">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="product-brand" class="form-label">品牌</label>
+                                        <select class="form-select" id="product-brand" name="brand" tabindex="11">
+                                            <option value="Diamond-Auto" selected>Diamond-Auto</option>
+                                            <option value="Garrett">Garrett</option>
+                                            <option value="BorgWarner">BorgWarner</option>
+                                            <option value="Bosch">Bosch</option>
+                                            <option value="Denso">Denso</option>
+                                            <option value="Continental">Continental</option>
+                                            <option value="Delphi">Delphi</option>
+                                            <option value="Other">其他</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="product-price" class="form-label">产品价格 (USD)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" id="product-price" name="price" step="0.01" min="0" placeholder="0.00" tabindex="3">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="product-warranty" class="form-label">保修期</label>
+                                        <select class="form-select" id="product-warranty" name="warranty" tabindex="12">
+                                            <option value="6">6个月</option>
+                                            <option value="12" selected>12个月</option>
+                                            <option value="24">24个月</option>
+                                            <option value="36">36个月</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label for="product-oe" class="form-label">OEM号</label>
+                                        <textarea class="form-control" id="product-oe" name="oe_number" rows="3" placeholder="请输入原厂编号，多个编号请换行输入" tabindex="4"></textarea>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label for="product-compatibility" class="form-label">适配</label>
+                                        <textarea class="form-control" id="product-compatibility" name="compatibility" rows="3" placeholder="请输入适配的车型/发动机型号，多个请用逗号分隔" tabindex="5"></textarea>
+                                    </div>
+                                                                    <div class="col-12 mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label for="product-description" class="form-label mb-0">产品描述</label>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="generateProductDescription()" tabindex="21">
+                                            <i class="bi bi-magic"></i> 自动生成
+                                        </button>
+                                    </div>
+                                    <textarea class="form-control" id="product-description" name="description" rows="4" placeholder="请输入产品的详细描述，或点击自动生成" tabindex="6"></textarea>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 产品特性 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">产品特性</h5>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="generateProductFeatures()" tabindex="22">
+                                    <i class="bi bi-magic"></i> 智能推荐
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label">选择产品特性标签</label>
+                                        <div id="features-container" class="d-flex flex-wrap gap-2 mb-2"></div>
+                                        <input type="hidden" id="product-features" name="features">
+                                        <small class="form-text text-muted">点击标签选择产品特性，可多选，或点击"智能推荐"自动选择</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 其他事项 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">其他事项</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label for="product-notes" class="form-label">附加说明</label>
+                                        <textarea class="form-control" id="product-notes" name="notes" rows="4" placeholder="请输入产品的附加说明、注意事项或其他重要信息" tabindex="7"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SEO信息 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">SEO信息</h5>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="generateSEODescription()" tabindex="20">
+                                    <i class="bi bi-magic"></i> 自动生成
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label for="product-meta-description" class="form-label">SEO描述</label>
+                                        <textarea class="form-control" id="product-meta-description" name="meta_description" rows="3" placeholder="请输入产品的SEO描述，建议120-150字，或点击自动生成" tabindex="8"></textarea>
+                                        <small class="form-text text-muted">此描述将显示在搜索引擎结果中</small>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label for="product-meta-keywords" class="form-label">SEO关键词</label>
+                                        <input type="text" class="form-control" id="product-meta-keywords" name="meta_keywords" placeholder="请输入SEO关键词，用逗号分隔，或点击自动生成" tabindex="9">
+                                        <small class="form-text text-muted">多个关键词请用逗号分隔</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 产品图片上传区域 -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">产品图片</label>
+                            <div class="upload-area" id="addUploadArea" 
+                                 onclick="document.getElementById('addProductImages').click()"
+                                 ondragover="handleDragOver(event)" 
+                                 ondragenter="handleDragEnter(event)" 
+                                 ondragleave="handleDragLeave(event)" 
+                                 ondrop="handleFileDrop(event)">
+                                <i class="bi bi-cloud-upload fs-1 text-muted mb-3"></i>
+                                <h5 class="text-muted">点击上传图片或拖拽文件到此处</h5>
+                                <p class="text-muted mb-0">支持 JPG, PNG, GIF 格式，可选择多张图片</p>
+                                <input type="file" id="addProductImages" name="images" accept="image/*" multiple style="display: none;" onchange="handleAddPageMultipleFileSelection(this.files)">
+                            </div>
+                            
+                            <!-- 图片预览和拖拽排序区域 -->
+                            <div id="addImagePreviews" class="mt-3" style="display: none;">
+                                <div class="form-text mb-2">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    可以拖拽图片调整顺序，第一张图片将作为主图显示
+                                </div>
+                                <div id="addImageContainer" class="d-flex flex-wrap gap-3">
+                                    <!-- 图片预览卡片将在这里动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作按钮 -->
+                        <div class="d-flex justify-content-end gap-3">
+                            <button type="button" class="btn btn-outline-secondary btn-lg" onclick="resetAddProductForm()">
+                                <i class="bi bi-arrow-clockwise me-2"></i>重置表单
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-plus-lg me-2"></i>添加产品
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分类管理页面 -->
+        <div id="categories-page" class="page-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">分类管理</h1>
+                <button class="btn btn-primary" onclick="showAddCategoryModal()">
+                    <i class="bi bi-plus-lg me-2"></i>添加分类
+                </button>
+            </div>
+
+            <!-- 分类列表 -->
+            <div class="row" id="categories-list">
+                <!-- 分类卡片将在这里动态生成 -->
+            </div>
+        </div>
+
+        <!-- 操作记录页面 -->
+        <div id="logs-page" class="page-content">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>操作记录</h2>
+                    <button onclick="clearLogs()" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash-alt"></i> 清空
+                    </button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body p-0">
+                        <table id="logs-table" class="table table-hover table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>操作员</th>
+                                    <th>操作</th>
+                                    <th>SKU</th>
+                                    <th>改动</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 操作记录将通过JavaScript动态加载 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 询价管理页面 -->
+        <div id="inquiries-page" class="page-content">
+            <!-- 页面标题和统计信息 -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <h1 class="h3 mb-2">📧 询价管理</h1>
+                    <p class="text-muted mb-0">管理客户询价信息，及时跟进处理状态</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="inquiry-stats d-flex gap-3 justify-content-end">
+                        <div class="stat-item">
+                            <div class="stat-number text-warning" id="pending-inquiries-display">0</div>
+                            <div class="stat-label">待处理</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number text-info" id="processing-inquiries-display">0</div>
+                            <div class="stat-label">处理中</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number text-success" id="completed-inquiries-display">0</div>
+                            <div class="stat-label">已完成</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 筛选和操作工具栏 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex gap-3 align-items-center flex-wrap">
+                                <div class="filter-group">
+                                    <label class="form-label mb-1 small text-muted">状态筛选</label>
+                                    <select class="form-select form-select-sm" id="inquiry-status-filter" style="min-width: 120px;">
+                                        <option value="">全部状态</option>
+                                        <option value="pending">🟡 待处理</option>
+                                        <option value="processing">🔵 处理中</option>
+                                        <option value="completed">🟢 已完成</option>
+                                        <option value="cancelled">⚫ 已取消</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label class="form-label mb-1 small text-muted">日期筛选</label>
+                                    <input type="date" class="form-control form-control-sm" id="inquiry-date-filter" style="min-width: 150px;">
+                                </div>
+                                <div class="filter-group">
+                                    <label class="form-label mb-1 small text-muted">搜索客户</label>
+                                    <input type="text" class="form-control form-control-sm" id="inquiry-search-filter"
+                                           placeholder="客户姓名/邮箱" style="min-width: 150px;">
+                                </div>
+                                <div class="filter-actions">
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="clearInquiryFilters()" title="清除筛选条件">
+                                        <i class="bi bi-arrow-clockwise"></i> 重置
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-outline-success btn-sm" onclick="exportInquiries()" title="导出询价数据">
+                                    <i class="bi bi-download me-1"></i>导出
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="refreshInquiries()" title="刷新数据">
+                                    <i class="bi bi-arrow-clockwise me-1"></i>刷新
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="showClearInquiriesModal()" title="清空所有询价数据">
+                                    <i class="bi bi-trash3 me-1"></i>清空
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 询价列表 -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="bi bi-list-ul me-2"></i>询价记录列表
+                            <span class="badge bg-primary ms-2" id="inquiry-total-count">0</span>
+                        </h6>
+                        <div class="d-flex gap-2">
+                            <small class="text-muted">
+                                显示 <span id="inquiry-display-range">0-0</span> 条，共 <span id="inquiry-total-display">0</span> 条记录
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 100px;">
+                                        <i class="bi bi-hash me-1"></i>询价ID
+                                    </th>
+                                    <th style="width: 200px;">
+                                        <i class="bi bi-person me-1"></i>客户信息
+                                    </th>
+                                    <th style="width: 180px;">
+                                        <i class="bi bi-box me-1"></i>产品信息
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-chat-text me-1"></i>询价内容
+                                    </th>
+                                    <th style="width: 100px;">
+                                        <i class="bi bi-flag me-1"></i>状态
+                                    </th>
+                                    <th style="width: 140px;">
+                                        <i class="bi bi-calendar me-1"></i>创建时间
+                                    </th>
+                                    <th style="width: 120px;">
+                                        <i class="bi bi-gear me-1"></i>操作
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="inquiry-list">
+                                <!-- 询价记录将通过JavaScript动态加载 -->
+                                <tr id="inquiry-loading-row">
+                                    <td colspan="7" class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">加载中...</span>
+                                        </div>
+                                        <div class="mt-2 text-muted">正在加载询价数据...</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分页控件 -->
+            <div class="card mt-3">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <small class="text-muted">每页显示</small>
+                            <select class="form-select form-select-sm" id="inquiry-page-size" style="width: auto;">
+                                <option value="10">10条</option>
+                                <option value="20" selected>20条</option>
+                                <option value="50">50条</option>
+                                <option value="100">100条</option>
+                            </select>
+                        </div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination pagination-sm mb-0" id="inquiry-pagination">
+                                <!-- 分页按钮将通过JavaScript动态生成 -->
+                            </ul>
+                        </nav>
+                        <div class="text-muted">
+                            <small>跳转到第
+                                <input type="number" class="form-control form-control-sm d-inline-block"
+                                       id="inquiry-goto-page" style="width: 60px;" min="1"> 页
+                                <button class="btn btn-outline-secondary btn-sm ms-1" onclick="gotoInquiryPage()">
+                                    <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 询价详情模态框 -->
+        <div class="modal fade" id="inquiryDetailModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">
+                            <i class="bi bi-chat-text me-2"></i>询价详情
+                            <span class="badge bg-light text-primary ms-2" id="detail-inquiry-id"></span>
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <!-- 客户信息卡片 -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">
+                                            <i class="bi bi-person-circle me-2"></i>客户信息
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label small text-muted">客户姓名</label>
+                                                <div class="fw-bold" id="detail-name"></div>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label small text-muted">邮箱地址</label>
+                                                <div id="detail-email">
+                                                    <i class="bi bi-envelope me-1"></i>
+                                                    <span class="email-text"></span>
+                                                    <button class="btn btn-sm btn-outline-primary ms-2" onclick="copyToClipboard(document.querySelector('#detail-email .email-text').textContent)">
+                                                        <i class="bi bi-copy"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label small text-muted">联系电话</label>
+                                                <div id="detail-phone">
+                                                    <i class="bi bi-telephone me-1"></i>
+                                                    <span class="phone-text"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label small text-muted">公司名称</label>
+                                                <div id="detail-company"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 产品信息卡片 -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">
+                                            <i class="bi bi-box me-2"></i>产品信息
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label small text-muted">产品名称</label>
+                                                <div class="fw-bold" id="detail-product-name"></div>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label small text-muted">产品型号</label>
+                                                <div id="detail-product-model"></div>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label small text-muted">创建时间</label>
+                                                <div id="detail-created-at"></div>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label small text-muted">IP地址</label>
+                                                <div id="detail-ip"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 询价内容 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-chat-quote me-2"></i>询价内容
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="detail-message" class="p-3 bg-light rounded border-start border-primary border-4" style="white-space: pre-wrap;"></div>
+                            </div>
+                        </div>
+
+                        <!-- 处理记录 -->
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-clock-history me-2"></i>处理记录
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="detail-history">
+                                    <!-- 处理记录将通过JavaScript动态加载 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <div class="d-flex align-items-center gap-3 w-100">
+                            <div class="flex-grow-1">
+                                <label class="form-label small text-muted mb-1">更新状态</label>
+                                <select class="form-select" id="detail-status">
+                                    <option value="pending">🟡 待处理</option>
+                                    <option value="processing">🔵 处理中</option>
+                                    <option value="completed">🟢 已完成</option>
+                                    <option value="cancelled">⚫ 已取消</option>
+                                </select>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-success" id="update-inquiry-status">
+                                    <i class="bi bi-check-circle me-1"></i>更新状态
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                    <i class="bi bi-x-circle me-1"></i>关闭
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 清空询价数据确认模态框 -->
+        <div class="modal fade" id="clearInquiriesModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="bi bi-exclamation-triangle me-2"></i>确认清空数据
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>警告：</strong>此操作将永久删除所有询价记录，无法恢复！
+                        </div>
+                        <p>您确定要清空所有询价数据吗？</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="confirmClearInquiries">
+                            <label class="form-check-label" for="confirmClearInquiries">
+                                我确认要删除所有询价数据
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-danger" id="confirmClearInquiriesBtn" disabled>
+                            <i class="bi bi-trash3 me-1"></i>确认清空
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 公司信息管理页面 -->
+        <div id="company-page" class="page-content" style="display: none;">
+            <div class="content-header">
+                <h2>公司信息管理</h2>
+                <button onclick="saveCompanyInfo()" class="btn btn-primary">
+                    <i class="bi bi-save"></i> 保存修改
+                </button>
+            </div>
+            
+            <div class="content-body">
+                <form id="company-info-form" class="grid gap-4">
+                    <div class="form-section">
+                        <h3 class="section-title">基本信息</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label for="companyName">公司全称</label>
+                                <input type="text" id="companyName" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="companyShortName">公司简称</label>
+                                <input type="text" id="companyShortName" class="form-control" required>
+                            </div>
+                            <div class="form-group col-span-2">
+                                <label for="companyDescription">公司描述</label>
+                                <textarea id="companyDescription" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="companyEstablished">成立年份</label>
+                                <input type="text" id="companyEstablished" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="companyExperience">行业经验</label>
+                                <input type="text" id="companyExperience" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">联系方式</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label for="companyPhone">联系电话</label>
+                                <input type="text" id="companyPhone" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="companyEmail">电子邮箱</label>
+                                <input type="email" id="companyEmail" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="companyWhatsapp">WhatsApp</label>
+                                <input type="text" id="companyWhatsapp" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="companyAddress">公司地址</label>
+                                <input type="text" id="companyAddress" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">社交媒体管理</h3>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            这些链接会显示在网站页头的产品标签栏右侧，方便用户关注和联系。
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label for="companyFacebook">Facebook 链接</label>
+                                <input type="url" id="companyFacebook" class="form-control" placeholder="https://www.facebook.com/your-page">
+                                <div class="form-text">Facebook 页面链接，用于页头社交媒体图标</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="companyInstagram">Instagram 链接</label>
+                                <input type="url" id="companyInstagram" class="form-control" placeholder="https://www.instagram.com/your-account">
+                                <div class="form-text">Instagram 账号链接，用于页头社交媒体图标</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="companySocialWhatsapp">WhatsApp 链接</label>
+                                <input type="url" id="companySocialWhatsapp" class="form-control" placeholder="https://wa.me/8613656157230">
+                                <div class="form-text">WhatsApp 联系链接，格式：https://wa.me/国家代码+电话号码</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="companySocialEmail">邮箱链接</label>
+                                <input type="email" id="companySocialEmail" class="form-control" placeholder="mailto:your-email@company.com">
+                                <div class="form-text">邮箱地址，用于生成邮件链接</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">营业时间</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label for="companyWeekdays">工作日营业时间</label>
+                                <input type="text" id="companyWeekdays" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="companyWeekend">周末营业时间</label>
+                                <input type="text" id="companyWeekend" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 管理员管理页面 -->
+        <div id="admins-page" class="page-content" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">管理员管理</h1>
+                <button class="btn btn-primary" onclick="showAddAdminModal()">
+                    <i class="bi bi-plus-lg me-2"></i>添加管理员
+                </button>
+            </div>
+
+            <!-- 管理员列表 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">管理员账户列表</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>姓名</th>
+                                    <th>用户名</th>
+                                    <th>邮箱</th>
+                                    <th>角色</th>
+                                    <th>状态</th>
+                                    <th>最后登录</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admins-table-body">
+                                <tr>
+                                    <td colspan="8" class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">加载中...</span>
+                                        </div>
+                                        <div class="mt-2 text-muted">正在加载管理员数据...</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 产品表单模态框 -->
+    <!-- 编辑产品模态框 -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productFormTitle">编辑产品</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProductForm" class="needs-validation" novalidate>
+                        <!-- 隐藏字段用于存储产品ID -->
+                        <input type="hidden" id="editProductId" name="id">
+                        
+                        <!-- 一键生成功能 -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="alert alert-info d-flex align-items-center">
+                                    <i class="bi bi-lightbulb me-2"></i>
+                                    <span class="me-auto">智能生成功能：填写产品名称/型号和分类后，可自动生成产品特性、描述和SEO信息</span>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="generateAllEditContent()">
+                                        <i class="bi bi-magic"></i> 一键生成所有内容
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <!-- 基本信息 -->
+                            <div class="col-md-6 mb-3">
+                                <label for="editProductName" class="form-label">产品名称 *</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="editProductName" name="name" required maxlength="120" tabindex="1">
+                                    <span class="input-group-text" id="edit-name-char-count">0/120</span>
+                                </div>
+                                <div class="form-text">请输入产品名称，最多120个字符</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editProductCategory" class="form-label">产品分类 *</label>
+                                <select class="form-select" id="editProductCategory" name="category" required tabindex="11">
+                                    <option value="">选择分类</option>
+                                    <option value="turbocharger" selected>涡轮增压器</option>
+                                    <option value="actuator">执行器</option>
+                                    <option value="injector">共轨喷油器</option>
+                                    <option value="turbo-parts">涡轮配件</option>
+                                    <option value="others">其他</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="editProductModel" class="form-label">产品型号 *</label>
+                                <input type="text" class="form-control" id="editProductModel" name="model" required tabindex="2">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editProductBrand" class="form-label">品牌</label>
+                                <select class="form-select" id="editProductBrand" name="brand" tabindex="11">
+                                    <option value="Diamond-Auto" selected>Diamond-Auto</option>
+                                    <option value="原厂">原厂</option>
+                                    <option value="OEM">OEM</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="editProductPrice" class="form-label">产品价格 (USD)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="editProductPrice" name="price" step="0.01" min="0" placeholder="0.00" tabindex="3">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editProductWarranty" class="form-label">保修期</label>
+                                <select class="form-select" id="editProductWarranty" name="warranty" tabindex="12">
+                                    <option value="6">6个月</option>
+                                    <option value="12" selected>12个月</option>
+                                    <option value="24">24个月</option>
+                                    <option value="36">36个月</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label for="editProductOe" class="form-label">OEM号</label>
+                                <textarea class="form-control" id="editProductOe" name="oe_number" rows="3" placeholder="请输入原厂编号，多个编号请换行输入" tabindex="4"></textarea>
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label for="editProductCompatibility" class="form-label">适配</label>
+                                <textarea class="form-control" id="editProductCompatibility" name="compatibility" rows="3" placeholder="请输入适配的车型/发动机型号，多个请用逗号分隔" tabindex="5"></textarea>
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label for="editProductDescription" class="form-label">产品描述</label>
+                                <textarea class="form-control" id="editProductDescription" name="description" rows="6" placeholder="详细的产品描述..." tabindex="6"></textarea>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="generateEditProductDescription()">
+                                        <i class="bi bi-robot"></i> 智能生成描述
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 产品特性选择 -->
+                            <div class="col-12 mb-3">
+                                <label class="form-label">产品特性</label>
+                                <div class="mb-2">
+                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="generateEditProductFeatures()">
+                                        <i class="bi bi-stars"></i> 智能推荐特性
+                                    </button>
+                                </div>
+                                <div class="feature-tags-container d-flex flex-wrap gap-2 mb-3" id="editFeatureTags">
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="原厂品质">原厂品质</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="钻石品质">钻石品质</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="高性能">高性能</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="精准控制">精准控制</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="精密喷射">精密喷射</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="配件齐全">配件齐全</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="专业工具">专业工具</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="高端产品">高端产品</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="现货充足">现货充足</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="原厂正品">原厂正品</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="高精度">高精度</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="长寿命">长寿命</button>
+                                </div>
+                                <input type="hidden" id="editProductFeatures" name="features">
+                            </div>
+                            
+                            <!-- 其他事项 -->
+                            <div class="col-12 mb-3">
+                                <label for="editProductNotes" class="form-label">其他事项</label>
+                                <textarea class="form-control" id="editProductNotes" name="notes" rows="3" placeholder="其他需要说明的事项..." tabindex="7"></textarea>
+                            </div>
+                            
+                            <!-- SEO信息 -->
+                            <div class="col-12 mb-3">
+                                <h6 class="text-muted mb-3">SEO优化信息</h6>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label for="editProductMetaDescription" class="form-label">SEO描述</label>
+                                        <textarea class="form-control" id="editProductMetaDescription" name="meta_description" rows="3" placeholder="用于搜索引擎显示的产品描述" tabindex="8"></textarea>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label for="editProductMetaKeywords" class="form-label">SEO关键词</label>
+                                        <input type="text" class="form-control" id="editProductMetaKeywords" name="meta_keywords" placeholder="用逗号分隔的关键词" tabindex="9">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 高级设置 -->
+                            <div class="col-12 mb-3">
+                                <h6 class="text-muted mb-3">库存和状态设置</h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="editProductStock" class="form-label">库存数量</label>
+                                        <input type="number" class="form-control" id="editProductStock" name="stock" min="0" value="10">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="editProductStatus" class="form-label">产品状态</label>
+                                        <select class="form-select" id="editProductStatus" name="status">
+                                            <option value="active">在售</option>
+                                            <option value="inactive">停售</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 产品标签 -->
+                            <div class="col-12 mb-3">
+                                <h6 class="text-muted mb-3">产品标签</h6>
+                                <div class="d-flex gap-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="editIsNew" name="isNew">
+                                        <label class="form-check-label" for="editIsNew">新品</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="editIsHot" name="isHot">
+                                        <label class="form-check-label" for="editIsHot">热门</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="editIsRecommend" name="isRecommend">
+                                        <label class="form-check-label" for="editIsRecommend">推荐</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 产品图片管理 -->
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3">产品图片管理</h6>
+                                
+                                <!-- 当前图片显示区域 -->
+                                <div id="currentImagesInfo" style="display: none;">
+                                    <div class="mb-2">
+                                        <small class="text-muted">当前图片（可拖拽排序）：</small>
+                                    </div>
+                                    <div id="currentImageContainer" class="d-flex flex-wrap gap-2 mb-3"></div>
+                                </div>
+                                
+                                <!-- 新图片上传 -->
+                                <div class="mb-3">
+                                    <label for="editProductImages" class="form-label">添加新图片</label>
+                                    <input type="file" class="form-control" id="editProductImages" name="images" multiple accept="image/*" onchange="handleEditMultipleFileSelection(this.files)">
+                                    <div class="form-text">可选择多张图片，支持拖拽排序。第一张图片将作为主图。</div>
+                                </div>
+                                
+                                <!-- 新图片预览区域 -->
+                                <div id="editImagePreviews" style="display: none;">
+                                    <div class="mb-2 mt-3">
+                                        <small class="text-muted">新添加的图片：</small>
+                                    </div>
+                                    <div id="editImageContainer" class="d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveEditProductBtn" onclick="saveEditProduct()">
+                        <i class="bi bi-check-lg"></i> 保存修改
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加分类模态框 -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加分类</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-category-form">
+                        <div class="mb-3">
+                            <label class="form-label">分类ID *</label>
+                            <input type="text" class="form-control" id="category-id" name="id" required 
+                                   placeholder="英文标识，如：turbocharger">
+                            <div class="form-text">只能包含字母、数字和连字符</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">分类名称 *</label>
+                            <input type="text" class="form-control" id="category-name" name="name" required 
+                                   placeholder="显示名称，如：涡轮增压器">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">分类描述</label>
+                            <textarea class="form-control" id="category-description" name="description" rows="3"
+                                      placeholder="分类的详细描述"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" form="add-category-form" class="btn btn-primary">保存分类</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑分类模态框 -->
+    <div class="modal fade" id="editCategoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑分类</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-category-form">
+                        <input type="hidden" id="edit-category-original-id">
+                        <div class="mb-3">
+                            <label class="form-label">分类ID *</label>
+                            <input type="text" class="form-control" id="edit-category-id" name="id" required>
+                            <div class="form-text">修改ID会影响相关产品的分类关联</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">分类名称 *</label>
+                            <input type="text" class="form-control" id="edit-category-name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">分类描述</label>
+                            <textarea class="form-control" id="edit-category-description" name="description" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" form="edit-category-form" class="btn btn-primary">保存修改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批量编辑产品模态框 -->
+    <div class="modal fade" id="batchEditModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">批量编辑产品</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        已选择 <span id="batch-count">0</span> 个产品。只有填写的字段会被更新，空白字段将保持原值不变。
+                    </div>
+                    
+                    <form id="batchEditForm">
+                        <!-- 批量修改选项 -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="batchCategory" class="form-label">产品分类</label>
+                                <select class="form-select" id="batchCategory" name="category">
+                                    <option value="">保持原分类</option>
+                                    <option value="turbocharger">涡轮增压器</option>
+                                    <option value="actuator">执行器</option>
+                                    <option value="injector">共轨喷油器</option>
+                                    <option value="turbo-parts">涡轮配件</option>
+                                    <option value="others">其他</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="batchStatus" class="form-label">产品状态</label>
+                                <select class="form-select" id="batchStatus" name="status">
+                                    <option value="">保持原状态</option>
+                                    <option value="active">在售</option>
+                                    <option value="inactive">停售</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="batchPriceAction" class="form-label">价格调整</label>
+                                <select class="form-select" id="batchPriceAction" onchange="togglePriceInput()">
+                                    <option value="">不调整价格</option>
+                                    <option value="set">设置固定价格</option>
+                                    <option value="increase">增加价格</option>
+                                    <option value="decrease">减少价格</option>
+                                    <option value="multiply">按比例调整</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="batchPriceValue" class="form-label">价格值</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="price-prefix">$</span>
+                                    <input type="number" class="form-control" id="batchPriceValue" 
+                                           step="0.01" min="0" placeholder="0.00" disabled>
+                                </div>
+                                <div class="form-text" id="price-help">选择价格调整方式后输入数值</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="batchStockAction" class="form-label">库存调整</label>
+                                <select class="form-select" id="batchStockAction" onchange="toggleStockInput()">
+                                    <option value="">不调整库存</option>
+                                    <option value="set">设置固定库存</option>
+                                    <option value="increase">增加库存</option>
+                                    <option value="decrease">减少库存</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="batchStockValue" class="form-label">库存数量</label>
+                                <input type="number" class="form-control" id="batchStockValue" 
+                                       min="0" placeholder="0" disabled>
+                                <div class="form-text" id="stock-help">选择库存调整方式后输入数值</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-warning" onclick="executeBatchEdit()">
+                        <i class="bi bi-pencil-square me-2"></i>批量更新
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加管理员模态框 -->
+    <div class="modal fade" id="addAdminModal" tabindex="-1" aria-labelledby="addAdminModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAdminModalLabel">
+                        <i class="bi bi-person-plus me-2"></i>添加管理员
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addAdminForm" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="adminUsername" class="form-label">用户名 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="adminUsername" required
+                                           pattern="^[a-zA-Z0-9_]{3,20}$"
+                                           placeholder="3-20位字母、数字或下划线">
+                                    <div class="invalid-feedback">
+                                        请输入3-20位字母、数字或下划线
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="adminEmail" class="form-label">邮箱地址 <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="adminEmail" required
+                                           placeholder="admin@example.com">
+                                    <div class="invalid-feedback">
+                                        请输入有效的邮箱地址
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="adminName" class="form-label">姓名 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="adminName" required
+                                           placeholder="管理员姓名">
+                                    <div class="invalid-feedback">
+                                        请输入管理员姓名
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="adminRole" class="form-label">角色 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="adminRole" required>
+                                        <option value="">请选择角色</option>
+                                        <option value="super_admin">超级管理员 - 拥有所有权限</option>
+                                        <option value="admin">管理员 - 可管理产品和内容</option>
+                                        <option value="editor">编辑员 - 可编辑产品和分类</option>
+                                        <option value="viewer">查看员 - 只能查看数据</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        请选择管理员角色
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="adminPassword" class="form-label">密码 <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control" id="adminPassword" required
+                                           minlength="8" placeholder="至少8位字符">
+                                    <div class="invalid-feedback">
+                                        密码长度至少8位
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="adminPasswordConfirm" class="form-label">确认密码 <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control" id="adminPasswordConfirm" required
+                                           minlength="8" placeholder="再次输入密码">
+                                    <div class="invalid-feedback">
+                                        两次输入的密码不一致
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>角色权限说明：</strong>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>超级管理员：</strong>拥有所有权限，包括管理其他管理员</li>
+                                <li><strong>管理员：</strong>可以管理产品、分类、询价和系统设置</li>
+                                <li><strong>编辑员：</strong>可以编辑产品和分类，查看询价</li>
+                                <li><strong>查看员：</strong>只能查看数据，不能修改</li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="addAdmin()">
+                        <i class="bi bi-check-lg me-2"></i>添加管理员
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑管理员模态框 -->
+    <div class="modal fade" id="editAdminModal" tabindex="-1" aria-labelledby="editAdminModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAdminModalLabel">
+                        <i class="bi bi-person-gear me-2"></i>编辑管理员
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editAdminForm" class="needs-validation" novalidate>
+                        <input type="hidden" id="editAdminId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editAdminUsername" class="form-label">用户名</label>
+                                    <input type="text" class="form-control" id="editAdminUsername" readonly>
+                                    <div class="form-text">用户名不可修改</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editAdminEmail" class="form-label">邮箱地址 <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="editAdminEmail" required>
+                                    <div class="invalid-feedback">
+                                        请输入有效的邮箱地址
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editAdminName" class="form-label">姓名 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="editAdminName" required>
+                                    <div class="invalid-feedback">
+                                        请输入管理员姓名
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editAdminRole" class="form-label">角色 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="editAdminRole" required>
+                                        <option value="super_admin">超级管理员</option>
+                                        <option value="admin">管理员</option>
+                                        <option value="editor">编辑员</option>
+                                        <option value="viewer">查看员</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editAdminStatus" class="form-label">状态</label>
+                            <select class="form-select" id="editAdminStatus">
+                                <option value="active">启用</option>
+                                <option value="disabled">禁用</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="updateAdmin()">
+                        <i class="bi bi-check-lg me-2"></i>保存修改
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重置密码模态框 -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resetPasswordModalLabel">
+                        <i class="bi bi-key me-2"></i>重置密码
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="resetPasswordForm" class="needs-validation" novalidate>
+                        <input type="hidden" id="resetAdminId">
+                        <div class="mb-3">
+                            <label class="form-label">管理员</label>
+                            <input type="text" class="form-control" id="resetAdminName" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">新密码 <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="newPassword" required
+                                   minlength="8" placeholder="至少8位字符">
+                            <div class="invalid-feedback">
+                                密码长度至少8位
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmNewPassword" class="form-label">确认新密码 <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="confirmNewPassword" required
+                                   minlength="8" placeholder="再次输入新密码">
+                            <div class="invalid-feedback">
+                                两次输入的密码不一致
+                            </div>
+                        </div>
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            重置密码后，该管理员需要使用新密码重新登录。
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-warning" onclick="resetAdminPassword()">
+                        <i class="bi bi-key me-2"></i>重置密码
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 清空询价数据模态框 -->
+    <div class="modal fade" id="clearInquiriesModal" tabindex="-1" aria-labelledby="clearInquiriesModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="clearInquiriesModalLabel">
+                        <i class="bi bi-exclamation-triangle me-2"></i>清空询价数据
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>危险操作警告！</strong>
+                    </div>
+                    <p class="mb-3">您即将清空所有询价数据，此操作将：</p>
+                    <ul class="text-danger mb-3">
+                        <li>永久删除所有历史询价记录</li>
+                        <li>清空客户联系信息</li>
+                        <li>重置询价统计数据</li>
+                        <li><strong>此操作不可撤销！</strong></li>
+                    </ul>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="confirmClearInquiries">
+                        <label class="form-check-label text-danger fw-bold" for="confirmClearInquiries">
+                            我确认要清空所有询价数据，并了解此操作不可撤销
+                        </label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clearConfirmText" class="form-label">请输入 <code>CLEAR</code> 确认操作：</label>
+                        <input type="text" class="form-control" id="clearConfirmText" placeholder="输入 CLEAR 确认">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" onclick="clearAllInquiries()" id="confirmClearBtn" disabled>
+                        <i class="bi bi-trash3 me-2"></i>确认清空
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改密码模态框 -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">
+                        <i class="bi bi-key me-2"></i>修改密码
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">当前密码</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="currentPassword" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('currentPassword', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">新密码</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="newPassword" required minlength="8">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('newPassword', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">密码长度至少8位</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">确认新密码</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="confirmPassword" required minlength="8">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('confirmPassword', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>安全提示：</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>建议使用包含字母、数字和特殊字符的强密码</li>
+                                <li>修改密码后需要重新登录</li>
+                                <li>请妥善保管新密码</li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="changePassword()">
+                        <i class="bi bi-check-lg me-2"></i>确认修改
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 统一产品卡片管理器 -->
+    <script src="../assets/js/modules/components/product-card-manager.js"></script>
+    <!-- 自定义JS -->
+    <script src="admin.js?v=2.1"></script>
+</body>
+</html> 
