@@ -21,6 +21,8 @@ RestartSec=10
 Environment=NODE_ENV=production
 Environment=PORT=3000
 Environment=HOST=0.0.0.0
+Environment=TZ=Asia/Shanghai
+Environment=NODE_TZ=Asia/Shanghai
 
 # 安全设置
 NoNewPrivileges=true

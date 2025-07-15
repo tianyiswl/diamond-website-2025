@@ -227,13 +227,51 @@
                     method: 'GET',
                     credentials: 'include'
                 });
-                
+
                 if (response.ok) {
                     // 已登录，重定向到管理后台
                     window.location.href = '/admin/';
                 }
             } catch (error) {
                 console.log('未登录状态');
+            }
+        }
+
+        // 验证认证状态并重定向
+        async function verifyAuthAndRedirect(retryCount = 0) {
+            const maxRetries = 3;
+
+            try {
+                console.log(`🔍 验证登录状态... (尝试 ${retryCount + 1}/${maxRetries + 1})`);
+
+                const response = await fetch('/api/auth/check', {
+                    method: 'GET',
+                    credentials: 'include',
+                    cache: 'no-cache'
+                });
+
+                if (response.ok) {
+                    console.log('✅ 认证验证成功，跳转到管理后台');
+                    window.location.href = '/admin/';
+                } else {
+                    throw new Error(`认证验证失败: ${response.status}`);
+                }
+            } catch (error) {
+                console.error(`❌ 认证验证失败 (尝试 ${retryCount + 1}):`, error);
+
+                if (retryCount < maxRetries) {
+                    console.log('🔄 1秒后重试验证...');
+                    setTimeout(() => {
+                        verifyAuthAndRedirect(retryCount + 1);
+                    }, 1000);
+                } else {
+                    console.error('❌ 认证验证重试失败，直接跳转');
+                    showAlert('登录可能存在问题，请手动刷新页面', 'warning');
+                    // 最后尝试直接跳转
+                    setTimeout(() => {
+                        window.location.href = '/admin/';
+                    }, 2000);
+                }
             }
         }
 
@@ -300,9 +338,12 @@
                 
                 if (response.ok) {
                     showAlert('登录成功，正在跳转...', 'success');
+
+                    // 🔧 增加延迟，确保Cookie设置完成
                     setTimeout(() => {
-                        window.location.href = '/admin/';
-                    }, 1000);
+                        // 先尝试验证认证状态，再跳转
+                        verifyAuthAndRedirect();
+                    }, 1500); // 增加延迟时间
                 } else {
                     showAlert(result.message || '登录失败');
                 }

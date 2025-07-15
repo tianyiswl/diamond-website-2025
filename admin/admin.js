@@ -44,15 +44,27 @@ document.addEventListener('DOMContentLoaded', function() {
     checkAuthStatus();
 });
 
-// 检查认证状态
-async function checkAuthStatus() {
+// 检查认证状态 - 增强版本，支持重试和更好的错误处理
+async function checkAuthStatus(retryCount = 0) {
+    const maxRetries = 3;
+    const retryDelay = 1000; // 1秒延迟
+
     try {
-        console.log('🔍 开始检查认证状态...');
+        console.log(`🔍 开始检查认证状态... (尝试 ${retryCount + 1}/${maxRetries + 1})`);
+
+        // 添加延迟，确保Cookie已经设置完成
+        if (retryCount > 0) {
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+        }
 
         const response = await fetch('/api/auth/check', {
             method: 'GET',
             credentials: 'include',
-            cache: 'no-cache' // 🔧 禁用缓存，确保获取最新状态
+            cache: 'no-cache', // 🔧 禁用缓存，确保获取最新状态
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
         });
 
         console.log('📡 认证检查响应:', response.status, response.statusText);
@@ -65,16 +77,45 @@ async function checkAuthStatus() {
             initializeApp();
             initFeatureTags();
             setupSEOGenerators();
-        } else {
+            return true;
+        } else if (response.status === 401 || response.status === 403) {
             console.log('❌ 认证失败，状态码:', response.status);
-            // 未登录，重定向到登录页
-            window.location.href = '/admin/login.html';
+            // 认证失败，重定向到登录页
+            redirectToLogin();
+            return false;
+        } else {
+            // 其他错误，可能是网络问题，尝试重试
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
     } catch (error) {
-        console.error('💥 认证检查失败:', error);
-        // 网络错误也重定向到登录页
-        window.location.href = '/admin/login.html';
+        console.error(`💥 认证检查失败 (尝试 ${retryCount + 1}):`, error);
+
+        // 如果还有重试次数，则重试
+        if (retryCount < maxRetries) {
+            console.log(`🔄 ${retryDelay}ms 后重试...`);
+            return checkAuthStatus(retryCount + 1);
+        } else {
+            console.error('❌ 认证检查重试次数已用完，重定向到登录页');
+            redirectToLogin();
+            return false;
+        }
     }
+}
+
+// 重定向到登录页的统一函数
+function redirectToLogin() {
+    // 清除可能的本地存储
+    try {
+        localStorage.removeItem('auth_token');
+        sessionStorage.clear();
+    } catch (e) {
+        console.warn('清除本地存储失败:', e);
+    }
+
+    // 延迟重定向，避免过快的跳转
+    setTimeout(() => {
+        window.location.href = '/admin/login.html';
+    }, 100);
 }
 
 // 应用初始化

@@ -45,6 +45,27 @@ check_root() {
     fi
 }
 
+# 设置系统时区
+setup_timezone() {
+    log_info "设置系统时区为Asia/Shanghai..."
+
+    # 设置系统时区
+    timedatectl set-timezone Asia/Shanghai
+
+    # 启用NTP时间同步
+    timedatectl set-ntp true
+
+    # 验证时区设置
+    current_timezone=$(timedatectl show --property=Timezone --value)
+    if [ "$current_timezone" = "Asia/Shanghai" ]; then
+        log_success "时区设置成功: $current_timezone"
+        log_info "当前时间: $(date)"
+    else
+        log_error "时区设置失败"
+        exit 1
+    fi
+}
+
 # 更新系统
 update_system() {
     log_info "更新系统软件包..."
@@ -330,6 +351,7 @@ main() {
     echo "================================================"
     
     check_root
+    setup_timezone
     update_system
     install_base_packages
     install_nodejs

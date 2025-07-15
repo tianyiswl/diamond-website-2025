@@ -1,3 +1,6 @@
+// 🌏 设置服务器时区为上海时区 - 解决JWT令牌时间验证问题
+process.env.TZ = 'Asia/Shanghai';
+
 const express = require('express');
 const compression = require('compression');
 const multer = require('multer');
@@ -12,6 +15,16 @@ const cookieParser = require('cookie-parser');
 const app = express();
 let PORT = process.env.PORT || 3000;
 const MAX_PORT_RETRY = 10; // 最大重试次数
+
+// 🕐 验证时区设置并输出调试信息
+console.log('🌏 服务器时区信息:');
+console.log('   系统时区:', process.env.TZ);
+console.log('   当前时间:', new Date().toString());
+console.log('   UTC时间:', new Date().toUTCString());
+console.log('   上海时间:', new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }));
+console.log('   时区偏移:', new Date().getTimezoneOffset(), '分钟');
+console.log('   Intl时区:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+console.log('');
 
 // 检查端口是否可用
 function isPortAvailable(port) {
@@ -712,7 +725,7 @@ const saveAdminConfig = (config) => {
     }
 };
 
-// JWT令牌验证中间件
+// JWT令牌验证中间件 - 增强版本
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.auth_token || req.headers.authorization?.split(' ')[1];
 
@@ -721,14 +734,19 @@ const authenticateToken = (req, res, next) => {
         hasCookie: !!req.cookies.auth_token,
         hasHeader: !!req.headers.authorization,
         userAgent: req.headers['user-agent'],
-        ip: req.ip || req.connection.remoteAddress
+        ip: req.ip || req.connection.remoteAddress,
+        url: req.url,
+        method: req.method
     });
 
     if (!token) {
         console.log('❌ 未找到认证令牌');
+        // 清除可能存在的无效cookie
+        res.clearCookie('auth_token');
         return res.status(401).json({
             success: false,
-            message: '未提供认证令牌'
+            message: '未提供认证令牌',
+            code: 'NO_TOKEN'
         });
     }
 
@@ -737,20 +755,58 @@ const authenticateToken = (req, res, next) => {
         console.log('❌ 系统配置加载失败');
         return res.status(500).json({
             success: false,
-            message: '系统配置错误'
+            message: '系统配置错误',
+            code: 'CONFIG_ERROR'
         });
     }
 
     try {
         const decoded = jwt.verify(token, config.security.jwt_secret);
+
+        // 🕐 时区兼容的令牌过期检查
+        const now = Math.floor(Date.now() / 1000);
+        const tokenExp = decoded.exp;
+        const tokenIat = decoded.iat;
+
+        console.log('🕐 令牌时间验证:', {
+            serverTime: new Date().toISOString(),
+            serverTimezone: process.env.TZ,
+            tokenIssued: new Date(tokenIat * 1000).toISOString(),
+            tokenExpires: new Date(tokenExp * 1000).toISOString(),
+            currentTimestamp: now,
+            tokenExpTimestamp: tokenExp,
+            isExpired: tokenExp < now,
+            timeDiff: now - tokenExp
+        });
+
+        if (decoded.exp && decoded.exp < now) {
+            throw new Error('Token expired');
+        }
+
         console.log('✅ 令牌验证成功:', decoded.username);
         req.user = decoded;
         next();
     } catch (error) {
         console.log('❌ 令牌验证失败:', error.message);
+
+        // 清除无效的cookie
+        res.clearCookie('auth_token');
+
+        let errorCode = 'INVALID_TOKEN';
+        let errorMessage = '无效的认证令牌';
+
+        if (error.name === 'TokenExpiredError') {
+            errorCode = 'TOKEN_EXPIRED';
+            errorMessage = '认证令牌已过期';
+        } else if (error.name === 'JsonWebTokenError') {
+            errorCode = 'MALFORMED_TOKEN';
+            errorMessage = '认证令牌格式错误';
+        }
+
         return res.status(403).json({
             success: false,
-            message: '无效的认证令牌'
+            message: errorMessage,
+            code: errorCode
         });
     }
 };
@@ -933,19 +989,34 @@ app.post('/api/auth/login', async (req, res) => {
         admin.last_login = new Date().toISOString();
         saveAdminConfig(config);
 
-        // 生成JWT令牌
+        // 生成JWT令牌 - 时区兼容版本
+        const now = Math.floor(Date.now() / 1000); // UTC时间戳（秒）
+        const expirationTime = rememberMe ? 7 * 24 * 60 * 60 : 60 * 60; // 7天或1小时（秒）
+
         const tokenPayload = {
             username: admin.username,
             email: admin.email,
             role: admin.role,
-            loginTime: Date.now()
+            loginTime: now,
+            iat: now, // 签发时间（UTC）
+            exp: now + expirationTime, // 过期时间（UTC）
+            timezone: process.env.TZ || 'Asia/Shanghai',
+            serverTime: new Date().toISOString(),
+            shanghaiTime: new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
         };
 
-        const tokenOptions = {
-            expiresIn: rememberMe ? '7d' : '1h'
-        };
+        console.log('🕐 生成JWT令牌时间信息:', {
+            serverTimezone: process.env.TZ,
+            currentUTC: new Date().toISOString(),
+            currentShanghai: new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }),
+            tokenIssued: new Date(now * 1000).toISOString(),
+            tokenExpires: new Date((now + expirationTime) * 1000).toISOString(),
+            expiresInSeconds: expirationTime,
+            rememberMe
+        });
 
-        const token = jwt.sign(tokenPayload, config.security.jwt_secret, tokenOptions);
+        // 🔧 不使用expiresIn选项，手动设置过期时间避免时区问题
+        const token = jwt.sign(tokenPayload, config.security.jwt_secret);
 
         // 设置Cookie - 针对服务器环境优化
         const cookieOptions = {

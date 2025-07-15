@@ -8,7 +8,11 @@
     "start:4000": "PORT=4000 node server.js",
     "start:5000": "PORT=5000 node server.js",
     "start:8080": "PORT=8080 node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:production": "NODE_ENV=production node server.js",
+    "start:linux": "TZ=Asia/Shanghai node server.js",
+    "start:pm2": "pm2 start server.js --name diamond-website",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "timezone:check": "node -e \"console.log('TZ:', process.env.TZ); console.log('Current:', new Date().toString()); console.log('Shanghai:', new Date().toLocaleString('zh-CN', {timeZone: 'Asia/Shanghai'}));\""
   },
   "keywords": [
     "cms",
