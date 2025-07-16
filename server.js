@@ -1006,7 +1006,7 @@ app.post('/api/auth/login', async (req, res) => {
 
         // 生成JWT令牌 - 时区兼容版本
         const now = Math.floor(Date.now() / 1000); // UTC时间戳（秒）
-        const expirationTime = rememberMe ? 7 * 24 * 60 * 60 : 60 * 60; // 7天或1小时（秒）
+        const expirationTime = rememberMe ? 7 * 24 * 60 * 60 : 24 * 60 * 60; // 7天或24小时（秒）
 
         const tokenPayload = {
             username: admin.username,
@@ -1040,7 +1040,7 @@ app.post('/api/auth/login', async (req, res) => {
         const cookieOptions = {
             httpOnly: true,
             secure: isHTTPS, // 🔧 根据实际协议动态设置
-            maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 2 * 60 * 60 * 1000, // 7天或2小时（延长基础时间）
+            maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // 7天或24小时（延长基础时间）
             sameSite: isProduction ? 'strict' : 'lax', // 🔧 生产环境使用strict，开发环境使用lax
             path: '/', // 🔧 确保cookie在整个域下有效
             domain: undefined // 🔧 不设置domain，避免跨域问题

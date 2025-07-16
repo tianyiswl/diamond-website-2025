@@ -13,7 +13,7 @@
       "last_login": "2025-07-16T03:17:36.158Z",
       "login_attempts": 0,
       "locked_until": null,
-      "session_timeout": 3600000,
+      "session_timeout": 86400000,
       "permissions": [
         "products.create",
         "products.read",
@@ -39,7 +39,7 @@
   "security": {
     "max_login_attempts": 5,
     "lockout_duration": 900000,
-    "session_timeout": 3600000,
+    "session_timeout": 86400000,
     "password_min_length": 8,
     "require_password_change": false,
     "jwt_secret": "diamond-auto-cms-secret-key-2025",
