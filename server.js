@@ -3367,7 +3367,7 @@ app.use((error, req, res, next) => {
     res.status(500).json({ error: '服务器内部错误' });
 });
 
-// 管理后台路由处理
+// 管理后台路由处理 - 🚀 性能优化版本
 app.get('/admin', (req, res) => {
     // 检查是否有认证令牌
     const token = req.cookies.auth_token;
@@ -3376,29 +3376,47 @@ app.get('/admin', (req, res) => {
     console.log('🏠 访问管理后台:', {
         hasCookie: !!token,
         userAgent: req.headers['user-agent'],
-        referer: req.headers.referer
+        referer: req.headers.referer,
+        ip: req.ip || req.connection.remoteAddress
     });
 
     if (!token) {
         console.log('❌ 未找到认证令牌，重定向到登录页');
         // 未登录，重定向到登录页
-        res.redirect('/admin/login.html');
-        return;
+        return res.redirect('/admin/login.html');
     }
 
     // 验证令牌
     const config = loadAdminConfig();
     if (!config) {
         console.log('❌ 配置加载失败，重定向到登录页');
-        res.redirect('/admin/login.html');
-        return;
+        return res.redirect('/admin/login.html');
     }
 
     try {
         const decoded = jwt.verify(token, config.security.jwt_secret);
-        console.log('✅ 令牌验证成功，重定向到管理后台:', decoded.username);
-        // 令牌有效，重定向到管理后台
-        res.redirect('/admin/index.html');
+        
+        // 🕐 时区兼容的令牌过期检查
+        const now = Math.floor(Date.now() / 1000);
+        const TIME_TOLERANCE = 1800; // 30分钟容差
+        
+        if (decoded.exp && (decoded.exp + TIME_TOLERANCE) < now) {
+            console.log('⚠️  令牌真正过期，重定向到登录页');
+            res.clearCookie('auth_token');
+            return res.redirect('/admin/login.html');
+        }
+        
+        console.log('✅ 令牌验证成功，直接返回管理后台页面:', decoded.username);
+        
+        // 🚀 直接返回HTML内容，避免重定向循环
+        const indexPath = path.join(__dirname, 'admin', 'index.html');
+        if (fs.existsSync(indexPath)) {
+            res.sendFile(indexPath);
+        } else {
+            console.log('❌ 管理后台文件不存在');
+            res.status(404).send('管理后台页面不存在');
+        }
+        
     } catch (error) {
         console.log('❌ 令牌验证失败，重定向到登录页:', error.message);
         // 令牌无效，清除cookie并重定向到登录页

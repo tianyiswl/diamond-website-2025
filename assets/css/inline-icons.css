@@ -1,0 +1,67 @@
+
+/* 🎯 内联图标样式 - 最终修复方案 */
+.bi-speedometer2::before { content: "📊"; font-size: 1.2em; }
+.bi-box-seam::before { content: "📦"; font-size: 1.2em; }
+.bi-plus-circle::before { content: "➕"; font-size: 1.2em; }
+.bi-tags::before { content: "🏷️"; font-size: 1.2em; }
+.bi-clock-history::before { content: "📝"; font-size: 1.2em; }
+.bi-chat-dots::before { content: "💬"; font-size: 1.2em; }
+.bi-building::before { content: "🏢"; font-size: 1.2em; }
+.bi-people::before { content: "👥"; font-size: 1.2em; }
+.bi-shield-lock::before { content: "🔒"; font-size: 1.5em; }
+.bi-box-arrow-right::before { content: "🚪"; font-size: 1.2em; }
+.bi-key::before { content: "🔑"; font-size: 1.2em; }
+.bi-eye::before { content: "👁"; font-size: 1.2em; }
+.bi-eye-slash::before { content: "🙈"; font-size: 1.2em; }
+.bi-cursor::before { content: "👆"; font-size: 1.2em; }
+.bi-graph-up::before { content: "📈"; font-size: 1.2em; }
+.bi-fire::before { content: "🔥"; font-size: 1.2em; }
+.bi-arrow-clockwise::before { content: "🔄"; font-size: 1.2em; }
+.bi-pencil::before { content: "✏️"; font-size: 1.2em; }
+.bi-trash::before { content: "🗑️"; font-size: 1.2em; }
+.bi-check-circle::before { content: "✅"; font-size: 1.2em; }
+.bi-exclamation-triangle::before { content: "⚠️"; font-size: 1.2em; }
+.bi-x::before { content: "❌"; font-size: 1.2em; }
+.bi-plus-lg::before { content: "➕"; font-size: 1.2em; }
+.bi-search::before { content: "🔍"; font-size: 1.2em; }
+.bi-filter::before { content: "🔽"; font-size: 1.2em; }
+.bi-download::before { content: "⬇️"; font-size: 1.2em; }
+.bi-upload::before { content: "⬆️"; font-size: 1.2em; }
+.bi-gear::before { content: "⚙️"; font-size: 1.2em; }
+
+/* 确保图标正确显示 */
+.bi::before,
+[class^="bi-"]::before,
+[class*=" bi-"]::before {
+    display: inline-block !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    line-height: 1 !important;
+    vertical-align: -.125em !important;
+    margin-right: 0.25rem !important;
+}
+
+/* 侧边栏图标特殊处理 */
+.sidebar .menu-item .bi::before,
+.sidebar .menu-item [class^="bi-"]::before,
+.sidebar .menu-item [class*=" bi-"]::before {
+    margin-right: 0.5rem !important;
+    font-size: 1.1em !important;
+}
+
+/* 按钮图标 */
+.btn .bi::before,
+.btn [class^="bi-"]::before,
+.btn [class*=" bi-"]::before {
+    margin-right: 0.25rem !important;
+}
+
+/* 统计卡片图标 */
+.stats-card .bi::before,
+.stats-card [class^="bi-"]::before,
+.stats-card [class*=" bi-"]::before {
+    font-size: 2em !important;
+    margin-right: 0 !important;
+}

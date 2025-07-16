@@ -1,0 +1,33 @@
+{
+  "name": "diamond-website-cms",
+  "version": "1.0.0",
+  "description": "无锡皇德国际贸易有限公司 - 专业产品管理系统",
+  "main": "server.js",
+  "deployment": {
+    "environment": "production",
+    "port": 3000,
+    "timezone": "Asia/Shanghai",
+    "features": {
+      "compression": true,
+      "analytics": true,
+      "i18n": true,
+      "admin_panel": true
+    }
+  },
+  "requirements": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "directories": {
+    "data": "./data",
+    "uploads": "./uploads",
+    "assets": "./assets",
+    "admin": "./admin",
+    "pages": "./pages"
+  },
+  "startup_checks": [
+    "data directory exists",
+    "admin config exists",
+    "required dependencies installed"
+  ]
+}

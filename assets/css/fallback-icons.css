@@ -1,0 +1,70 @@
+
+/* 🎨 备用图标样式 - 使用Unicode字符 */
+.bi-speedometer2::before { content: "📊"; }
+.bi-box-seam::before { content: "📦"; }
+.bi-plus-circle::before { content: "➕"; }
+.bi-tags::before { content: "🏷️"; }
+.bi-clock-history::before { content: "🕐"; }
+.bi-chat-dots::before { content: "💬"; }
+.bi-building::before { content: "🏢"; }
+.bi-people::before { content: "👥"; }
+.bi-shield-lock::before { content: "🔒"; }
+.bi-box-arrow-right::before { content: "🚪"; }
+.bi-key::before { content: "🔑"; }
+.bi-eye::before { content: "👁️"; }
+.bi-cursor::before { content: "👆"; }
+.bi-graph-up::before { content: "📈"; }
+.bi-fire::before { content: "🔥"; }
+.bi-arrow-clockwise::before { content: "🔄"; }
+.bi-pencil::before { content: "✏️"; }
+.bi-trash::before { content: "🗑️"; }
+.bi-eye-slash::before { content: "🙈"; }
+.bi-check-circle::before { content: "✅"; }
+.bi-exclamation-triangle::before { content: "⚠️"; }
+.bi-x::before { content: "❌"; }
+.bi-plus-lg::before { content: "➕"; }
+.bi-search::before { content: "🔍"; }
+.bi-filter::before { content: "🔽"; }
+.bi-download::before { content: "⬇️"; }
+.bi-upload::before { content: "⬆️"; }
+.bi-gear::before { content: "⚙️"; }
+.bi-star::before { content: "⭐"; }
+.bi-heart::before { content: "❤️"; }
+.bi-bookmark::before { content: "🔖"; }
+.bi-share::before { content: "📤"; }
+.bi-printer::before { content: "🖨️"; }
+.bi-envelope::before { content: "📧"; }
+.bi-telephone::before { content: "📞"; }
+.bi-globe::before { content: "🌐"; }
+.bi-house::before { content: "🏠"; }
+.bi-person::before { content: "👤"; }
+.bi-lock::before { content: "🔒"; }
+
+/* 确保图标正确显示 */
+.bi::before,
+[class^="bi-"]::before,
+[class*=" bi-"]::before {
+    display: inline-block;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    vertical-align: -.125em;
+    font-size: 1em;
+}
+
+/* 修复图标在按钮中的显示 */
+.btn .bi::before,
+.btn [class^="bi-"]::before,
+.btn [class*=" bi-"]::before {
+    margin-right: 0.25rem;
+}
+
+/* 修复侧边栏图标 */
+.menu-item .bi::before,
+.menu-item [class^="bi-"]::before,
+.menu-item [class*=" bi-"]::before {
+    margin-right: 0.5rem;
+    font-size: 1.1em;
+}

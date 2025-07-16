@@ -41,9 +41,11 @@ const presetFeatures = [
 
 // 初始化 - 国外服务器优化版本，避免竞态条件
 document.addEventListener('DOMContentLoaded', function() {
+    // 🚀 性能优化版本 - 国外服务器专用
+    console.log('🌍 管理后台加载中，检测网络环境...');
     // 🌍 检测是否为国外访问，调整延迟时间
     const isLikelyOverseas = detectOverseasAccess();
-    const delay = isLikelyOverseas ? 2000 : 500; // 国外服务器使用更长延迟
+    const delay = isLikelyOverseas ? 5000 : 1000; // 🚀 增加延迟时间 // 国外服务器使用更长延迟
 
     console.log('🔍 初始化认证检查，延迟:', delay, 'ms', isLikelyOverseas ? '(国外访问)' : '(国内访问)');
 
