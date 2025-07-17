@@ -208,16 +208,26 @@
     "placeholder": "Search product models, brands..."
   },
   "test": {
-    "title": "Product Card Multilingual Test",
-    "description": "Test whether feature tags and buttons in product cards are correctly translated",
-    "language_label": "Select Language:",
-    "features_title": "Feature Tags Test",
-    "features_desc": "The following are common feature tags in product cards:",
-    "buttons_title": "Button Text Test",
-    "buttons_desc": "The following are buttons in product cards:",
-    "product_info_title": "Product Information Test",
-    "product_info_desc": "The following is basic information in product cards:",
-    "status_title": "System Status"
+    "title": "Language Switching Test Page",
+    "description": "This page is used to test the fix for frontend page multiple refresh and multilingual switching issues.",
+    "language_switch": {
+      "title": "Language Switching Test",
+      "description": "Click the buttons below to test language switching functionality:"
+    },
+    "page_refresh": {
+      "title": "Page Refresh Test",
+      "description": "Test whether the page has multiple refresh issues:"
+    },
+    "performance": {
+      "title": "Performance Test",
+      "description": "Test the performance and response time of language switching:"
+    },
+    "sample_content": {
+      "title": "Sample Content",
+      "welcome": "Welcome to use our products!",
+      "company": "Wuxi Diamond International Trading Co., Ltd.",
+      "contact": "Contact us for more information"
+    }
   },
   "hero": {
     "slides": {

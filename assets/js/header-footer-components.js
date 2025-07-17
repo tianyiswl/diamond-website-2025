@@ -663,36 +663,11 @@ class ComponentManager {
             }
         };
 
-        // 绑定搜索框事件
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            // 回车键搜索 - 检查是否已经绑定过事件
-            if (!searchInput.hasAttribute('data-header-keypress-bound')) {
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        console.log('🔍 header-footer-components.js - 回车键搜索触发');
-                        performSearch();
-                    }
-                });
-                searchInput.setAttribute('data-header-keypress-bound', 'true');
-                console.log('✅ header-footer-components.js - 回车键事件绑定成功');
-            } else {
-                console.log('⚠️ header-footer-components.js - 回车键事件已绑定，跳过重复绑定');
-            }
+        // 🔧 搜索功能现在由统一的搜索管理器处理，移除重复的事件绑定
+        // 搜索事件绑定已在 main.js 的 initSearchFunctionality() 和 search-fix.js 中统一处理
+        // 这里只保留 performSearch 函数供其他地方调用，不再重复绑定事件
 
-            // 实时搜索（输入时）
-            searchInput.addEventListener('input', function(e) {
-                const searchTerm = e.target.value.trim();
-                if (searchTerm.length >= 2) { // 至少输入2个字符才开始搜索
-                    performHeaderSearch(searchTerm);
-                } else if (searchTerm.length === 0) {
-                    // 清空搜索框时，如果在产品页面，显示所有产品
-                    if (window.location.pathname.includes('products.html') && typeof searchProducts === 'function') {
-                        searchProducts('');
-                    }
-                }
-            });
-        }
+        console.log('✅ header-footer-components.js - 页头页尾组件渲染完成，搜索功能由统一管理器处理');
 
         // 初始化页尾快速询价表单
         this.initFooterInquiryForm();

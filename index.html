@@ -24,6 +24,9 @@
     <!-- 页脚反馈增强样式 -->
     <link rel="stylesheet" href="assets/css/footer-feedback-enhancement.css">
 
+    <!-- 主页产品展示专用样式 -->
+    <link rel="stylesheet" href="assets/css/homepage-products.css">
+
     <!-- 特性标签样式优化 -->
     <style>
         /* 覆盖主页产品卡片的特性标签样式 */
@@ -112,6 +115,10 @@
                     <!-- 产品将通过JavaScript从API动态加载 -->
                     <div class="loading-text">
                         <i class="fas fa-spinner fa-spin"></i> <span data-i18n="products.loading">正在加载最新产品...</span>
+                        <br><br>
+                        <button onclick="testProductLoad()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                            🧪 测试产品加载
+                        </button>
                     </div>
                 </div>
                 
@@ -306,6 +313,33 @@
 
 
 
+    <!-- 🔧 早期语言检测脚本 - 在所有其他脚本之前执行，避免语言闪烁 -->
+    <script>
+        (function() {
+            'use strict';
+            console.log('🌍 早期语言检测开始...');
+
+            // 检测用户偏好语言
+            const preferredLang = localStorage.getItem('preferred-language') ||
+                                 (navigator.language || navigator.userLanguage || 'zh-CN');
+
+            console.log('🌍 检测到用户偏好语言:', preferredLang);
+
+            // 立即设置HTML lang属性，避免闪烁
+            const langCode = preferredLang.split('-')[0];
+            document.documentElement.lang = langCode;
+
+            // 在window对象上设置早期语言信息，供后续脚本使用
+            window.earlyLanguageDetection = {
+                preferredLanguage: preferredLang,
+                langCode: langCode,
+                timestamp: Date.now()
+            };
+
+            console.log('✅ 早期语言检测完成，HTML lang已设置为:', langCode);
+        })();
+    </script>
+
     <!-- 🚀 统一页面加载管理器 - 必须最先加载 -->
     <script src="assets/js/page-load-manager.js"></script>
 
@@ -345,71 +379,45 @@
     <!-- 🔧 搜索功能修复模块 -->
     <script src="assets/js/search-fix.js"></script>
 
-    <!-- 🚨 紧急产品展示修复脚本 -->
-    <script src="emergency-product-fix.js"></script>
+
     
     <script>
-        // 🏠 主页初始化脚本 - 强健的产品加载机制
+        // 🏠 简化的主页产品展示初始化
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🏠 主页DOMContentLoaded - 开始初始化');
+            console.log('🏠 主页初始化开始');
 
-            // 🚀 立即尝试加载产品展示
+            // 延迟执行，确保所有脚本加载完成
             setTimeout(function() {
-                const showcase = document.getElementById('products-showcase');
-                if (showcase) {
-                    console.log('🎯 找到产品展示容器，开始强制加载产品');
-                    loadHomepageProductsDirectly();
-                }
-            }, 500);
-
-            // 🔄 备用加载机制 - 2秒后再次检查
-            setTimeout(function() {
-                const showcase = document.getElementById('products-showcase');
-                if (showcase && showcase.innerHTML.includes('正在加载')) {
-                    console.log('⚠️ 产品仍在加载中，触发备用加载机制');
-                    loadHomepageProductsDirectly();
-                }
-            }, 2000);
-
-            // 🔄 最终保障机制 - 5秒后强制显示
-            setTimeout(function() {
-                const showcase = document.getElementById('products-showcase');
-                if (showcase && showcase.innerHTML.includes('正在加载')) {
-                    console.log('🚨 启动最终保障机制');
-                    loadHomepageProductsDirectly();
-                }
-            }, 5000);
+                console.log('🚀 开始自动初始化产品展示...');
+                initHomepageProducts();
+            }, 500); // 增加延迟时间，确保所有资源加载完成
         });
 
-        // 🎯 直接产品加载函数
-        async function loadHomepageProductsDirectly() {
+        // 🎯 统一的主页产品初始化函数
+        async function initHomepageProducts() {
             const showcase = document.getElementById('products-showcase');
             if (!showcase) {
                 console.log('❌ 产品展示容器未找到');
                 return;
             }
 
-            console.log('🚀 开始直接加载主页产品...');
+            console.log('🚀 开始加载主页产品...');
 
             // 显示加载状态
             showcase.innerHTML = `
-                <div style="text-align: center; padding: 40px; color: #6c757d;">
+                <div class="loading-text" style="text-align: center; padding: 40px; color: #6c757d;">
                     <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
-                    <br>正在加载最新产品...
+                    <br><span data-i18n="products.loading">正在加载最新产品...</span>
                 </div>
             `;
 
             try {
-                console.log('🌐 调用API: /api/public/products?limit=9');
                 const response = await fetch('/api/public/products?limit=9');
-
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
 
                 const result = await response.json();
-                console.log('📦 API响应成功:', result);
-
                 const products = result.data || result;
 
                 if (!Array.isArray(products) || products.length === 0) {
@@ -419,295 +427,177 @@
                 const activeProducts = products.filter(p => p.status === 'active').slice(0, 9);
                 console.log(`✅ 获取到 ${activeProducts.length} 个活跃产品`);
 
-                // 保存到全局变量
+                // 保存到全局变量供其他功能使用
                 window.featuredProducts = activeProducts;
 
                 // 渲染产品卡片
-                renderProductCards(activeProducts, showcase);
+                renderHomepageProducts(activeProducts, showcase);
 
                 console.log('🎉 主页产品展示加载完成');
 
             } catch (error) {
                 console.error('❌ 产品加载失败:', error);
                 showcase.innerHTML = `
-                    <div style="color: #dc3545; text-align: center; padding: 40px;">
+                    <div class="loading-text" style="color: #dc3545; text-align: center; padding: 40px;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 10px;"></i>
                         <br>产品加载失败: ${error.message}
-                        <br><button onclick="loadHomepageProductsDirectly()"
-                            style="margin-top: 10px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                            重试加载
+                        <br><button onclick="initHomepageProducts()" class="btn-retry"
+                            style="margin-top: 15px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                            <i class="fas fa-redo"></i> 重试加载
                         </button>
                     </div>
                 `;
             }
         }
 
-        // 🎨 渲染产品卡片函数
-        function renderProductCards(products, container) {
-            console.log('🎨 开始渲染产品卡片');
+        // 🎨 渲染主页产品函数
+        function renderHomepageProducts(products, container) {
+            console.log('🎨 开始渲染主页产品卡片', products);
+            console.log('🔍 产品卡组件状态:', {
+                exists: !!window.productCardComponent,
+                hasRenderMethod: !!(window.productCardComponent && typeof window.productCardComponent.renderToShowcase === 'function')
+            });
 
-            // 尝试使用产品卡组件
-            if (window.productCardComponent && typeof window.productCardComponent.renderToShowcase === 'function') {
-                console.log('✅ 使用产品卡组件渲染');
-                window.productCardComponent.renderToShowcase(products, {
-                    showDescription: false,
-                    imagePath: ''
-                });
+            // 直接使用备用渲染方案，确保产品能够显示
+            console.log('✅ 使用直接渲染方案');
+            renderProductCardsDirectly(products, container);
+        }
+
+        // 🎨 直接渲染产品卡片（备用方案）
+        function renderProductCardsDirectly(products, container) {
+            const html = products.map(product => createProductCardHTML(product)).join('');
+            container.innerHTML = html;
+            console.log('✅ 直接渲染完成');
+        }
+
+        // 🏗️ 创建产品卡片HTML
+        function createProductCardHTML(product) {
+            const features = product.features ? product.features.split(',').slice(0, 3) : [];
+            const imageUrl = product.image || 'assets/images/carousel/img1.jpg';
+
+            return `
+                <div class="product-showcase-card">
+                    ${product.isNew ? '<div class="product-badge new">新品</div>' : ''}
+                    ${product.isHot ? '<div class="product-badge hot">热门</div>' : ''}
+                    ${product.isRecommend ? '<div class="product-badge recommend">推荐</div>' : ''}
+
+                    <div class="product-image-container">
+                        <a href="pages/product-detail.html?id=${product.id}" class="product-image-link">
+                            <img src="${imageUrl}" alt="${product.name}" class="product-image"
+                                 onerror="this.src='assets/images/carousel/img1.jpg'">
+                        </a>
+                    </div>
+
+                    <div class="product-info">
+                        <div class="product-brand">${product.brand || '皇德国际'}</div>
+                        <h3 class="product-name">${product.name}</h3>
+                        <div class="product-model">${product.model || '暂无型号'}</div>
+
+                        ${features.length > 0 ? `
+                            <div class="product-features">
+                                ${features.map(feature => `
+                                    <span class="feature-tag">
+                                        <i class="fas fa-check"></i>
+                                        <span class="feature-text">${feature.trim()}</span>
+                                    </span>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+
+                        <div class="product-buttons">
+                            <a href="pages/product-detail.html?id=${product.id}" class="product-btn btn-detail">
+                                <i class="fas fa-info-circle"></i>
+                                <span data-i18n="product.view_details">查看详情</span>
+                            </a>
+                            <a href="https://wa.me/8613656157230?text=我对产品${encodeURIComponent(product.name)}感兴趣，请提供更多信息"
+                               target="_blank" class="product-btn btn-inquiry">
+                                <i class="fab fa-whatsapp"></i>
+                                <span data-i18n="product.inquire">立即询价</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 🏠 主页其他功能初始化
+        function initOtherHomepageFeatures() {
+            console.log('🏠 主页其他功能初始化');
+
+            // 📞 初始化公司信息
+            setTimeout(async function() {
+                try {
+                    if (window.companyService) {
+                        await window.companyService.loadCompanyInfo();
+                        window.companyService.updatePageElements();
+                        console.log('✅ 公司信息已更新');
+                    }
+                } catch (error) {
+                    console.error('❌ 加载公司信息失败:', error);
+                }
+            }, 200);
+
+            // 📝 初始化联系表单
+            setTimeout(function() {
+                try {
+                    if (typeof window.initContactForms === 'function') {
+                        window.initContactForms();
+                        console.log('✅ 联系表单初始化完成');
+                    }
+                } catch (error) {
+                    console.error('❌ 联系表单初始化失败:', error);
+                }
+            }, 300);
+        }
+
+        // 🧪 测试产品加载函数
+        window.testProductLoad = async function() {
+            console.log('🧪 手动测试产品加载...');
+            const showcase = document.getElementById('products-showcase');
+            if (!showcase) {
+                console.error('❌ 找不到产品展示容器');
                 return;
             }
 
-            // 备用渲染方案
-            console.log('⚠️ 使用备用渲染方案');
-            const html = products.map(product => `
-                <div class="product-card" style="
-                    border: 1px solid #ddd;
-                    padding: 20px;
-                    margin: 15px;
-                    border-radius: 12px;
-                    display: inline-block;
-                    background: white;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                    max-width: 280px;
-                    vertical-align: top;
-                    transition: transform 0.3s ease, box-shadow 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.15)'"
-                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)'">
-
-                    <div style="text-align: center; margin-bottom: 15px;">
-                        <img src="${product.image || 'assets/images/carousel/img1.jpg'}"
-                             alt="${product.name}"
-                             style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px;"
-                             onerror="this.src='assets/images/carousel/img1.jpg'">
-                    </div>
-
-                    <h4 style="margin: 0 0 10px 0; color: #333; font-size: 16px; font-weight: 600;">${product.name}</h4>
-                    <p style="margin: 5px 0; font-size: 13px; color: #666;">SKU: ${product.sku}</p>
-                    <p style="margin: 5px 0; font-size: 13px; color: #666;">型号: ${product.model || '暂无'}</p>
-
-                    ${product.features && product.features.length > 0 ? `
-                        <div style="margin: 10px 0;">
-                            ${product.features.slice(0, 3).map(feature => `
-                                <span style="
-                                    background: linear-gradient(135deg, #00DC82 0%, #00b76c 100%);
-                                    color: white;
-                                    padding: 6px 12px;
-                                    border-radius: 16px;
-                                    font-size: 11px;
-                                    margin: 2px;
-                                    display: inline-block;
-                                    font-weight: 500;
-                                    box-shadow: 0 2px 4px rgba(0, 220, 130, 0.25);
-                                ">${feature}</span>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-
-                    <div style="margin-top: 15px; text-align: center;">
-                        <button onclick="window.open('https://wa.me/8613656157230?text=我对产品${encodeURIComponent(product.name)}感兴趣，请提供更多信息', '_blank')"
-                                style="
-                                    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-                                    color: white;
-                                    border: none;
-                                    padding: 8px 16px;
-                                    border-radius: 20px;
-                                    font-size: 12px;
-                                    cursor: pointer;
-                                    transition: all 0.3s ease;
-                                " onmouseover="this.style.transform='scale(1.05)'"
-                                   onmouseout="this.style.transform='scale(1)'">
-                            <i class="fab fa-whatsapp"></i> 咨询详情
-                        </button>
-                    </div>
+            showcase.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #007bff;">
+                    <i class="fas fa-spinner fa-spin"></i> 正在手动测试API调用...
                 </div>
-            `).join('');
+            `;
 
-            container.innerHTML = html;
-            console.log('✅ 备用渲染完成');
-        }
-            console.log('🏠 主页内联脚本 - DOMContentLoaded 事件触发');
-            
-            // 📞 1. 首先加载公司信息并更新联系信息
-            setTimeout(async function() {
-                console.log('🔧 主页内联脚本 - 开始加载公司信息...');
-                
-                try {
-                    if (window.companyService) {
-                        console.log('📞 正在加载联系信息...');
-                        await window.companyService.loadCompanyInfo();
-                        
-                        // 获取数据用于调试
-                        const contactData = window.companyService.getContactInfo();
-                        console.log('📞 获取到联系信息:', contactData);
-                        
-                        // 更新页面元素
-                        window.companyService.updatePageElements();
-                        console.log('✅ 首页联系信息已更新');
-                        
-                        // 验证更新
-                        const addressElement = document.getElementById('company-address');
-                        const phoneElement = document.getElementById('company-phone');
-                        if (addressElement && phoneElement) {
-                            console.log('✅ 验证联系信息更新成功:');
-                            console.log('地址:', addressElement.innerHTML);
-                            console.log('电话:', phoneElement.textContent);
-                        }
-                    } else {
-                        console.warn('⚠️ companyService未找到');
-                    }
-                } catch (error) {
-                    console.error('❌ 加载联系信息失败:', error);
+            try {
+                console.log('📡 开始API调用...');
+                const response = await fetch('/api/public/products?limit=9');
+                console.log('📡 API响应状态:', response.status, response.statusText);
+
+                const result = await response.json();
+                console.log('📦 API返回数据:', result);
+
+                const products = result.data || result;
+                console.log('🎯 处理后的产品数据:', products);
+
+                if (!Array.isArray(products) || products.length === 0) {
+                    throw new Error('没有可用的产品数据');
                 }
-            }, 100);
-            
-            // 📝 2. 初始化主页联系表单
-            setTimeout(function() {
-                console.log('🔧 主页内联脚本 - 开始初始化联系表单...');
-                
-                try {
-                    // 检查initContactForms函数是否存在
-                    if (typeof window.initContactForms === 'function') {
-                        console.log('📝 调用initContactForms初始化主页联系表单...');
-                        window.initContactForms();
-                        console.log('✅ 主页联系表单初始化完成');
-                    } else {
-                        console.warn('⚠️ initContactForms函数未找到，使用备用初始化方法...');
-                        // 备用的表单初始化方法
-                        initHomepageContactForm();
-                    }
-                } catch (error) {
-                    console.error('❌ 主页联系表单初始化失败:', error);
-                }
-            }, 500);
-            
-            // 备用的主页联系表单初始化函数
-            function initHomepageContactForm() {
-                console.log('📝 使用备用方法初始化主页联系表单...');
-                
-                const inquiryForm = document.getElementById('inquiryForm');
-                if (!inquiryForm) {
-                    console.error('❌ 未找到主页联系表单');
-                    return;
-                }
-                
-                console.log('✅ 找到主页联系表单，开始绑定事件...');
-                
-                // 绑定表单提交事件
-                inquiryForm.addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    console.log('📝 主页联系表单提交事件触发');
-                    
-                    const submitBtn = inquiryForm.querySelector('.btn-submit');
-                    if (!submitBtn) {
-                        console.error('❌ 未找到提交按钮');
-                        return;
-                    }
-                    
-                    const originalText = submitBtn.innerHTML;
-                    
-                    // 获取表单数据
-                    const formData = {
-                        name: document.getElementById('inquiryName').value,
-                        email: document.getElementById('inquiryEmail').value,
-                        phone: document.getElementById('inquiryPhone').value,
-                        company: document.getElementById('inquiryCompany').value,
-                        message: document.getElementById('inquiryMessage').value,
-                        source: 'homepage_contact_form',
-                        sourceDetails: {
-                            page: window.location.pathname,
-                            referrer: document.referrer || 'direct',
-                            timestamp: new Date().toISOString()
-                        }
-                    };
-                    
-                    // 基本验证
-                    if (!formData.name || !formData.email || !formData.message) {
-                        alert('请填写必填字段：姓名、邮箱和详细需求');
-                        return;
-                    }
-                    
-                    console.log('📤 准备提交主页联系表单数据:', formData);
-                    
-                    // 显示提交状态
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
-                    submitBtn.disabled = true;
-                    
-                    // 提交到后台API
-                    fetch('/api/inquiries', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(formData)
-                    })
-                    .then(response => {
-                        console.log('📡 收到服务器响应:', response.status);
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('📨 服务器响应数据:', data);
-                        
-                        if (data.success) {
-                            alert('📧 询价信息发送成功！我们将在24小时内回复您。');
-                            inquiryForm.reset();
-                        } else {
-                            throw new Error(data.message || '表单提交失败');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('❌ 表单提交错误:', error);
-                        alert('❌ 发送失败，请稍后重试或直接联系我们。\\n\\n备用联系方式：\\n电话: +86 133 7622 3199\\nWhatsApp: +86 136 5615 7230\\n邮箱: sales03@diamond-auto.com');
-                    })
-                    .finally(() => {
-                        // 恢复按钮状态
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                        console.log('🔄 表单按钮状态已恢复');
-                    });
-                });
-                
-                console.log('✅ 主页联系表单初始化完成（备用方法）');
+
+                // 直接渲染产品
+                renderProductCardsDirectly(products, showcase);
+                console.log('✅ 手动测试完成');
+
+            } catch (error) {
+                console.error('❌ 手动测试失败:', error);
+                showcase.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #dc3545;">
+                        ❌ 测试失败: ${error.message}
+                        <br><button onclick="testProductLoad()" style="margin-top: 10px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">重试</button>
+                    </div>
+                `;
             }
-            
-            // 📦 3. 确保产品展示能够正常加载
-            console.log('🔧 主页内联脚本 - 确保产品展示正常加载');
+        };
 
-            // 多重保障机制确保产品能够加载
-            setTimeout(function() {
-                const showcase = document.getElementById('products-showcase');
-                if (showcase && showcase.innerHTML.includes('正在加载产品')) {
-                    console.log('🚀 触发产品展示加载保障机制');
-
-                    if (window.PageLoadManager && typeof window.PageLoadManager.initHomepageProducts === 'function') {
-                        console.log('📦 使用页面加载管理器加载产品');
-                        window.PageLoadManager.initHomepageProducts();
-                    } else if (typeof loadProductShowcase === 'function') {
-                        console.log('📦 使用传统方式加载产品');
-                        loadProductShowcase();
-                    } else {
-                        console.warn('⚠️ 产品加载函数未找到，尝试直接API调用');
-                        // 直接API调用作为最后备用方案
-                        fetch('/api/public/products?limit=9')
-                            .then(response => response.json())
-                            .then(result => {
-                                const products = result.data || result;
-                                if (products && products.length > 0) {
-                                    const activeProducts = products.filter(p => p.status === 'active').slice(0, 9);
-                                    const html = activeProducts.map(product => `
-                                        <div class="product-card" style="border: 1px solid #ddd; padding: 15px; margin: 10px; border-radius: 8px; display: inline-block; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 200px; vertical-align: top;">
-                                            <h4 style="margin: 0 0 10px 0; color: #333; font-size: 14px;">${product.name}</h4>
-                                            <p style="margin: 5px 0; font-size: 12px; color: #666;">SKU: ${product.sku}</p>
-                                        </div>
-                                    `).join('');
-                                    showcase.innerHTML = html;
-                                    console.log('✅ 直接API调用产品展示完成');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('❌ 直接API调用失败:', error);
-                            });
-                    }
-                }
-            }, 2000); // 2秒后检查并触发备用加载
+        // 在DOM加载完成后初始化其他功能
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initOtherHomepageFeatures, 500);
         });
         
         // 轮播图点击导航到产品页面

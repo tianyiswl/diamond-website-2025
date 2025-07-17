@@ -199,19 +199,59 @@ class CarouselManager {
     }
 }
 
-// DOM加载完成后初始化轮播图
-document.addEventListener('DOMContentLoaded', () => {
-    const carousel = new CarouselManager(carouselConfig);
-    
-    // 将实例存储在window对象上，以便其他代码可以访问
-    window.carouselManager = carousel;
-    
-    // 加载公司信息
-    loadCompanyInfo();
-    
-    // 初始化联系表单
-    initContactForms();
-});
+// 🔧 使用统一页面加载管理器初始化轮播图（防重复执行）
+if (window.PageLoadManager) {
+    window.PageLoadManager.addToQueue('carousel-manager-init', function() {
+        const carousel = new CarouselManager(carouselConfig);
+
+        // 将实例存储在window对象上，以便其他代码可以访问
+        window.carouselManager = carousel;
+
+        console.log('✅ 轮播图管理器初始化完成');
+    }, ['domReady']);
+
+    // 🔧 加载公司信息（使用页面加载管理器）
+    window.PageLoadManager.addToQueue('company-info-init', function() {
+        loadCompanyInfo();
+        console.log('✅ 公司信息加载完成');
+    }, ['domReady']);
+
+    // 🔧 初始化联系表单（使用页面加载管理器）
+    window.PageLoadManager.addToQueue('contact-forms-init', function() {
+        initContactForms();
+        console.log('✅ 联系表单初始化完成');
+    }, ['domReady']);
+} else {
+    // 备用方案：如果页面加载管理器未就绪，延迟执行
+    setTimeout(() => {
+        if (window.PageLoadManager) {
+            window.PageLoadManager.addToQueue('carousel-manager-init', function() {
+                const carousel = new CarouselManager(carouselConfig);
+                window.carouselManager = carousel;
+                console.log('✅ 轮播图管理器初始化完成');
+            }, ['domReady']);
+
+            window.PageLoadManager.addToQueue('company-info-init', function() {
+                loadCompanyInfo();
+                console.log('✅ 公司信息加载完成');
+            }, ['domReady']);
+
+            window.PageLoadManager.addToQueue('contact-forms-init', function() {
+                initContactForms();
+                console.log('✅ 联系表单初始化完成');
+            }, ['domReady']);
+        } else {
+            // 最后备用方案
+            document.addEventListener('DOMContentLoaded', () => {
+                const carousel = new CarouselManager(carouselConfig);
+                window.carouselManager = carousel;
+                loadCompanyInfo();
+                initContactForms();
+                console.log('✅ 主要功能初始化完成（备用方案）');
+            });
+        }
+    }, 100);
+}
 
 // 平滑滚动导航
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -291,24 +331,70 @@ window.addEventListener('load', () => {
     }
 });
 
-// DOM加载完成就开始隐藏动画，不等待所有资源加载完成
-document.addEventListener('DOMContentLoaded', () => {
-    const loading = document.getElementById('loading');
-    if (loading) {
-        // 给用户一个短暂的加载体验，然后快速隐藏
-        setTimeout(() => {
-            loading.classList.add('hidden');
+// 🔧 使用统一页面加载管理器处理加载动画隐藏（防重复执行）
+if (window.PageLoadManager) {
+    window.PageLoadManager.addToQueue('loading-animation-hide', function() {
+        const loading = document.getElementById('loading');
+        if (loading) {
+            // 给用户一个短暂的加载体验，然后快速隐藏
             setTimeout(() => {
-                loading.style.display = 'none';
-            }, 300);
-        }, 300); // DOM加载完成后300ms就隐藏
-    }
-    
-    // 初始化轮播图点击事件
-    if (typeof updateCarouselClickEvents === 'function') {
-        setTimeout(updateCarouselClickEvents, 100);
-    }
-});
+                loading.classList.add('hidden');
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                }, 300);
+            }, 300); // DOM加载完成后300ms就隐藏
+        }
+
+        // 初始化轮播图点击事件
+        if (typeof updateCarouselClickEvents === 'function') {
+            setTimeout(updateCarouselClickEvents, 100);
+        }
+
+        console.log('✅ 加载动画隐藏处理完成');
+    }, ['domReady']);
+} else {
+    // 备用方案：如果页面加载管理器未就绪，使用原始方法
+    setTimeout(() => {
+        if (window.PageLoadManager) {
+            window.PageLoadManager.addToQueue('loading-animation-hide', function() {
+                const loading = document.getElementById('loading');
+                if (loading) {
+                    setTimeout(() => {
+                        loading.classList.add('hidden');
+                        setTimeout(() => {
+                            loading.style.display = 'none';
+                        }, 300);
+                    }, 300);
+                }
+
+                if (typeof updateCarouselClickEvents === 'function') {
+                    setTimeout(updateCarouselClickEvents, 100);
+                }
+
+                console.log('✅ 加载动画隐藏处理完成');
+            }, ['domReady']);
+        } else {
+            // 最后备用方案
+            document.addEventListener('DOMContentLoaded', () => {
+                const loading = document.getElementById('loading');
+                if (loading) {
+                    setTimeout(() => {
+                        loading.classList.add('hidden');
+                        setTimeout(() => {
+                            loading.style.display = 'none';
+                        }, 300);
+                    }, 300);
+                }
+
+                if (typeof updateCarouselClickEvents === 'function') {
+                    setTimeout(updateCarouselClickEvents, 100);
+                }
+
+                console.log('✅ 加载动画隐藏处理完成（备用方案）');
+            });
+        }
+    }, 100);
+}
 
 // 监听分类数据加载完成事件（主页）
 document.addEventListener('categoriesLoaded', function(event) {
@@ -537,17 +623,47 @@ function selectSearchResult(type, name, productId = '') {
     }
 }
 
-// 搜索输入事件监听
-document.addEventListener('DOMContentLoaded', () => {
+// 🔧 使用统一页面加载管理器处理搜索功能初始化（防重复执行）
+if (window.PageLoadManager) {
+    window.PageLoadManager.addToQueue('search-functionality-init', function() {
+        initSearchFunctionality();
+        console.log('✅ 搜索功能初始化完成');
+    }, ['domReady', 'componentsLoaded']);
+} else {
+    // 备用方案：如果页面加载管理器未就绪，延迟执行
+    setTimeout(() => {
+        if (window.PageLoadManager) {
+            window.PageLoadManager.addToQueue('search-functionality-init', function() {
+                initSearchFunctionality();
+                console.log('✅ 搜索功能初始化完成');
+            }, ['domReady', 'componentsLoaded']);
+        } else {
+            // 最后备用方案
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(initSearchFunctionality, 1000); // 延迟1秒确保组件已加载
+                console.log('✅ 搜索功能初始化完成（备用方案）');
+            });
+        }
+    }, 100);
+}
+
+// 🔧 搜索功能初始化函数（统一管理，防重复绑定）
+function initSearchFunctionality() {
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
-    
+
     // 检查是否为主页
-    const isHomePage = window.location.pathname === '/' || 
+    const isHomePage = window.location.pathname === '/' ||
                        window.location.pathname.includes('index.html') ||
                        document.getElementById('products-showcase');
-    
+
     if (searchInput) {
+        // 检查是否已经绑定过事件，避免重复绑定
+        if (searchInput.hasAttribute('data-main-search-bound')) {
+            console.log('⚠️ main.js - 搜索功能已绑定，跳过重复绑定');
+            return;
+        }
+
         if (isHomePage) {
             // 主页：启用实时搜索
             console.log('🏠 主页搜索功能已启用（实时搜索）');
@@ -567,57 +683,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 回车键搜索（所有页面都支持）
-        // 检查是否已经绑定过事件，避免重复绑定
-        if (!searchInput.hasAttribute('data-main-keypress-bound')) {
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    console.log('🔍 main.js - 回车键搜索触发');
-                    performSearch();
-                }
-            });
-            searchInput.setAttribute('data-main-keypress-bound', 'true');
-            console.log('✅ main.js - 回车键事件绑定成功');
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                console.log('🔍 main.js - 回车键搜索触发');
+                performSearch();
+            }
+        });
+
+        // 标记已绑定，防止重复绑定
+        searchInput.setAttribute('data-main-search-bound', 'true');
+        console.log('✅ main.js - 搜索事件绑定成功');
+
+        // 智能加载产品数据
+        const isProductPage = window.location.pathname.includes('products.html');
+
+        // 只在主页加载产品数据（产品页面有自己的加载逻辑）
+        if (isHomePage) {
+            console.log('🏠 检测到主页，加载产品数据用于搜索功能');
+            loadProductsData();
+        } else if (isProductPage) {
+            console.log('📦 检测到产品页面，跳过main.js的产品数据加载（产品页面有独立的加载逻辑）');
         } else {
-            console.log('⚠️ main.js - 回车键事件已绑定，跳过重复绑定');
+            console.log('📄 当前页面不需要产品数据，跳过加载');
         }
     } else {
         // 搜索输入框不存在，可能组件管理器还没有渲染完成，延迟重试
         console.log('⏳ 搜索输入框尚未创建，2秒后重试初始化...');
         setTimeout(() => {
             const retrySearchInput = document.getElementById('searchInput');
-            if (retrySearchInput && !retrySearchInput.hasAttribute('data-main-keypress-bound')) {
+            if (retrySearchInput && !retrySearchInput.hasAttribute('data-main-search-bound')) {
                 console.log('🔄 重试搜索功能初始化...');
-                // 重新执行搜索功能初始化
-                if (isHomePage) {
-                    console.log('🏠 主页搜索功能已启用（重试）');
-                    retrySearchInput.addEventListener('input', debounce(performSearch, 300));
-                }
-                retrySearchInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        console.log('🔍 main.js - 回车键搜索触发（重试）');
-                        performSearch();
-                    }
-                });
-                retrySearchInput.setAttribute('data-main-keypress-bound', 'true');
-                console.log('✅ 搜索功能重试初始化成功');
+                initSearchFunctionality(); // 递归调用自身
             }
         }, 2000);
     }
-    
-    // 智能加载产品数据
-    
-    const isProductPage = window.location.pathname.includes('products.html');
-    
-    // 只在主页加载产品数据（产品页面有自己的加载逻辑）
-    if (isHomePage) {
-        console.log('🏠 检测到主页，加载产品数据用于搜索功能');
-        loadProductsData();
-    } else if (isProductPage) {
-        console.log('📦 检测到产品页面，跳过main.js的产品数据加载（产品页面有独立的加载逻辑）');
-    } else {
-        console.log('📄 当前页面不需要产品数据，跳过加载');
-    }
-});
+}
 
 // 防抖函数
 function debounce(func, wait) {
@@ -1060,10 +1160,8 @@ console.log('🏷️ 产品过滤功能已启用');
 console.log('📱 移动端菜单功能已启用');
 console.log('🏪 产品展示功能已启用'); 
 
-// 📝 联系表单增强功能
-document.addEventListener('DOMContentLoaded', function() {
-    initContactForms();
-});
+// 🔧 联系表单功能已在主初始化队列中处理，移除重复的DOMContentLoaded监听器
+// 联系表单初始化现在由统一页面加载管理器在 'contact-forms-init' 队列项中处理
 
 // 初始化联系表单功能
 function initContactForms() {

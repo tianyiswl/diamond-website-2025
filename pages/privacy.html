@@ -333,9 +333,39 @@
     <div id="footer-container"></div>
 
     <!-- 脚本文件 -->
+    <!-- 🔧 早期语言检测脚本 - 在所有其他脚本之前执行，避免语言闪烁 -->
+    <script>
+        (function() {
+            'use strict';
+            console.log('🌍 早期语言检测开始...');
+
+            // 检测用户偏好语言
+            const preferredLang = localStorage.getItem('preferred-language') ||
+                                 (navigator.language || navigator.userLanguage || 'zh-CN');
+
+            console.log('🌍 检测到用户偏好语言:', preferredLang);
+
+            // 立即设置HTML lang属性，避免闪烁
+            const langCode = preferredLang.split('-')[0];
+            document.documentElement.lang = langCode;
+
+            // 在window对象上设置早期语言信息，供后续脚本使用
+            window.earlyLanguageDetection = {
+                preferredLanguage: preferredLang,
+                langCode: langCode,
+                timestamp: Date.now()
+            };
+
+            console.log('✅ 早期语言检测完成，HTML lang已设置为:', langCode);
+        })();
+    </script>
+
+    <!-- 🚀 统一页面加载管理器（优先加载，防止页面多次刷新） -->
+    <script src="../assets/js/page-load-manager.js"></script>
+
     <!-- 🎨 WebP图片优化加载器 -->
     <script src="../assets/js/webp-loader.js"></script>
-    
+
     <!-- 🌍 国际化管理器 -->
     <script src="../assets/js/i18n-manager.js"></script>
 
@@ -343,47 +373,110 @@
     <script src="../assets/js/modules/services/company-service.js"></script>
     <script src="../assets/js/modules/components/component-manager.js"></script>
     <script src="../assets/js/unified-component-loader.js"></script>
-    
+
     <!-- 🔧 搜索功能修复模块 -->
     <script src="../assets/js/search-fix.js"></script>
-    
+
     <script src="../assets/js/main.js"></script>
     
-    <!-- 隐私政策页面初始化脚本 -->
+    <!-- 隐私政策页面初始化脚本（使用统一页面加载管理器，防重复执行） -->
     <script>
-        // 初始化页面组件和动态内容
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 隐私政策页面 - 开始初始化...');
+        // 🔧 使用统一页面加载管理器初始化隐私政策页面（防重复执行）
+        if (window.PageLoadManager) {
+            window.PageLoadManager.addToQueue('privacy-page-init', async function() {
+                console.log('🚀 隐私政策页面 - 开始初始化...');
 
-            try {
-                // 等待组件管理器初始化
-                let componentManager = window.componentManager;
-                if (!componentManager) {
-                    console.log('⏳ 等待组件管理器初始化...');
-                    // 等待最多3秒
-                    for (let i = 0; i < 30; i++) {
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                        componentManager = window.componentManager;
-                        if (componentManager) break;
+                try {
+                    // 等待组件管理器初始化
+                    let componentManager = window.componentManager;
+                    if (!componentManager) {
+                        console.log('⏳ 等待组件管理器初始化...');
+                        // 等待最多3秒
+                        for (let i = 0; i < 30; i++) {
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                            componentManager = window.componentManager;
+                            if (componentManager) break;
+                        }
                     }
+
+                    if (!componentManager) {
+                        throw new Error('组件管理器初始化失败');
+                    }
+
+                    // 初始化页头页尾组件
+                    await componentManager.init(false);
+
+                    // 加载公司信息并更新联系信息
+                    await loadContactInfo();
+
+                    console.log('✅ 隐私政策页面 - 初始化完成');
+
+                } catch (error) {
+                    console.error('❌ 隐私政策页面初始化失败:', error);
                 }
+            }, ['domReady', 'componentsLoaded']);
+        } else {
+            // 备用方案：如果页面加载管理器未就绪，延迟执行
+            setTimeout(() => {
+                if (window.PageLoadManager) {
+                    window.PageLoadManager.addToQueue('privacy-page-init', async function() {
+                        console.log('🚀 隐私政策页面 - 开始初始化...');
 
-                if (!componentManager) {
-                    throw new Error('组件管理器初始化失败');
+                        try {
+                            let componentManager = window.componentManager;
+                            if (!componentManager) {
+                                console.log('⏳ 等待组件管理器初始化...');
+                                for (let i = 0; i < 30; i++) {
+                                    await new Promise(resolve => setTimeout(resolve, 100));
+                                    componentManager = window.componentManager;
+                                    if (componentManager) break;
+                                }
+                            }
+
+                            if (!componentManager) {
+                                throw new Error('组件管理器初始化失败');
+                            }
+
+                            await componentManager.init(false);
+                            await loadContactInfo();
+                            console.log('✅ 隐私政策页面 - 初始化完成');
+
+                        } catch (error) {
+                            console.error('❌ 隐私政策页面初始化失败:', error);
+                        }
+                    }, ['domReady', 'componentsLoaded']);
+                } else {
+                    // 最后备用方案
+                    document.addEventListener('DOMContentLoaded', async function() {
+                        console.log('🚀 隐私政策页面 - 开始初始化（备用方案）...');
+
+                        try {
+                            // 延迟执行，确保其他组件已加载
+                            setTimeout(async () => {
+                                let componentManager = window.componentManager;
+                                if (!componentManager) {
+                                    console.log('⏳ 等待组件管理器初始化...');
+                                    for (let i = 0; i < 30; i++) {
+                                        await new Promise(resolve => setTimeout(resolve, 100));
+                                        componentManager = window.componentManager;
+                                        if (componentManager) break;
+                                    }
+                                }
+
+                                if (componentManager) {
+                                    await componentManager.init(false);
+                                    await loadContactInfo();
+                                }
+                                console.log('✅ 隐私政策页面 - 初始化完成（备用方案）');
+                            }, 1000);
+
+                        } catch (error) {
+                            console.error('❌ 隐私政策页面初始化失败:', error);
+                        }
+                    });
                 }
-
-                // 初始化页头页尾组件
-                await componentManager.init(false);
-
-                // 加载公司信息并更新联系信息
-                await loadContactInfo();
-
-                console.log('✅ 隐私政策页面 - 初始化完成');
-
-            } catch (error) {
-                console.error('❌ 隐私政策页面初始化失败:', error);
-            }
-        });
+            }, 100);
+        }
 
         // 加载并更新联系信息
         async function loadContactInfo() {
@@ -494,10 +587,10 @@
         document.addEventListener('i18n:changed', function(event) {
             console.log('🌍 隐私政策页面监听到语言切换事件:', event.detail);
 
-            // 重新加载并更新联系信息
+            // 重新加载并更新联系信息（统一延迟时间为200ms）
             setTimeout(() => {
                 loadContactInfo();
-            }, 100);
+            }, 200);
         });
     </script>
 </body>

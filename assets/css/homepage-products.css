@@ -1,0 +1,408 @@
+/**
+ * 🏠 主页产品展示专用样式
+ * 确保产品卡片在主页上的一致性和美观性
+ */
+
+/* 产品展示区域 */
+.products-section {
+    padding: 60px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-header h2 {
+    font-size: 42px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.section-header h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(135deg, #00DC82 0%, #00b76c 100%);
+    border-radius: 2px;
+}
+
+.section-header p {
+    font-size: 18px;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* 产品展示网格 */
+.products-showcase {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin: 40px 0;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 1200px) {
+    .products-showcase {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .products-showcase {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 20px;
+    }
+}
+
+/* 产品卡片样式 */
+.product-showcase-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.product-showcase-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 25px 50px rgba(0, 220, 130, 0.15);
+    border-color: #00DC82;
+    background: linear-gradient(145deg, #fff 0%, #f8faff 100%);
+}
+
+/* 产品徽章 */
+.product-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.product-badge.new {
+    background: linear-gradient(135deg, #3742fa 0%, #2b36cc 100%);
+}
+
+.product-badge.hot {
+    background: linear-gradient(135deg, #ff4757 0%, #ff2d40 100%);
+}
+
+.product-badge.recommend {
+    background: linear-gradient(135deg, #2ed573 0%, #28bd66 100%);
+}
+
+/* 产品图片容器 */
+.product-image-container {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.product-image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.product-showcase-card:hover .product-image {
+    transform: scale(1.08);
+}
+
+/* 产品信息区域 */
+.product-info {
+    padding: 25px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-brand {
+    font-size: 13px;
+    color: #3b82f6;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 0.8px;
+}
+
+.product-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    height: 75px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s ease;
+}
+
+.product-showcase-card:hover .product-name {
+    color: #3b82f6;
+}
+
+.product-model {
+    font-size: 14px;
+    color: #2c3e50;
+    margin: 10px 0;
+    padding: 8px 12px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 3px solid #3b82f6;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    height: 40px;
+    line-height: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.product-showcase-card:hover .product-model {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-left-color: #1d4ed8;
+    transform: translateX(3px);
+    box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
+}
+
+/* 产品特性标签 */
+.product-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 15px 0;
+}
+
+.feature-tag {
+    background: linear-gradient(135deg, #00DC82 0%, #00b76c 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 18px;
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 220, 130, 0.25);
+    letter-spacing: 0.3px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.3s ease;
+}
+
+.feature-tag:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 220, 130, 0.35);
+    background: linear-gradient(135deg, #00b76c 0%, #009c5a 100%);
+}
+
+.feature-tag i {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 产品按钮区域 */
+.product-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.product-btn {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-detail {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-detail:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-inquiry {
+    background: linear-gradient(135deg, #00DC82 0%, #00b76c 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 220, 130, 0.3);
+}
+
+.btn-inquiry:hover {
+    background: linear-gradient(135deg, #00b76c 0%, #009c5a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 220, 130, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.product-btn i {
+    font-size: 14px;
+}
+
+/* 加载状态样式 */
+.loading-text {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 18px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.loading-text i {
+    font-size: 32px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.btn-retry {
+    transition: all 0.3s ease;
+}
+
+.btn-retry:hover {
+    background: #0056b3 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+}
+
+/* 查看更多按钮区域 */
+.products-more-section {
+    text-align: center;
+    margin-top: 50px;
+    padding: 30px 0;
+}
+
+.btn-view-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 36px;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+}
+
+.btn-view-more:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(0, 123, 255, 0.4);
+    text-decoration: none;
+    color: white;
+}
+
+.btn-view-more i {
+    transition: transform 0.3s ease;
+}
+
+.btn-view-more:hover i {
+    transform: translateX(5px);
+}
+
+.more-hint {
+    margin-top: 20px;
+    color: #666;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+    .products-section {
+        padding: 40px 0;
+    }
+    
+    .section-header h2 {
+        font-size: 32px;
+    }
+    
+    .product-showcase-card {
+        border-radius: 15px;
+    }
+    
+    .product-info {
+        padding: 20px;
+    }
+    
+    .product-name {
+        font-size: 16px;
+        height: 65px;
+    }
+    
+    .product-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn-view-more {
+        padding: 15px 30px;
+        font-size: 16px;
+    }
+    
+    .feature-tag {
+        font-size: 10px;
+        padding: 5px 10px;
+    }
+}

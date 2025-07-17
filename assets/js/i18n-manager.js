@@ -45,12 +45,14 @@ class I18nManager {
         return this.initPromise;
     }
 
-    // 实际的初始化逻辑
+    // 实际的初始化逻辑（优化版本，减少闪烁）
     async _doInit() {
         console.log('🌍 初始化国际化管理器...');
 
-        // 检测用户语言偏好
-        this.detectLanguage();
+        // 🔧 优化：检测用户语言偏好（如果已经预设了语言，跳过检测）
+        if (!this.currentLanguage || this.currentLanguage === 'zh-CN') {
+            this.detectLanguage();
+        }
 
         // 加载语言包
         await this.loadLanguages();
@@ -60,11 +62,19 @@ class I18nManager {
 
         console.log(`🌍 国际化管理器初始化完成，当前语言: ${this.currentLanguage}`);
 
-        // 🔥 关键修复：初始化完成后立即应用翻译（特别是针对用户之前选择的语言）
-        this.updatePageContent();
+        // 🔧 优化：使用带检查的页面内容更新，确保渲染质量
+        await this.updatePageContentWithCheck();
+
+        // 🔧 等待DOM更新完成
+        await this.waitForDOMUpdate();
 
         // 触发语言加载完成事件
         this.dispatchEvent('i18n:loaded');
+
+        // 🔧 设置页面加载管理器状态（如果存在）
+        if (window.PageLoadManager) {
+            window.PageLoadManager.setState('i18nReady', true);
+        }
 
         return true;
     }
@@ -210,7 +220,7 @@ class I18nManager {
         });
     }
 
-    // 切换语言
+    // 切换语言（优化版本，添加渲染完成检查和更好的时序控制）
     async switchLanguage(lang) {
         if (!this.isSupported(lang)) {
             console.error(`❌ 不支持的语言: ${lang}`);
@@ -225,11 +235,13 @@ class I18nManager {
 
         console.log(`🌍 切换语言: ${this.currentLanguage} → ${lang}`);
 
-        // 🎨 显示切换中的视觉反馈
+        // 🎨 显示切换中的视觉反馈（改进版本）
         this.showSwitchFeedback('正在切换语言...', 'loading');
 
         try {
             const oldLanguage = this.currentLanguage;
+
+            // 🔧 预先设置语言，减少闪烁
             this.currentLanguage = lang;
 
             // 保存语言偏好
@@ -237,8 +249,15 @@ class I18nManager {
 
             // 确保语言包已加载
             if (!this.translations[lang]) {
+                console.log('📦 加载语言包:', lang);
                 await this.loadLanguage(lang);
             }
+
+            // 🔧 立即更新页面内容，减少延迟
+            await this.updatePageContentWithCheck();
+
+            // 🔧 等待DOM更新完成后再触发事件，确保其他组件能获取到正确的翻译内容
+            await this.waitForDOMUpdate();
 
             // 触发语言切换事件
             this.dispatchEvent('i18n:changed', {
@@ -246,13 +265,14 @@ class I18nManager {
                 newLanguage: lang
             });
 
-            // 更新页面内容
-            this.updatePageContent();
+            // 🔧 再次验证关键元素是否已正确更新
+            await this.verifyLanguageUpdate(lang);
 
             // 🎨 显示成功反馈
             const langName = this.languageConfig[lang]?.nativeName || lang;
             this.showSwitchFeedback(`已切换到${langName}`, 'success');
 
+            console.log(`✅ 语言切换完成: ${oldLanguage} → ${lang}`);
             return true;
         } catch (error) {
             console.error('❌ 语言切换失败:', error);
@@ -261,7 +281,7 @@ class I18nManager {
         }
     }
 
-    // 更新页面内容
+    // 更新页面内容（优化版本，添加渲染状态验证）
     updatePageContent() {
         console.log('🔄 更新页面内容...');
 
@@ -280,6 +300,70 @@ class I18nManager {
         console.log('✅ 页面内容更新完成');
     }
 
+    // 🔧 带检查的页面内容更新（新增方法）
+    async updatePageContentWithCheck() {
+        console.log('🔄 更新页面内容（带渲染检查）...');
+
+        // 更新HTML lang属性
+        document.documentElement.lang = this.getLanguageCode();
+
+        // 批量更新所有带有data-i18n属性的元素
+        const updateCount = this.updateI18nElementsWithCheck();
+        console.log(`📝 更新了 ${updateCount} 个国际化元素`);
+
+        // 更新动态内容
+        this.updateDynamicContent();
+
+        // 🌍 更新语言选择器状态
+        this.updateLanguageSwitchers();
+
+        console.log('✅ 页面内容更新完成（带检查）');
+    }
+
+    // 🔧 等待DOM更新完成（新增方法）
+    async waitForDOMUpdate() {
+        return new Promise(resolve => {
+            // 使用requestAnimationFrame确保DOM更新完成
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    resolve();
+                });
+            });
+        });
+    }
+
+    // 🔧 验证语言更新是否成功（新增方法）
+    async verifyLanguageUpdate(expectedLang) {
+        console.log('🔍 验证语言更新结果...');
+
+        // 检查HTML lang属性
+        const htmlLang = document.documentElement.lang;
+        if (htmlLang !== this.getLanguageCode()) {
+            console.warn('⚠️ HTML lang属性未正确更新');
+        }
+
+        // 检查关键元素是否已更新
+        const sampleElements = document.querySelectorAll('[data-i18n]');
+        let updatedCount = 0;
+
+        sampleElements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            const currentText = el.textContent;
+            const expectedText = this.t(key);
+
+            if (currentText === expectedText) {
+                updatedCount++;
+            }
+        });
+
+        console.log(`✅ 验证完成: ${updatedCount}/${sampleElements.length} 个元素已正确更新`);
+
+        // 如果更新率低于80%，给出警告
+        if (sampleElements.length > 0 && updatedCount / sampleElements.length < 0.8) {
+            console.warn('⚠️ 部分元素可能未正确更新，建议检查');
+        }
+    }
+
     // 获取语言代码（去掉地区）
     getLanguageCode() {
         return this.currentLanguage.split('-')[0];
@@ -288,14 +372,14 @@ class I18nManager {
     // 更新带有data-i18n属性的元素
     updateI18nElements() {
         const elements = document.querySelectorAll('[data-i18n]');
-        
+
         elements.forEach(el => {
             const key = el.getAttribute('data-i18n');
             const params = this.parseElementParams(el);
-            
+
             // 获取翻译内容
             const translation = this.t(key, params);
-            
+
             // 更新元素内容
             const attr = el.getAttribute('data-i18n-attr');
             if (attr) {
@@ -304,6 +388,45 @@ class I18nManager {
                 el.textContent = translation;
             }
         });
+    }
+
+    // 🔧 带检查的国际化元素更新（新增方法）
+    updateI18nElementsWithCheck() {
+        const elements = document.querySelectorAll('[data-i18n]');
+        let updateCount = 0;
+
+        elements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            const params = this.parseElementParams(el);
+
+            // 获取翻译内容
+            const translation = this.t(key, params);
+
+            // 检查是否需要更新
+            const attr = el.getAttribute('data-i18n-attr');
+            let needsUpdate = false;
+
+            if (attr) {
+                needsUpdate = el.getAttribute(attr) !== translation;
+                if (needsUpdate) {
+                    el.setAttribute(attr, translation);
+                    updateCount++;
+                }
+            } else {
+                needsUpdate = el.textContent !== translation;
+                if (needsUpdate) {
+                    el.textContent = translation;
+                    updateCount++;
+                }
+            }
+
+            // 添加更新标记，便于调试
+            if (needsUpdate) {
+                el.setAttribute('data-i18n-updated', Date.now());
+            }
+        });
+
+        return updateCount;
     }
 
     // 解析元素参数
@@ -548,17 +671,52 @@ class I18nManager {
         return config && config.dir === 'rtl';
     }
 
-    // 🎨 显示语言切换反馈
+    // 🎨 显示语言切换反馈（改进版本，提供更好的视觉反馈）
     showSwitchFeedback(message, type = 'info') {
         // 移除现有的反馈元素
         const existingFeedback = document.querySelector('.i18n-switch-feedback');
         if (existingFeedback) {
-            existingFeedback.remove();
+            // 如果是从loading状态切换到其他状态，使用平滑过渡
+            if (existingFeedback.classList.contains('i18n-feedback-loading') && type !== 'loading') {
+                existingFeedback.classList.remove('i18n-feedback-loading');
+                existingFeedback.classList.add(`i18n-feedback-${type}`);
+
+                const contentEl = existingFeedback.querySelector('.feedback-content');
+                if (contentEl) {
+                    contentEl.innerHTML = `
+                        ${type === 'success' ? '<i class="fas fa-check"></i>' : ''}
+                        ${type === 'error' ? '<i class="fas fa-exclamation-triangle"></i>' : ''}
+                        <span>${message}</span>
+                    `;
+
+                    // 更新背景色
+                    existingFeedback.style.background = type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3';
+
+                    // 自动隐藏
+                    setTimeout(() => {
+                        existingFeedback.style.opacity = '0';
+                        existingFeedback.style.transform = 'translateX(100%)';
+                        setTimeout(() => {
+                            if (existingFeedback.parentNode) {
+                                existingFeedback.remove();
+                            }
+                        }, 300);
+                    }, 2000);
+
+                    return; // 已更新现有元素，无需创建新元素
+                }
+            } else {
+                existingFeedback.remove();
+            }
         }
 
         // 创建反馈元素
         const feedback = document.createElement('div');
         feedback.className = `i18n-switch-feedback i18n-feedback-${type}`;
+
+        // 添加语言切换进度指示器（仅在loading状态）
+        const progressBar = type === 'loading' ? `<div class="language-switch-progress"></div>` : '';
+
         feedback.innerHTML = `
             <div class="feedback-content">
                 ${type === 'loading' ? '<i class="fas fa-spinner fa-spin"></i>' : ''}
@@ -566,6 +724,7 @@ class I18nManager {
                 ${type === 'error' ? '<i class="fas fa-exclamation-triangle"></i>' : ''}
                 <span>${message}</span>
             </div>
+            ${progressBar}
         `;
 
         // 添加样式
@@ -584,6 +743,7 @@ class I18nManager {
             opacity: 0;
             transform: translateX(100%);
             transition: all 0.3s ease;
+            overflow: hidden;
         `;
 
         document.body.appendChild(feedback);
@@ -592,6 +752,27 @@ class I18nManager {
         setTimeout(() => {
             feedback.style.opacity = '1';
             feedback.style.transform = 'translateX(0)';
+
+            // 如果是loading状态，添加进度条动画
+            if (type === 'loading') {
+                const progressBar = feedback.querySelector('.language-switch-progress');
+                if (progressBar) {
+                    progressBar.style.cssText = `
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        height: 3px;
+                        background: rgba(255,255,255,0.7);
+                        width: 0%;
+                        transition: width 2s ease-in-out;
+                    `;
+
+                    // 启动进度条动画
+                    setTimeout(() => {
+                        progressBar.style.width = '100%';
+                    }, 50);
+                }
+            }
         }, 10);
 
         // 自动隐藏（除了loading状态）
@@ -605,6 +786,86 @@ class I18nManager {
                     }
                 }, 300);
             }, 2000);
+        }
+
+        return feedback;
+    }
+
+    // 🔧 显示全局语言切换状态（新增方法）
+    showGlobalLanguageStatus(message, type = 'info', duration = 3000) {
+        // 创建或更新全局状态指示器
+        let statusIndicator = document.querySelector('.global-language-status');
+
+        if (!statusIndicator) {
+            statusIndicator = document.createElement('div');
+            statusIndicator.className = 'global-language-status';
+            document.body.appendChild(statusIndicator);
+        }
+
+        statusIndicator.className = `global-language-status status-${type}`;
+        statusIndicator.innerHTML = `
+            <div class="status-content">
+                ${type === 'loading' ? '<div class="status-spinner"></div>' : ''}
+                ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : ''}
+                ${type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' : ''}
+                <span>${message}</span>
+            </div>
+        `;
+
+        // 添加样式
+        statusIndicator.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            z-index: 10001;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateX(-50%) translateY(100%);
+            transition: all 0.4s ease;
+            text-align: center;
+            min-width: 250px;
+        `;
+
+        // 显示动画
+        setTimeout(() => {
+            statusIndicator.style.opacity = '1';
+            statusIndicator.style.transform = 'translateX(-50%) translateY(0)';
+        }, 10);
+
+        // 自动隐藏
+        if (type !== 'loading') {
+            setTimeout(() => {
+                statusIndicator.style.opacity = '0';
+                statusIndicator.style.transform = 'translateX(-50%) translateY(100%)';
+                setTimeout(() => {
+                    if (statusIndicator.parentNode) {
+                        statusIndicator.remove();
+                    }
+                }, 400);
+            }, duration);
+        }
+
+        return statusIndicator;
+    }
+
+    // 🔧 隐藏全局语言状态（新增方法）
+    hideGlobalLanguageStatus() {
+        const statusIndicator = document.querySelector('.global-language-status');
+        if (statusIndicator) {
+            statusIndicator.style.opacity = '0';
+            statusIndicator.style.transform = 'translateX(-50%) translateY(100%)';
+            setTimeout(() => {
+                if (statusIndicator.parentNode) {
+                    statusIndicator.remove();
+                }
+            }, 400);
         }
     }
 }
@@ -621,23 +882,45 @@ if (typeof window !== 'undefined') {
     // 🔧 修复：添加兼容性别名，解决组件管理器中的引用问题
     window.i18nManager = window.i18n;
 
-    // 自动初始化 - 修复：检查DOM状态并立即初始化
+    // 🔧 优化的自动初始化 - 立即应用用户偏好语言，避免闪烁
     const initI18n = async () => {
         console.log('🌍 开始自动初始化i18n系统...');
         try {
+            // 🔧 预先检查用户语言偏好，避免"先中文后英文"的闪烁
+            const preferredLang = localStorage.getItem('preferred-language') ||
+                                 (navigator.language || navigator.userLanguage || 'zh-CN');
+
+            console.log('🌍 检测到用户偏好语言:', preferredLang);
+
+            // 🔧 如果偏好语言不是默认语言，立即设置HTML lang属性
+            if (preferredLang !== window.i18n.currentLanguage) {
+                console.log('🔧 预设页面语言属性:', preferredLang);
+                document.documentElement.lang = preferredLang.split('-')[0];
+
+                // 预设当前语言，减少初始化时的语言切换
+                window.i18n.currentLanguage = preferredLang;
+            }
+
             await window.i18n.init();
+
+            // 🔧 初始化完成后，如果当前语言与偏好语言不同，立即切换
+            if (window.i18n.currentLanguage !== preferredLang && window.i18n.isSupported(preferredLang)) {
+                console.log('🔧 应用用户偏好语言:', preferredLang);
+                await window.i18n.switchLanguage(preferredLang);
+            }
+
             console.log('✅ i18n系统自动初始化完成');
         } catch (error) {
             console.error('❌ i18n系统初始化失败:', error);
         }
     };
 
-    // 检查DOM是否已经加载完成
+    // 🔧 优化的DOM检查和初始化
     if (document.readyState === 'loading') {
         // DOM还在加载中，等待DOMContentLoaded
         document.addEventListener('DOMContentLoaded', initI18n);
     } else {
         // DOM已经加载完成，立即初始化
-        initI18n();
+        setTimeout(initI18n, 0); // 使用setTimeout确保在下一个事件循环中执行
     }
 }

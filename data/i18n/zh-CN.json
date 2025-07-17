@@ -207,16 +207,26 @@
     "placeholder": "搜索产品型号、品牌..."
   },
   "test": {
-    "title": "产品卡片多语言测试",
-    "description": "测试产品卡片中的特性标签和按钮是否正确翻译",
-    "language_label": "选择语言:",
-    "features_title": "特性标签测试",
-    "features_desc": "以下是产品卡片中常见的特性标签：",
-    "buttons_title": "按钮文本测试",
-    "buttons_desc": "以下是产品卡片中的按钮：",
-    "product_info_title": "产品信息测试",
-    "product_info_desc": "以下是产品卡片中的基本信息：",
-    "status_title": "系统状态"
+    "title": "语言切换测试页面",
+    "description": "此页面用于测试前端页面多次刷新和多语言切换问题的修复效果。",
+    "language_switch": {
+      "title": "语言切换测试",
+      "description": "点击下面的按钮测试语言切换功能："
+    },
+    "page_refresh": {
+      "title": "页面刷新测试",
+      "description": "测试页面是否存在多次刷新问题："
+    },
+    "performance": {
+      "title": "性能测试",
+      "description": "测试语言切换的性能和响应时间："
+    },
+    "sample_content": {
+      "title": "示例内容",
+      "welcome": "欢迎使用我们的产品！",
+      "company": "无锡皇德国际贸易有限公司",
+      "contact": "联系我们获取更多信息"
+    }
   },
   "hero": {
     "slides": {
