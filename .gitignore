@@ -103,6 +103,84 @@ ecosystem.config.js
 coverage/
 *.lcov
 
+# ===================================
+# Git自动化工具相关文件
+# ===================================
+
+# Git钩子生成的临时文件
+.git-hooks-temp/
+.commit-template-temp
+.pre-commit-temp/
+.pre-push-temp/
+
+# 自动化脚本日志
+.git-automation.log
+.pre-commit.log
+.pre-push.log
+.commit-msg.log
+
+# 分支备份文件
+.branch-backup-*
+.git-backup/
+*.git-backup
+
+# 代码质量检查缓存
+.eslintcache
+.jshintcache
+.stylelintcache
+
+# 格式化工具缓存
+.prettierignore
+.prettier-cache/
+
+# 测试相关
+test-results/
+.jest-cache/
+.mocha-cache/
+
+# CI/CD 相关
+.github-actions-cache/
+.ci-temp/
+.deployment-temp/
+
+# 版本标签备份
+.version-backup
+.tag-backup-*
+
+# 自动化提交模板
+.gitmessage-template
+.commit-template-*
+
+# 代码统计和分析
+.code-analysis/
+.complexity-report/
+.dependency-check/
+
+# 安全扫描结果
+.security-scan/
+.vulnerability-report/
+
+# 性能测试结果
+.performance-test/
+.benchmark-results/
+
+# ===================================
+# 开发工具和配置
+# ===================================
+
+# Husky Git钩子
+.husky/_/
+
+# lint-staged 缓存
+.lintstagedrc*
+
+# commitizen 配置
+.czrc
+
+# 代码格式化配置（项目特定）
+.editorconfig-local
+.prettierrc-local
+
 # 其他
 .DS_Store
 Thumbs.db

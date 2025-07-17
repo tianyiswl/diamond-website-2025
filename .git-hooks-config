@@ -1,0 +1,32 @@
+# Git钩子配置文件
+# 安装时间: $(date '+%Y-%m-%d %H:%M:%S')
+
+# 钩子状态
+PRE_COMMIT_ENABLED=true
+PRE_PUSH_ENABLED=true
+COMMIT_MSG_ENABLED=true
+
+# 检查配置
+SYNTAX_CHECK=true
+FORMAT_CHECK=true
+SECURITY_CHECK=true
+TEST_RUN=true
+
+# 文件大小限制 (字节)
+MAX_FILE_SIZE=5242880
+
+# 提交信息配置
+MIN_COMMIT_MSG_LENGTH=10
+MAX_COMMIT_MSG_LENGTH=72
+REQUIRE_CONVENTIONAL_COMMITS=false
+
+# 分支保护
+PROTECTED_BRANCHES="main,master,production,release"
+
+# 自动格式化
+AUTO_FORMAT=true
+AUTO_FIX=false
+
+# 日志配置
+LOG_LEVEL=INFO
+LOG_RETENTION_DAYS=30
