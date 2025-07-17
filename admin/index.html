@@ -827,6 +827,18 @@
         <div id="dashboard-page" class="page-content active">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h3 mb-0">控制台</h1>
+                <!-- 时间筛选组件 -->
+                <div class="time-filter-component">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="time-range-display">
+                            <small class="text-muted">时间范围：</small>
+                            <span id="dashboard-time-range-text" class="fw-bold text-primary">今天</span>
+                        </div>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="showTimeFilterModal('dashboard')" title="选择时间范围">
+                            <i class="bi bi-calendar-range me-1"></i>筛选时间
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- 数据概览卡片 - 预留给未来的点击和咨询数据 -->
@@ -926,22 +938,8 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">
                                     <i class="bi bi-graph-up me-2"></i>访问趋势分析
+                                    <small class="text-muted ms-2">使用页面顶部的时间筛选器选择数据范围</small>
                                 </h5>
-                                <div class="d-flex gap-2">
-                                    <!-- 历史数据查询控件 -->
-                                    <select class="form-select form-select-sm" id="period-selector" style="width: auto;" onchange="loadHistoricalData()">
-                                        <option value="today">今日数据</option>
-                                        <option value="year">按年查看</option>
-                                        <option value="month">按月查看</option>
-                                        <option value="day">按日查看</option>
-                                    </select>
-                                    <select class="form-select form-select-sm" id="value-selector" style="width: auto; display: none;" onchange="loadHistoricalData()">
-                                        <!-- 动态填充选项 -->
-                                    </select>
-                                    <button class="btn btn-outline-primary btn-sm" onclick="refreshCurrentData()" title="刷新当前数据">
-                                        <i class="bi bi-arrow-clockwise"></i>
-                                    </button>
-                                </div>
                             </div>
                         </div>
                         <div class="card-body" style="padding: 20px;">
@@ -1426,9 +1424,21 @@
             <div class="container-fluid">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>操作记录</h2>
-                    <button onclick="clearLogs()" class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash-alt"></i> 清空
-                    </button>
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- 时间筛选组件 -->
+                        <div class="time-filter-component">
+                            <div class="d-flex align-items-center gap-2">
+                                <small class="text-muted">时间范围：</small>
+                                <span id="logs-time-range-text" class="fw-bold text-primary">今天</span>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="showTimeFilterModal('logs')" title="选择时间范围">
+                                    <i class="bi bi-calendar-range me-1"></i>筛选
+                                </button>
+                            </div>
+                        </div>
+                        <button onclick="clearLogs()" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i> 清空
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="card">
@@ -1495,8 +1505,13 @@
                                     </select>
                                 </div>
                                 <div class="filter-group">
-                                    <label class="form-label mb-1 small text-muted">日期筛选</label>
-                                    <input type="date" class="form-control form-control-sm" id="inquiry-date-filter" style="min-width: 150px;">
+                                    <label class="form-label mb-1 small text-muted">时间筛选</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span id="inquiries-time-range-text" class="badge bg-primary">今天</span>
+                                        <button class="btn btn-outline-secondary btn-sm" onclick="showTimeFilterModal('inquiries')" title="选择时间范围">
+                                            <i class="bi bi-calendar-range"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="filter-group">
                                     <label class="form-label mb-1 small text-muted">搜索客户</label>
@@ -2646,6 +2661,122 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-primary" onclick="changePassword()">
                         <i class="bi bi-check-lg me-2"></i>确认修改
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 时间筛选模态框 -->
+    <div class="modal fade" id="timeFilterModal" tabindex="-1" aria-labelledby="timeFilterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="timeFilterModalLabel">
+                        <i class="bi bi-calendar-range me-2"></i>选择时间范围
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 快捷时间选项 -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">
+                            <i class="bi bi-lightning me-2"></i>快捷选项
+                        </h6>
+                        <div class="row g-2">
+                            <div class="col-md-3 col-6">
+                                <button type="button" class="btn btn-outline-primary w-100 time-shortcut-btn"
+                                        data-range="today" onclick="selectTimeShortcut('today')">
+                                    <i class="bi bi-calendar-day me-1"></i>今天
+                                </button>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <button type="button" class="btn btn-outline-primary w-100 time-shortcut-btn"
+                                        data-range="yesterday" onclick="selectTimeShortcut('yesterday')">
+                                    <i class="bi bi-calendar-minus me-1"></i>昨天
+                                </button>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <button type="button" class="btn btn-outline-primary w-100 time-shortcut-btn"
+                                        data-range="dayBeforeYesterday" onclick="selectTimeShortcut('dayBeforeYesterday')">
+                                    <i class="bi bi-calendar2-minus me-1"></i>前天
+                                </button>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <button type="button" class="btn btn-outline-success w-100 time-shortcut-btn"
+                                        data-range="thisWeek" onclick="selectTimeShortcut('thisWeek')">
+                                    <i class="bi bi-calendar-week me-1"></i>本周
+                                </button>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <button type="button" class="btn btn-outline-success w-100 time-shortcut-btn"
+                                        data-range="lastWeek" onclick="selectTimeShortcut('lastWeek')">
+                                    <i class="bi bi-calendar2-week me-1"></i>上周
+                                </button>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <button type="button" class="btn btn-outline-info w-100 time-shortcut-btn"
+                                        data-range="thisMonth" onclick="selectTimeShortcut('thisMonth')">
+                                    <i class="bi bi-calendar-month me-1"></i>本月
+                                </button>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <button type="button" class="btn btn-outline-info w-100 time-shortcut-btn"
+                                        data-range="lastMonth" onclick="selectTimeShortcut('lastMonth')">
+                                    <i class="bi bi-calendar2-month me-1"></i>上月
+                                </button>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <button type="button" class="btn btn-outline-secondary w-100"
+                                        onclick="resetTimeFilter()">
+                                    <i class="bi bi-arrow-clockwise me-1"></i>重置
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- 自定义时间范围 -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">
+                            <i class="bi bi-calendar-range me-2"></i>自定义时间范围
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="startDate" class="form-label">开始日期</label>
+                                <input type="date" class="form-control" id="startDate" onchange="validateDateRange()">
+                                <div class="form-text">选择查询的开始日期</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="endDate" class="form-label">结束日期</label>
+                                <input type="date" class="form-control" id="endDate" onchange="validateDateRange()">
+                                <div class="form-text">选择查询的结束日期</div>
+                            </div>
+                        </div>
+                        <div id="dateRangeError" class="alert alert-danger mt-2 d-none">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <span id="dateRangeErrorText"></span>
+                        </div>
+                    </div>
+
+                    <!-- 当前选择的时间范围显示 -->
+                    <div class="alert alert-info">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <div>
+                                <strong>当前选择：</strong>
+                                <span id="currentTimeRangeDisplay">今天</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-2"></i>取消
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="applyTimeFilter()" id="applyTimeFilterBtn">
+                        <i class="bi bi-check-lg me-2"></i>应用筛选
                     </button>
                 </div>
             </div>

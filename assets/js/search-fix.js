@@ -144,11 +144,30 @@
         console.log('✅ 搜索修复模块初始化完成');
     }
     
-    // 页面加载完成后初始化
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initSearchFix);
+    // 🚫 已移除重复的DOMContentLoaded监听器
+    // 现在使用统一的页面加载管理器处理搜索功能初始化
+
+    // 使用统一页面加载管理器初始化搜索功能
+    if (window.PageLoadManager) {
+        window.PageLoadManager.addToQueue('search-fix', function() {
+            initSearchFix();
+        }, ['domReady', 'componentsLoaded']);
     } else {
-        initSearchFix();
+        // 备用方案：延迟执行
+        setTimeout(function() {
+            if (window.PageLoadManager) {
+                window.PageLoadManager.addToQueue('search-fix', function() {
+                    initSearchFix();
+                }, ['domReady', 'componentsLoaded']);
+            } else {
+                console.warn('⚠️ 页面加载管理器未找到，直接初始化搜索功能');
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', initSearchFix);
+                } else {
+                    initSearchFix();
+                }
+            }
+        }, 100);
     }
     
 })(); 

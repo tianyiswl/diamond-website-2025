@@ -86,3 +86,183 @@
     max-width: 300px;
     font-size: 0.9rem;
 }
+
+/* ===== 时间筛选组件样式 ===== */
+
+/* 时间筛选组件容器 */
+.time-filter-component {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* 时间范围显示 */
+.time-range-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: rgba(37, 99, 235, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.time-range-display small {
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+/* 时间筛选模态框样式 */
+#timeFilterModal .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+#timeFilterModal .modal-header {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    border-bottom: none;
+}
+
+#timeFilterModal .modal-header .btn-close {
+    filter: invert(1);
+}
+
+/* 快捷时间选项按钮 */
+.time-shortcut-btn {
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.time-shortcut-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.time-shortcut-btn.active {
+    background: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.time-shortcut-btn.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+}
+
+/* 日期输入框样式 */
+#timeFilterModal .form-control[type="date"] {
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    padding: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+#timeFilterModal .form-control[type="date"]:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* 错误提示样式 */
+#dateRangeError {
+    border-radius: 8px;
+    border: none;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 当前时间范围显示 */
+#currentTimeRangeDisplay {
+    font-weight: 600;
+    color: #2563eb;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .time-filter-component {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .time-range-display {
+        font-size: 0.85rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    #timeFilterModal .modal-dialog {
+        margin: 1rem;
+    }
+
+    .time-shortcut-btn {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.6rem;
+    }
+}
+
+/* 询价管理页面的时间筛选样式 */
+#inquiries-time-range-text {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+}
+
+/* 操作记录页面的时间筛选样式 */
+#logs-time-range-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* 控制台页面的时间筛选样式 */
+#dashboard-time-range-text {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* 时间筛选按钮悬停效果 */
+.time-filter-component button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 加载状态样式 */
+.time-filter-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.time-filter-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}

@@ -324,28 +324,8 @@ document.addEventListener('categoriesLoaded', function(event) {
     }
 });
 
-// 主页产品展示初始化
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔧 main.js - DOMContentLoaded 事件触发');
-    
-    // 检查是否为主页（有products-showcase容器）
-    const showcase = document.getElementById('products-showcase');
-    console.log('🔍 查找products-showcase容器:', showcase ? '找到' : '未找到');
-    
-    if (showcase) {
-        console.log('🏠 检测到主页，开始加载产品展示...');
-        console.log('🔧 loadProductShowcase函数类型:', typeof loadProductShowcase);
-        
-        // 立即调用产品展示函数
-        if (typeof loadProductShowcase === 'function') {
-            loadProductShowcase();
-        } else {
-            console.error('❌ loadProductShowcase 函数未定义');
-        }
-    } else {
-        console.log('📄 不是主页，跳过产品展示加载');
-    }
-});
+// 🚫 已移除重复的DOMContentLoaded监听器
+// 现在使用统一的页面加载管理器处理产品展示初始化
 
 // 产品卡片动画
 const observerOptions = {
@@ -1556,26 +1536,43 @@ function initializeAllFeatures() {
     console.log('✅ 所有功能初始化完成');
 }
 
-// 当DOM加载完成后初始化所有功能
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔧 main.js - DOMContentLoaded 事件触发');
-    
-    // 检查是否为主页，如果是主页就调用产品展示加载
-    const showcase = document.getElementById('products-showcase');
-    if (showcase) {
-        console.log('🔍 查找products-showcase容器: 找到');
-        loadProductShowcase();
-    } else {
-        console.log('🔍 查找products-showcase容器: 未找到');
-        console.log('📄 不是主页，跳过产品展示加载');
-    }
-    
-    // 检查是否需要加载产品数据(产品页面等)
-    const productContainer = document.querySelector('.products-grid, .product-detail-container');
-    if (productContainer && !showcase) {
-        console.log('📄 当前页面不需要产品数据，跳过加载');
-    }
-    
-    // 调用主要初始化函数
-    initializeAllFeatures();
-}); 
+// 🚫 已移除重复的DOMContentLoaded监听器
+// 现在使用统一的页面加载管理器处理所有初始化
+
+// 使用统一页面加载管理器初始化功能
+if (window.PageLoadManager) {
+    // 🚀 简化依赖关系：产品展示只依赖DOM就绪
+    window.PageLoadManager.addToQueue('main-homepage-products', function() {
+        console.log('🏠 main.js - 开始初始化主页产品展示');
+        window.PageLoadManager.initHomepageProducts();
+    }, ['domReady']);
+
+    // 添加其他功能初始化到队列
+    window.PageLoadManager.addToQueue('main-features', function() {
+        initializeAllFeatures();
+    }, ['domReady']);
+} else {
+    // 备用方案：如果页面加载管理器未加载，延迟执行
+    setTimeout(function() {
+        if (window.PageLoadManager) {
+            window.PageLoadManager.addToQueue('main-homepage-products', function() {
+                console.log('🏠 main.js - 延迟初始化主页产品展示');
+                window.PageLoadManager.initHomepageProducts();
+            }, ['domReady']);
+
+            window.PageLoadManager.addToQueue('main-features', function() {
+                initializeAllFeatures();
+            }, ['domReady']);
+        } else {
+            console.warn('⚠️ 页面加载管理器未找到，使用传统初始化方式');
+            initializeAllFeatures();
+
+            // 传统方式加载产品展示
+            const showcase = document.getElementById('products-showcase');
+            if (showcase) {
+                console.log('🏠 main.js - 传统方式加载产品展示');
+                loadProductShowcase();
+            }
+        }
+    }, 100);
+}

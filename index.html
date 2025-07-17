@@ -232,7 +232,7 @@
                                 <span data-i18n="contact.company_name">无锡皇德国际贸易有限公司</span>
                             </div>
                             <iframe
-                                src="https://maps.google.com/maps?q=31.576825,120.328764&z=16&output=embed&hl=en&markers=color:red%7Clabel:H%7C31.576825,120.328764"
+                                src="https://maps.google.com/maps?q=31.691717,120.486254&z=16&output=embed&hl=zh-CN&markers=color:red%7Clabel:皇%7C31.691717,120.486254"
                                 width="100%"
                                 height="400"
                                 style="border:0; border-radius: 15px;"
@@ -304,18 +304,20 @@
     <!-- 页脚组件容器 -->
     <div id="footer-container"></div>
 
-    <!-- 🔍 服务器状态监控 -->
-    <script src="js/server-status.js"></script>
+
+
+    <!-- 🚀 统一页面加载管理器 - 必须最先加载 -->
+    <script src="assets/js/page-load-manager.js"></script>
 
     <!-- 🎨 WebP图片优化加载器 -->
     <script src="assets/js/webp-loader.js"></script>
 
     <!-- 🌍 国际化管理器 -->
     <script src="assets/js/i18n-manager.js"></script>
-    
+
     <!-- 🔍 SEO结构化数据管理器 -->
     <script src="assets/js/seo-structured-data.js"></script>
-    
+
     <!-- 🔧 统一组件管理系统 -->
     <script src="assets/js/modules/services/company-service.js"></script>
     <script src="assets/js/modules/components/component-manager.js"></script>
@@ -339,13 +341,189 @@
     
     <!-- 主要脚本文件（简化版） -->
     <script src="assets/js/main.js"></script>
-    
+
     <!-- 🔧 搜索功能修复模块 -->
     <script src="assets/js/search-fix.js"></script>
+
+    <!-- 🚨 紧急产品展示修复脚本 -->
+    <script src="emergency-product-fix.js"></script>
     
     <script>
-        // 🏠 主页初始化脚本 - 统一产品排序逻辑
+        // 🏠 主页初始化脚本 - 强健的产品加载机制
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏠 主页DOMContentLoaded - 开始初始化');
+
+            // 🚀 立即尝试加载产品展示
+            setTimeout(function() {
+                const showcase = document.getElementById('products-showcase');
+                if (showcase) {
+                    console.log('🎯 找到产品展示容器，开始强制加载产品');
+                    loadHomepageProductsDirectly();
+                }
+            }, 500);
+
+            // 🔄 备用加载机制 - 2秒后再次检查
+            setTimeout(function() {
+                const showcase = document.getElementById('products-showcase');
+                if (showcase && showcase.innerHTML.includes('正在加载')) {
+                    console.log('⚠️ 产品仍在加载中，触发备用加载机制');
+                    loadHomepageProductsDirectly();
+                }
+            }, 2000);
+
+            // 🔄 最终保障机制 - 5秒后强制显示
+            setTimeout(function() {
+                const showcase = document.getElementById('products-showcase');
+                if (showcase && showcase.innerHTML.includes('正在加载')) {
+                    console.log('🚨 启动最终保障机制');
+                    loadHomepageProductsDirectly();
+                }
+            }, 5000);
+        });
+
+        // 🎯 直接产品加载函数
+        async function loadHomepageProductsDirectly() {
+            const showcase = document.getElementById('products-showcase');
+            if (!showcase) {
+                console.log('❌ 产品展示容器未找到');
+                return;
+            }
+
+            console.log('🚀 开始直接加载主页产品...');
+
+            // 显示加载状态
+            showcase.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #6c757d;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                    <br>正在加载最新产品...
+                </div>
+            `;
+
+            try {
+                console.log('🌐 调用API: /api/public/products?limit=9');
+                const response = await fetch('/api/public/products?limit=9');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                console.log('📦 API响应成功:', result);
+
+                const products = result.data || result;
+
+                if (!Array.isArray(products) || products.length === 0) {
+                    throw new Error('没有可用的产品数据');
+                }
+
+                const activeProducts = products.filter(p => p.status === 'active').slice(0, 9);
+                console.log(`✅ 获取到 ${activeProducts.length} 个活跃产品`);
+
+                // 保存到全局变量
+                window.featuredProducts = activeProducts;
+
+                // 渲染产品卡片
+                renderProductCards(activeProducts, showcase);
+
+                console.log('🎉 主页产品展示加载完成');
+
+            } catch (error) {
+                console.error('❌ 产品加载失败:', error);
+                showcase.innerHTML = `
+                    <div style="color: #dc3545; text-align: center; padding: 40px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <br>产品加载失败: ${error.message}
+                        <br><button onclick="loadHomepageProductsDirectly()"
+                            style="margin-top: 10px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            重试加载
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // 🎨 渲染产品卡片函数
+        function renderProductCards(products, container) {
+            console.log('🎨 开始渲染产品卡片');
+
+            // 尝试使用产品卡组件
+            if (window.productCardComponent && typeof window.productCardComponent.renderToShowcase === 'function') {
+                console.log('✅ 使用产品卡组件渲染');
+                window.productCardComponent.renderToShowcase(products, {
+                    showDescription: false,
+                    imagePath: ''
+                });
+                return;
+            }
+
+            // 备用渲染方案
+            console.log('⚠️ 使用备用渲染方案');
+            const html = products.map(product => `
+                <div class="product-card" style="
+                    border: 1px solid #ddd;
+                    padding: 20px;
+                    margin: 15px;
+                    border-radius: 12px;
+                    display: inline-block;
+                    background: white;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    max-width: 280px;
+                    vertical-align: top;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.15)'"
+                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)'">
+
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <img src="${product.image || 'assets/images/carousel/img1.jpg'}"
+                             alt="${product.name}"
+                             style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px;"
+                             onerror="this.src='assets/images/carousel/img1.jpg'">
+                    </div>
+
+                    <h4 style="margin: 0 0 10px 0; color: #333; font-size: 16px; font-weight: 600;">${product.name}</h4>
+                    <p style="margin: 5px 0; font-size: 13px; color: #666;">SKU: ${product.sku}</p>
+                    <p style="margin: 5px 0; font-size: 13px; color: #666;">型号: ${product.model || '暂无'}</p>
+
+                    ${product.features && product.features.length > 0 ? `
+                        <div style="margin: 10px 0;">
+                            ${product.features.slice(0, 3).map(feature => `
+                                <span style="
+                                    background: linear-gradient(135deg, #00DC82 0%, #00b76c 100%);
+                                    color: white;
+                                    padding: 6px 12px;
+                                    border-radius: 16px;
+                                    font-size: 11px;
+                                    margin: 2px;
+                                    display: inline-block;
+                                    font-weight: 500;
+                                    box-shadow: 0 2px 4px rgba(0, 220, 130, 0.25);
+                                ">${feature}</span>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    <div style="margin-top: 15px; text-align: center;">
+                        <button onclick="window.open('https://wa.me/8613656157230?text=我对产品${encodeURIComponent(product.name)}感兴趣，请提供更多信息', '_blank')"
+                                style="
+                                    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+                                    color: white;
+                                    border: none;
+                                    padding: 8px 16px;
+                                    border-radius: 20px;
+                                    font-size: 12px;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                " onmouseover="this.style.transform='scale(1.05)'"
+                                   onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-whatsapp"></i> 咨询详情
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = html;
+            console.log('✅ 备用渲染完成');
+        }
             console.log('🏠 主页内联脚本 - DOMContentLoaded 事件触发');
             
             // 📞 1. 首先加载公司信息并更新联系信息
@@ -490,82 +668,61 @@
                 console.log('✅ 主页联系表单初始化完成（备用方法）');
             }
             
-            // 📦 3. 然后加载产品展示
-            setTimeout(async function() {
-                console.log('🔧 主页内联脚本 - 开始加载产品展示...');
-                
+            // 📦 3. 确保产品展示能够正常加载
+            console.log('🔧 主页内联脚本 - 确保产品展示正常加载');
+
+            // 多重保障机制确保产品能够加载
+            setTimeout(function() {
                 const showcase = document.getElementById('products-showcase');
-                if (showcase) {
-                    console.log('🎯 找到产品展示容器，开始加载产品...');
-                    
-                    try {
-                        // 直接从API加载产品数据
-                        console.log('🚀 开始从API加载主页产品展示数据...');
-                        const response = await fetch('/api/public/products?limit=1000');
-                        
-                        if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                        }
-                        
-                        const result = await response.json();
-                        console.log('🔍 API响应结构:', result);
-                        
-                        // 处理API返回的数据格式: {data: [...]}
-                        const products = result.data || result;
-                        console.log(`✅ API产品数据加载成功: ${products.length}个产品`);
-                        
-                        if (!Array.isArray(products) || products.length === 0) {
-                            throw new Error('没有可用的产品数据');
-                        }
-                        
-                        // 简单排序：过滤活跃产品并取前9个
-                        const activeProducts = products.filter(p => p.status === 'active');
-                        const displayProducts = activeProducts.slice(0, 9);
+                if (showcase && showcase.innerHTML.includes('正在加载产品')) {
+                    console.log('🚀 触发产品展示加载保障机制');
 
-                        // 保存到全局变量，供语言切换时重新渲染使用
-                        window.featuredProducts = displayProducts;
-
-                        console.log(`📦 准备显示 ${displayProducts.length} 个产品`);
-
-                        // 使用产品卡组件渲染
-                        if (window.productCardComponent) {
-                            window.productCardComponent.renderToShowcase(displayProducts, {
-                                showDescription: false,
-                                imagePath: ''
+                    if (window.PageLoadManager && typeof window.PageLoadManager.initHomepageProducts === 'function') {
+                        console.log('📦 使用页面加载管理器加载产品');
+                        window.PageLoadManager.initHomepageProducts();
+                    } else if (typeof loadProductShowcase === 'function') {
+                        console.log('📦 使用传统方式加载产品');
+                        loadProductShowcase();
+                    } else {
+                        console.warn('⚠️ 产品加载函数未找到，尝试直接API调用');
+                        // 直接API调用作为最后备用方案
+                        fetch('/api/public/products?limit=9')
+                            .then(response => response.json())
+                            .then(result => {
+                                const products = result.data || result;
+                                if (products && products.length > 0) {
+                                    const activeProducts = products.filter(p => p.status === 'active').slice(0, 9);
+                                    const html = activeProducts.map(product => `
+                                        <div class="product-card" style="border: 1px solid #ddd; padding: 15px; margin: 10px; border-radius: 8px; display: inline-block; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 200px; vertical-align: top;">
+                                            <h4 style="margin: 0 0 10px 0; color: #333; font-size: 14px;">${product.name}</h4>
+                                            <p style="margin: 5px 0; font-size: 12px; color: #666;">SKU: ${product.sku}</p>
+                                        </div>
+                                    `).join('');
+                                    showcase.innerHTML = html;
+                                    console.log('✅ 直接API调用产品展示完成');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('❌ 直接API调用失败:', error);
                             });
-                            console.log('✅ 产品展示渲染完成');
-                        } else {
-                            console.warn('⚠️ productCardComponent未找到，使用简单渲染');
-                            // 简单的HTML渲染
-                            const html = displayProducts.map(product => `
-                                <div class="product-card">
-                                    <h3>${product.name}</h3>
-                                    <p>SKU: ${product.sku}</p>
-                                </div>
-                            `).join('');
-                            showcase.innerHTML = html;
-                        }
-                        
-                    } catch (error) {
-                        console.error('❌ 加载产品数据失败:', error);
-                        showcase.innerHTML = `
-                            <div class="loading-text" style="color: #dc3545;">
-                                <i class="fas fa-exclamation-triangle"></i> 
-                                产品加载失败: ${error.message}
-                                <br><small>请检查网络连接并刷新页面重试</small>
-                            </div>
-                        `;
                     }
-                } else {
-                    console.log('🔍 未找到产品展示容器');
                 }
-            }, 200);
+            }, 2000); // 2秒后检查并触发备用加载
         });
         
         // 轮播图点击导航到产品页面
         function navigateToProducts(category) {
             window.location.href = `pages/products.html?category=${category}`;
         }
+
+        // 地图配置 - 公司精确坐标
+        const MAP_CONFIG = {
+            // 公司坐标 - 无锡市锡山区东港镇黄土塘村工业园区创业路107号
+            latitude: 31.691717,  // 纬度 (北纬) - 精确坐标
+            longitude: 120.486254, // 经度 (东经) - 精确坐标
+            zoom: 16,             // 缩放级别
+            companyName: '无锡皇德国际贸易有限公司'
+        };
 
         // 地图语言切换功能
         function updateMapLanguage() {
@@ -574,15 +731,15 @@
 
             const currentLangInfo = window.i18nManager?.getCurrentLanguage() || 'zh-CN';
             const currentLang = currentLangInfo.code || currentLangInfo; // 兼容新旧版本
-            const coords = '31.576825,120.328764';
-            const zoom = '16';
+            const coords = `${MAP_CONFIG.latitude},${MAP_CONFIG.longitude}`;
+            const zoom = MAP_CONFIG.zoom;
 
             let mapUrl;
             if (currentLang === 'en-US') {
-                // 英文地图
+                // 英文地图 - 使用精确坐标
                 mapUrl = `https://maps.google.com/maps?q=${coords}&z=${zoom}&output=embed&hl=en&markers=color:red%7Clabel:H%7C${coords}`;
             } else {
-                // 中文地图
+                // 中文地图 - 使用精确坐标
                 mapUrl = `https://maps.google.com/maps?q=${coords}&z=${zoom}&output=embed&hl=zh-CN&markers=color:red%7Clabel:皇%7C${coords}`;
             }
 
@@ -591,6 +748,23 @@
 
         // 监听语言切换事件
         document.addEventListener('i18n:changed', updateMapLanguage);
+
+        // 地图调试功能 - 在控制台中使用
+        window.updateMapCoords = function(lat, lng, zoom = 16) {
+            MAP_CONFIG.latitude = lat;
+            MAP_CONFIG.longitude = lng;
+            MAP_CONFIG.zoom = zoom;
+            updateMapLanguage();
+            console.log(`🗺️ 地图坐标已更新: ${lat}, ${lng}, 缩放: ${zoom}`);
+            console.log(`📍 使用方法: updateMapCoords(纬度, 经度, 缩放级别)`);
+        };
+
+        // 显示当前地图配置
+        window.showMapConfig = function() {
+            console.log('🗺️ 当前地图配置:', MAP_CONFIG);
+            console.log(`📍 坐标: ${MAP_CONFIG.latitude}, ${MAP_CONFIG.longitude}`);
+            console.log(`🔍 缩放: ${MAP_CONFIG.zoom}`);
+        };
 
         // 🌍 监听语言切换事件，重新更新联系信息和产品卡片
         document.addEventListener('i18n:changed', function(event) {

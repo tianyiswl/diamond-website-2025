@@ -88,11 +88,11 @@ class ComponentManager {
                 return true;
             }
 
-            const response = await fetch('/api/categories');
+            const response = await fetch('/api/public/categories');
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
-            
+
             const categories = await response.json();
             
             // 确保数据格式正确
@@ -1183,30 +1183,54 @@ if (typeof module !== 'undefined' && module.exports) {
     // 创建全局组件管理器实例
     window.componentManager = new ComponentManager();
     
-    // DOM加载完成后自动初始化
-    document.addEventListener('DOMContentLoaded', async function() {
-        // 检查是否是首页
-        const isHomePage = window.location.pathname === '/' || 
-                          window.location.pathname.endsWith('index.html') || 
-                          window.location.pathname === '/diamond-website-new/' ||
-                          window.location.pathname === '/diamond-website-new/index.html';
-        
-        console.log('🚀 统一组件管理器 - 开始自动初始化...');
-        
-        // 初始化组件管理器（会自动渲染页头页尾）
-        if (window.componentManager) {
-            await window.componentManager.init(isHomePage);
-            
-            // 触发分类加载完成事件
-            const event = new CustomEvent('categoriesLoaded', {
-                detail: { 
-                    categories: window.componentManager.categories,
-                    isHomePage: isHomePage
+    // 🚫 已移除重复的DOMContentLoaded监听器
+    // 现在使用统一的页面加载管理器处理组件初始化
+
+    // 使用统一页面加载管理器初始化组件
+    if (window.PageLoadManager) {
+        window.PageLoadManager.addToQueue('component-manager-init', async function() {
+            const isHomePage = window.location.pathname === '/' ||
+                              window.location.pathname.endsWith('index.html') ||
+                              window.location.pathname === '/diamond-website-new/' ||
+                              window.location.pathname === '/diamond-website-new/index.html';
+
+            console.log('🚀 统一组件管理器 - 开始初始化...');
+
+            if (window.componentManager) {
+                await window.componentManager.init(isHomePage);
+
+                // 触发分类加载完成事件
+                const event = new CustomEvent('categoriesLoaded', {
+                    detail: {
+                        categories: window.componentManager.categories,
+                        isHomePage: isHomePage
+                    }
+                });
+                document.dispatchEvent(event);
+
+                console.log('✅ 统一组件管理器 - 初始化完成');
+                window.PageLoadManager.setState('componentsLoaded', true);
+            }
+        }, ['domReady']);
+    } else {
+        // 备用方案：延迟执行直到页面加载管理器可用
+        setTimeout(function() {
+            if (window.PageLoadManager) {
+                window.PageLoadManager.initComponentManager();
+            } else {
+                console.warn('⚠️ 页面加载管理器未找到，使用传统初始化方式');
+                // 传统的DOMContentLoaded方式作为最后备用
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', async function() {
+                        const isHomePage = window.location.pathname === '/' ||
+                                          window.location.pathname.endsWith('index.html');
+
+                        if (window.componentManager) {
+                            await window.componentManager.init(isHomePage);
+                        }
+                    });
                 }
-            });
-            document.dispatchEvent(event);
-            
-            console.log('✅ 统一组件管理器 - 自动初始化完成');
-        }
-    });
+            }
+        }, 100);
+    }
 }

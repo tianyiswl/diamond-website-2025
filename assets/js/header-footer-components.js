@@ -24,11 +24,11 @@ class ComponentManager {
     // 从后台API加载分类数据
     async loadCategories() {
         try {
-            const response = await fetch('/api/categories');
+            const response = await fetch('/api/public/categories');
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
-            
+
             const categories = await response.json();
             
             // 确保数据格式正确

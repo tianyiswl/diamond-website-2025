@@ -51,15 +51,37 @@ if (typeof window.componentManager === 'undefined') {
         }
     };
 
-    // 自动初始化
-    document.addEventListener('DOMContentLoaded', async () => {
-        const success = await initializeServices();
-        if (success) {
-            console.log('🎉 统一组件系统初始化完成！');
-        } else {
-            console.warn('⚠️ 统一组件系统初始化失败，将使用备用方案');
-        }
-    });
+    // 🚫 已移除重复的DOMContentLoaded监听器
+    // 现在使用统一的页面加载管理器处理组件加载
+
+    // 使用统一页面加载管理器初始化服务
+    if (window.PageLoadManager) {
+        window.PageLoadManager.addToQueue('unified-component-loader', async function() {
+            const success = await initializeServices();
+            if (success) {
+                console.log('🎉 统一组件系统初始化完成！');
+            } else {
+                console.warn('⚠️ 统一组件系统初始化失败，将使用备用方案');
+            }
+        }, ['domReady']);
+    } else {
+        // 备用方案：延迟执行
+        setTimeout(async function() {
+            if (window.PageLoadManager) {
+                window.PageLoadManager.addToQueue('unified-component-loader', async function() {
+                    const success = await initializeServices();
+                    if (success) {
+                        console.log('🎉 统一组件系统初始化完成！');
+                    } else {
+                        console.warn('⚠️ 统一组件系统初始化失败，将使用备用方案');
+                    }
+                }, ['domReady']);
+            } else {
+                console.warn('⚠️ 页面加载管理器未找到，直接初始化服务');
+                await initializeServices();
+            }
+        }, 50);
+    }
     
 } else {
     console.log('✅ 统一组件管理系统已存在');

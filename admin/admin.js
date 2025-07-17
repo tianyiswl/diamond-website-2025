@@ -4389,7 +4389,6 @@ async function loadInquiries() {
 
         // 获取筛选条件
         const statusFilter = document.getElementById('inquiry-status-filter').value;
-        const dateFilter = document.getElementById('inquiry-date-filter').value;
         const searchFilter = document.getElementById('inquiry-search-filter').value.toLowerCase();
 
         // 过滤询价记录
@@ -4401,10 +4400,14 @@ async function loadInquiries() {
                 matches = false;
             }
 
-            // 日期筛选
-            if (dateFilter) {
-                const filterDate = new Date(dateFilter).toISOString().split('T')[0];
-                if (inquiry.createdAt.split('T')[0] !== filterDate) {
+            // 时间范围筛选（使用全局时间筛选器）
+            if (currentTimeFilter && currentTimeFilter.startDate && currentTimeFilter.endDate) {
+                const inquiryDate = new Date(inquiry.createdAt);
+                const startDate = new Date(currentTimeFilter.startDate);
+                const endDate = new Date(currentTimeFilter.endDate);
+                endDate.setHours(23, 59, 59, 999); // 设置为当天结束
+
+                if (inquiryDate < startDate || inquiryDate > endDate) {
                     matches = false;
                 }
             }
@@ -4663,8 +4666,12 @@ function gotoInquiryPage() {
 // 清除筛选条件
 function clearInquiryFilters() {
     document.getElementById('inquiry-status-filter').value = '';
-    document.getElementById('inquiry-date-filter').value = '';
     document.getElementById('inquiry-search-filter').value = '';
+
+    // 重置时间筛选为今天
+    selectTimeShortcut('today');
+    updatePageTimeRangeDisplay();
+
     currentInquiryPage = 1;
     loadInquiries();
 }
@@ -4855,10 +4862,7 @@ function initInquiryManagement() {
         loadInquiries();
     });
 
-    document.getElementById('inquiry-date-filter').addEventListener('change', () => {
-        currentInquiryPage = 1;
-        loadInquiries();
-    });
+    // 时间筛选现在通过时间筛选组件处理，不需要单独的日期筛选监听器
 
     document.getElementById('inquiry-search-filter').addEventListener('input', debounce(() => {
         currentInquiryPage = 1;
@@ -5566,7 +5570,8 @@ function updateTrafficSourcesChart(trafficSources) {
     });
 }
 
-// 历史数据查询功能
+// 历史数据查询功能 - 已移除，现在使用全局时间筛选器
+/* 已废弃：使用全局时间筛选器替代
 async function loadHistoricalData() {
     const periodSelector = document.getElementById('period-selector');
     const valueSelector = document.getElementById('value-selector');
@@ -5647,6 +5652,7 @@ async function loadHistoricalData() {
         showToast('加载历史数据失败', 'error');
     }
 }
+*/
 
 // 加载指定周期的数据
 async function loadPeriodData(period, value) {
@@ -5905,16 +5911,17 @@ async function refreshCurrentData() {
     }
 }
 
-// 页面加载时初始化历史数据功能
+// 页面加载时初始化历史数据功能 - 已移除，现在使用全局时间筛选器
+/* 已废弃：使用全局时间筛选器替代
 document.addEventListener('DOMContentLoaded', function() {
     // 为周期选择器绑定事件
     const periodSelector = document.getElementById('period-selector');
     const valueSelector = document.getElementById('value-selector');
-    
+
     if (periodSelector) {
         periodSelector.addEventListener('change', loadHistoricalData);
     }
-    
+
     if (valueSelector) {
         valueSelector.addEventListener('change', function() {
             const period = periodSelector.value;
@@ -5925,6 +5932,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+*/
 
 // 更新地理位置统计
 async function updateGeoStats() {
@@ -6685,3 +6693,1474 @@ async function clearAllInquiries() {
         }
     }
 }
+
+// ===== 时间筛选组件功能 =====
+
+// 时间筛选相关全局变量
+let currentTimeFilter = {
+    startDate: null,
+    endDate: null,
+    range: 'today',
+    displayText: '今天'
+};
+
+let currentFilterPage = null; // 当前使用时间筛选的页面
+
+// 显示时间筛选模态框
+function showTimeFilterModal(page) {
+    currentFilterPage = page;
+
+    // 初始化模态框
+    const modal = new bootstrap.Modal(document.getElementById('timeFilterModal'));
+
+    // 设置当前选择的时间范围
+    updateCurrentTimeRangeDisplay();
+
+    // 设置日期输入框的默认值
+    if (currentTimeFilter.startDate && currentTimeFilter.endDate) {
+        document.getElementById('startDate').value = currentTimeFilter.startDate;
+        document.getElementById('endDate').value = currentTimeFilter.endDate;
+    } else {
+        // 如果没有自定义日期，根据当前范围设置
+        const dates = calculateDateRange(currentTimeFilter.range);
+        document.getElementById('startDate').value = dates.startDate;
+        document.getElementById('endDate').value = dates.endDate;
+    }
+
+    // 高亮当前选中的快捷选项
+    highlightActiveShortcut(currentTimeFilter.range);
+
+    modal.show();
+}
+
+// 选择快捷时间选项
+function selectTimeShortcut(range) {
+    const dates = calculateDateRange(range);
+
+    // 更新全局时间筛选状态
+    currentTimeFilter.range = range;
+    currentTimeFilter.startDate = dates.startDate;
+    currentTimeFilter.endDate = dates.endDate;
+    currentTimeFilter.displayText = getTimeRangeDisplayText(range, dates);
+
+    // 更新日期输入框
+    document.getElementById('startDate').value = dates.startDate;
+    document.getElementById('endDate').value = dates.endDate;
+
+    // 高亮选中的按钮
+    highlightActiveShortcut(range);
+
+    // 更新当前选择显示
+    updateCurrentTimeRangeDisplay();
+
+    // 清除日期范围错误
+    hideDateRangeError();
+}
+
+// 计算日期范围
+function calculateDateRange(range) {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const date = today.getDate();
+    const day = today.getDay(); // 0=周日, 1=周一, ...
+
+    let startDate, endDate;
+
+    switch (range) {
+        case 'today':
+            startDate = endDate = formatDateForInput(today);
+            break;
+
+        case 'yesterday':
+            const yesterday = new Date(year, month, date - 1);
+            startDate = endDate = formatDateForInput(yesterday);
+            break;
+
+        case 'dayBeforeYesterday':
+            const dayBeforeYesterday = new Date(year, month, date - 2);
+            startDate = endDate = formatDateForInput(dayBeforeYesterday);
+            break;
+
+        case 'thisWeek':
+            // 本周（周一到今天）
+            const mondayOffset = day === 0 ? -6 : 1 - day; // 如果是周日，往前6天；否则往前到周一
+            const monday = new Date(year, month, date + mondayOffset);
+            startDate = formatDateForInput(monday);
+            endDate = formatDateForInput(today);
+            break;
+
+        case 'lastWeek':
+            // 上周（上周一到上周日）
+            const lastMondayOffset = day === 0 ? -13 : -6 - day;
+            const lastSundayOffset = day === 0 ? -7 : -day;
+            const lastMonday = new Date(year, month, date + lastMondayOffset);
+            const lastSunday = new Date(year, month, date + lastSundayOffset);
+            startDate = formatDateForInput(lastMonday);
+            endDate = formatDateForInput(lastSunday);
+            break;
+
+        case 'thisMonth':
+            // 本月（本月1号到今天）
+            const firstDayOfMonth = new Date(year, month, 1);
+            startDate = formatDateForInput(firstDayOfMonth);
+            endDate = formatDateForInput(today);
+            break;
+
+        case 'lastMonth':
+            // 上月（上月1号到上月最后一天）
+            const firstDayOfLastMonth = new Date(year, month - 1, 1);
+            const lastDayOfLastMonth = new Date(year, month, 0);
+            startDate = formatDateForInput(firstDayOfLastMonth);
+            endDate = formatDateForInput(lastDayOfLastMonth);
+            break;
+
+        default:
+            startDate = endDate = formatDateForInput(today);
+    }
+
+    return { startDate, endDate };
+}
+
+// 格式化日期为输入框格式 (YYYY-MM-DD)
+function formatDateForInput(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// 获取时间范围显示文本
+function getTimeRangeDisplayText(range, dates) {
+    const rangeTexts = {
+        'today': '今天',
+        'yesterday': '昨天',
+        'dayBeforeYesterday': '前天',
+        'thisWeek': '本周',
+        'lastWeek': '上周',
+        'thisMonth': '本月',
+        'lastMonth': '上月'
+    };
+
+    if (rangeTexts[range]) {
+        return rangeTexts[range];
+    }
+
+    // 自定义日期范围
+    if (dates && dates.startDate && dates.endDate) {
+        if (dates.startDate === dates.endDate) {
+            return formatDateForDisplay(dates.startDate);
+        } else {
+            return `${formatDateForDisplay(dates.startDate)} 至 ${formatDateForDisplay(dates.endDate)}`;
+        }
+    }
+
+    return '自定义';
+}
+
+// 格式化日期为显示格式 (MM-DD)
+function formatDateForDisplay(dateString) {
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${month}-${day}`;
+}
+
+// 高亮激活的快捷选项
+function highlightActiveShortcut(activeRange) {
+    // 移除所有按钮的激活状态
+    document.querySelectorAll('.time-shortcut-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // 激活当前选中的按钮
+    const activeBtn = document.querySelector(`[data-range="${activeRange}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+}
+
+// 更新当前时间范围显示
+function updateCurrentTimeRangeDisplay() {
+    const displayElement = document.getElementById('currentTimeRangeDisplay');
+    if (displayElement) {
+        displayElement.textContent = currentTimeFilter.displayText;
+    }
+}
+
+// 验证日期范围
+function validateDateRange() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    if (!startDate || !endDate) {
+        hideDateRangeError();
+        return true;
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // 设置为今天的最后一刻
+
+    // 检查开始日期是否晚于结束日期
+    if (start > end) {
+        showDateRangeError('开始日期不能晚于结束日期');
+        return false;
+    }
+
+    // 检查日期是否超过今天
+    if (start > today || end > today) {
+        showDateRangeError('日期不能超过今天');
+        return false;
+    }
+
+    // 检查日期范围是否过大（超过1年）
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    if (start < oneYearAgo) {
+        showDateRangeError('查询范围不能超过1年');
+        return false;
+    }
+
+    hideDateRangeError();
+
+    // 更新自定义时间筛选
+    currentTimeFilter.range = 'custom';
+    currentTimeFilter.startDate = startDate;
+    currentTimeFilter.endDate = endDate;
+    currentTimeFilter.displayText = getTimeRangeDisplayText('custom', { startDate, endDate });
+
+    // 移除快捷选项的激活状态
+    highlightActiveShortcut('');
+
+    // 更新当前选择显示
+    updateCurrentTimeRangeDisplay();
+
+    return true;
+}
+
+// 显示日期范围错误
+function showDateRangeError(message) {
+    const errorElement = document.getElementById('dateRangeError');
+    const errorTextElement = document.getElementById('dateRangeErrorText');
+
+    if (errorElement && errorTextElement) {
+        errorTextElement.textContent = message;
+        errorElement.classList.remove('d-none');
+    }
+
+    // 禁用应用按钮
+    const applyBtn = document.getElementById('applyTimeFilterBtn');
+    if (applyBtn) {
+        applyBtn.disabled = true;
+    }
+}
+
+// 隐藏日期范围错误
+function hideDateRangeError() {
+    const errorElement = document.getElementById('dateRangeError');
+    if (errorElement) {
+        errorElement.classList.add('d-none');
+    }
+
+    // 启用应用按钮
+    const applyBtn = document.getElementById('applyTimeFilterBtn');
+    if (applyBtn) {
+        applyBtn.disabled = false;
+    }
+}
+
+// 重置时间筛选
+function resetTimeFilter() {
+    // 重置为今天
+    selectTimeShortcut('today');
+    showToast('时间筛选已重置为今天', 'info');
+}
+
+// 应用时间筛选
+function applyTimeFilter() {
+    // 验证日期范围
+    if (!validateDateRange()) {
+        return;
+    }
+
+    // 更新对应页面的时间范围显示
+    updatePageTimeRangeDisplay();
+
+    // 根据页面类型应用筛选
+    switch (currentFilterPage) {
+        case 'dashboard':
+            applyDashboardTimeFilter();
+            break;
+        case 'logs':
+            applyLogsTimeFilter();
+            break;
+        case 'inquiries':
+            applyInquiriesTimeFilter();
+            break;
+        default:
+            console.warn('未知的筛选页面:', currentFilterPage);
+    }
+
+    // 关闭模态框
+    const modal = bootstrap.Modal.getInstance(document.getElementById('timeFilterModal'));
+    modal.hide();
+
+    showToast(`已应用时间筛选：${currentTimeFilter.displayText}`, 'success');
+}
+
+// 更新页面时间范围显示
+function updatePageTimeRangeDisplay() {
+    const displayElementId = `${currentFilterPage}-time-range-text`;
+    const displayElement = document.getElementById(displayElementId);
+
+    if (displayElement) {
+        displayElement.textContent = currentTimeFilter.displayText;
+    }
+}
+
+// 应用控制台时间筛选（已移动到性能优化部分）
+
+// 应用操作记录时间筛选
+async function applyLogsTimeFilter() {
+    try {
+        // 显示加载状态
+        showLogsLoading();
+
+        // 加载筛选后的操作记录
+        await loadFilteredLogs();
+
+    } catch (error) {
+        console.error('应用操作记录时间筛选失败:', error);
+        showToast('加载操作记录失败，请重试', 'error');
+    } finally {
+        hideLogsLoading();
+    }
+}
+
+// 应用询价管理时间筛选
+async function applyInquiriesTimeFilter() {
+    try {
+        // 重置到第一页
+        currentInquiryPage = 1;
+
+        // 重新加载询价数据
+        await loadInquiries();
+
+    } catch (error) {
+        console.error('应用询价时间筛选失败:', error);
+        showToast('加载询价数据失败，请重试', 'error');
+    }
+}
+
+// 加载控制台历史数据
+async function loadDashboardHistoricalData() {
+    try {
+        // 构建查询参数
+        const params = new URLSearchParams({
+            startDate: currentTimeFilter.startDate,
+            endDate: currentTimeFilter.endDate
+        });
+
+        const response = await fetch(`/api/analytics/range?${params}`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: 获取历史数据失败`);
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message || '获取历史数据失败');
+        }
+
+        return result; // 返回完整的API响应数据
+
+    } catch (error) {
+        console.error('加载控制台历史数据失败:', error);
+        throw error; // 重新抛出错误，让调用者处理
+    }
+}
+
+// 使用范围数据更新控制台所有区域
+async function updateDashboardWithRangeData(apiResponse) {
+    try {
+        // 处理API响应数据
+        const data = apiResponse.success ? apiResponse : apiResponse.data || apiResponse;
+
+        // 1. 更新顶部访问统计区域
+        const summary = {
+            page_views: data.total_page_views || 0,
+            product_clicks: data.total_product_clicks || 0,
+            unique_visitors: data.total_unique_visitors || 0
+        };
+        await updateDashboardStats(summary);
+
+        // 2. 更新热门产品排行区域
+        if (data.merged_top_products && data.merged_top_products.length > 0) {
+            // 使用合并后的热门产品数据
+            updateTopProductsList(data.merged_top_products);
+            updateHotProductsOverviewFromMerged(data.merged_top_products);
+        } else if (data.daily_data && data.daily_data.length > 0) {
+            // 如果没有合并数据，从每日数据中计算
+            updateHotProductsForRange(data.daily_data);
+        }
+
+        // 3. 更新访问趋势分析区域
+        if (data.daily_data && data.daily_data.length > 0) {
+            updateTrendAnalysisForRange(data.daily_data);
+        } else {
+            // 如果没有每日数据，使用汇总数据更新卡片
+            const conversionRate = summary.page_views > 0 ?
+                ((summary.product_clicks / summary.page_views) * 100).toFixed(2) : 0;
+            updateTrendAnalysisCards(summary.page_views, summary.unique_visitors, summary.product_clicks, conversionRate);
+        }
+
+        // 4. 更新访问地理分布区域
+        if (data.merged_geographic_distribution) {
+            // 使用合并后的地理分布数据
+            updateGeographicDistributionFromMerged(data.merged_geographic_distribution);
+        } else if (data.daily_data && data.daily_data.length > 0) {
+            // 如果没有合并数据，从每日数据中计算
+            updateGeographicDistributionForRange(data.daily_data);
+        }
+
+        console.log(`已更新控制台所有区域的数据 (${currentTimeFilter.displayText})`);
+
+    } catch (error) {
+        console.error('更新控制台范围数据失败:', error);
+        showToast('部分数据更新失败', 'warning');
+    }
+}
+
+// 从合并数据更新热门产品概览
+function updateHotProductsOverviewFromMerged(mergedProducts) {
+    const totalClicks = mergedProducts.reduce((sum, product) => sum + (product.clicks || 0), 0);
+    updateHotProductsOverview(mergedProducts, totalClicks);
+}
+
+// 从合并数据更新地理分布
+function updateGeographicDistributionFromMerged(mergedLocations) {
+    const locationData = Object.entries(mergedLocations)
+        .map(([name, value]) => ({ name, value }))
+        .sort((a, b) => b.value - a.value);
+
+    const totalUsers = locationData.reduce((sum, item) => sum + item.value, 0);
+
+    // 更新地理分布图表和列表
+    updateGeographicChart(locationData, totalUsers);
+    updateGeographicList(locationData, totalUsers);
+
+    console.log(`已更新地理分布 (合并数据): ${locationData.length}个地区, ${totalUsers}位用户`);
+}
+
+// 更新热门产品排行区域（时间范围版本）
+function updateHotProductsForRange(dailyData) {
+    try {
+        // 合并所有天的热门产品数据
+        const allProducts = {};
+        let totalClicks = 0;
+
+        dailyData.forEach(dayData => {
+            if (dayData.top_products && Array.isArray(dayData.top_products)) {
+                dayData.top_products.forEach(product => {
+                    const productId = product.id || product.name;
+                    if (allProducts[productId]) {
+                        allProducts[productId].clicks += product.clicks || 0;
+                        allProducts[productId].views += product.views || 0;
+                    } else {
+                        allProducts[productId] = {
+                            id: productId,
+                            name: product.name || productId,
+                            clicks: product.clicks || 0,
+                            views: product.views || 0,
+                            image: product.image || '/assets/images/default-product.jpg'
+                        };
+                    }
+                    totalClicks += product.clicks || 0;
+                });
+            }
+        });
+
+        // 排序并取前10名
+        const topProducts = Object.values(allProducts)
+            .sort((a, b) => b.clicks - a.clicks)
+            .slice(0, 10);
+
+        // 更新热门产品列表
+        updateTopProductsList(topProducts);
+
+        // 更新热门产品概览统计
+        updateHotProductsOverview(topProducts, totalClicks);
+
+        console.log(`已更新热门产品排行 (${currentTimeFilter.displayText}): ${topProducts.length}个产品`);
+
+    } catch (error) {
+        console.error('更新热门产品排行失败:', error);
+        // 显示空状态
+        updateTopProductsList([]);
+    }
+}
+
+// 更新热门产品概览统计
+function updateHotProductsOverview(topProducts, totalClicks) {
+    const overviewContainer = document.getElementById('hot-products-overview');
+    if (!overviewContainer) return;
+
+    const topProduct = topProducts[0];
+    const productCount = topProducts.length;
+    const avgClicks = productCount > 0 ? Math.round(totalClicks / productCount) : 0;
+
+    overviewContainer.innerHTML = `
+        <div class="col-md-6">
+            <div class="d-flex align-items-center mb-3">
+                <div class="icon-circle bg-primary bg-opacity-10 me-3">
+                    <i class="bi bi-trophy text-primary"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0">最热门产品</h6>
+                    <p class="text-muted mb-0 small">${topProduct ? topProduct.name : '暂无数据'}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex align-items-center mb-3">
+                <div class="icon-circle bg-success bg-opacity-10 me-3">
+                    <i class="bi bi-graph-up text-success"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0">总点击量</h6>
+                    <p class="text-muted mb-0 small">${totalClicks.toLocaleString()} 次点击</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex align-items-center mb-3">
+                <div class="icon-circle bg-info bg-opacity-10 me-3">
+                    <i class="bi bi-collection text-info"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0">热门产品数</h6>
+                    <p class="text-muted mb-0 small">${productCount} 个产品</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex align-items-center mb-3">
+                <div class="icon-circle bg-warning bg-opacity-10 me-3">
+                    <i class="bi bi-bar-chart text-warning"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0">平均点击量</h6>
+                    <p class="text-muted mb-0 small">${avgClicks} 次/产品</p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// 更新访问趋势分析区域（时间范围版本）
+function updateTrendAnalysisForRange(dailyData) {
+    try {
+        // 更新24小时趋势图为多日趋势图
+        updateRangeCharts(dailyData);
+
+        // 更新趋势分析统计
+        updateTrendAnalysisStats(dailyData);
+
+        console.log(`已更新访问趋势分析 (${currentTimeFilter.displayText}): ${dailyData.length}天数据`);
+
+    } catch (error) {
+        console.error('更新访问趋势分析失败:', error);
+    }
+}
+
+// 更新趋势分析统计数据
+function updateTrendAnalysisStats(dailyData) {
+    if (!dailyData || dailyData.length === 0) {
+        // 如果没有数据，清空显示
+        updateTrendAnalysisCards(0, 0, 0, 0);
+        return;
+    }
+
+    // 计算趋势统计
+    const totalDays = dailyData.length;
+    const totalViews = dailyData.reduce((sum, day) => sum + (day.page_views || 0), 0);
+    const totalClicks = dailyData.reduce((sum, day) => sum + (day.product_clicks || 0), 0);
+    const totalUniqueVisitors = dailyData.reduce((sum, day) => sum + (day.unique_visitors || 0), 0);
+    const totalInquiries = dailyData.reduce((sum, day) => sum + (day.inquiries || 0), 0);
+
+    // 计算平均值
+    const avgViewsPerDay = Math.round(totalViews / totalDays);
+    const avgClicksPerDay = Math.round(totalClicks / totalDays);
+    const avgVisitorsPerDay = Math.round(totalUniqueVisitors / totalDays);
+
+    // 计算转化率（产品点击数 / 页面访问数）
+    const conversionRate = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(2) : 0;
+
+    // 计算增长趋势
+    const firstDay = dailyData[0];
+    const lastDay = dailyData[dailyData.length - 1];
+    const viewsGrowth = firstDay.page_views > 0 ?
+        ((lastDay.page_views - firstDay.page_views) / firstDay.page_views * 100).toFixed(1) : 0;
+
+    // 更新数据卡片显示
+    updateTrendAnalysisCards(totalViews, totalUniqueVisitors, totalClicks, conversionRate);
+
+    // 页面选择器已移除，现在使用全局时间筛选器
+
+    console.log(`趋势分析统计已更新: ${totalDays}天, ${totalViews}访问, ${totalClicks}点击, ${conversionRate}%转化率`);
+}
+
+// 更新趋势分析数据卡片
+function updateTrendAnalysisCards(pageViews, uniqueVisitors, productClicks, conversionRate) {
+    // 更新页面访问量
+    const pageViewsEl = document.getElementById('overview-page-views');
+    if (pageViewsEl) {
+        pageViewsEl.textContent = pageViews.toLocaleString();
+    }
+
+    // 更新独立用户数
+    const uniqueVisitorsEl = document.getElementById('overview-unique-visitors');
+    if (uniqueVisitorsEl) {
+        uniqueVisitorsEl.textContent = uniqueVisitors.toLocaleString();
+    }
+
+    // 更新产品点击数
+    const productClicksEl = document.getElementById('overview-product-clicks');
+    if (productClicksEl) {
+        productClicksEl.textContent = productClicks.toLocaleString();
+    }
+
+    // 更新转化率
+    const conversionRateEl = document.getElementById('overview-conversion-rate');
+    if (conversionRateEl) {
+        conversionRateEl.textContent = `${conversionRate}%`;
+    }
+}
+
+// 更新范围图表
+function updateRangeCharts(dailyData) {
+    // 更新24小时趋势图为多日趋势图
+    const chartElement = document.getElementById('hourly-chart');
+    if (chartElement && window.echarts) {
+        const chart = echarts.init(chartElement);
+
+        const dates = dailyData.map(item => formatDateForDisplay(item.date));
+        const pageViews = dailyData.map(item => item.page_views || 0);
+        const productClicks = dailyData.map(item => item.product_clicks || 0);
+
+        const option = {
+            title: {
+                text: `${currentTimeFilter.displayText}数据趋势`,
+                left: 'center',
+                textStyle: { fontSize: 14 }
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'cross' }
+            },
+            legend: {
+                data: ['页面访问', '产品点击'],
+                top: 30
+            },
+            xAxis: {
+                type: 'category',
+                data: dates,
+                axisLabel: { rotate: 45 }
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name: '页面访问',
+                    type: 'line',
+                    data: pageViews,
+                    smooth: true,
+                    itemStyle: { color: '#2563eb' }
+                },
+                {
+                    name: '产品点击',
+                    type: 'line',
+                    data: productClicks,
+                    smooth: true,
+                    itemStyle: { color: '#dc2626' }
+                }
+            ]
+        };
+
+        chart.setOption(option);
+    }
+}
+
+// 更新访问地理分布区域（时间范围版本）
+function updateGeographicDistributionForRange(dailyData) {
+    try {
+        // 合并所有天的地理分布数据
+        const allLocations = {};
+        let totalUsers = 0;
+
+        dailyData.forEach(dayData => {
+            if (dayData.geographic_distribution && typeof dayData.geographic_distribution === 'object') {
+                Object.entries(dayData.geographic_distribution).forEach(([location, count]) => {
+                    if (allLocations[location]) {
+                        allLocations[location] += count;
+                    } else {
+                        allLocations[location] = count;
+                    }
+                    totalUsers += count;
+                });
+            }
+        });
+
+        // 转换为数组并排序
+        const locationData = Object.entries(allLocations)
+            .map(([name, value]) => ({ name, value }))
+            .sort((a, b) => b.value - a.value);
+
+        // 更新地理分布图表
+        updateGeographicChart(locationData, totalUsers);
+
+        // 更新地理分布列表
+        updateGeographicList(locationData, totalUsers);
+
+        console.log(`已更新访问地理分布 (${currentTimeFilter.displayText}): ${locationData.length}个地区, ${totalUsers}位用户`);
+
+    } catch (error) {
+        console.error('更新访问地理分布失败:', error);
+        // 显示空状态
+        updateGeographicChart([], 0);
+    }
+}
+
+// 更新地理分布图表
+function updateGeographicChart(locationData, totalUsers) {
+    const chartElement = document.getElementById('geo-chart');
+    if (!chartElement) {
+        console.warn('地理分布图表元素未找到: geo-chart');
+        return;
+    }
+
+    const chart = echarts.init(chartElement);
+
+    if (totalUsers === 0 || locationData.length === 0) {
+        // 显示空图表
+        const option = {
+            title: {
+                text: `访问地理分布 (${currentTimeFilter.displayText})`,
+                left: 'center',
+                top: 20,
+                textStyle: { fontSize: 14 }
+            },
+            graphic: {
+                type: 'text',
+                left: 'center',
+                top: 'middle',
+                style: {
+                    text: '暂无地理位置数据',
+                    fontSize: 16,
+                    fill: '#999'
+                }
+            }
+        };
+        chart.setOption(option);
+        return;
+    }
+
+    // 取前10个地区
+    const topLocations = locationData.slice(0, 10);
+
+    const option = {
+        title: {
+            text: `访问地理分布 (${totalUsers}位用户)`,
+            subtext: currentTimeFilter.displayText,
+            left: 'center',
+            top: 20,
+            textStyle: { fontSize: 14 }
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            top: 60,
+            data: topLocations.map(item => item.name)
+        },
+        series: [
+            {
+                name: '访问用户',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                center: ['60%', '60%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: '18',
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: topLocations
+            }
+        ]
+    };
+
+    chart.setOption(option);
+}
+
+// 更新地理分布列表
+function updateGeographicList(locationData, totalUsers) {
+    const listElement = document.getElementById('geo-list');
+    if (!listElement) {
+        console.warn('地理分布列表元素未找到: geo-list');
+        return;
+    }
+
+    if (totalUsers === 0 || locationData.length === 0) {
+        listElement.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-globe fa-2x mb-2"></i>
+                <p>暂无地理位置数据</p>
+                <small>${currentTimeFilter.displayText}期间无访问记录</small>
+            </div>
+        `;
+        return;
+    }
+
+    // 取前8个地区显示
+    const topLocations = locationData.slice(0, 8);
+
+    listElement.innerHTML = topLocations.map((location, index) => {
+        const percentage = ((location.value / totalUsers) * 100).toFixed(1);
+        const progressWidth = Math.max(percentage, 5); // 最小宽度5%
+
+        return `
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-primary me-2">${index + 1}</span>
+                    <span class="fw-medium">${location.name}</span>
+                </div>
+                <div class="text-end" style="min-width: 80px;">
+                    <div class="fw-bold">${location.value}</div>
+                    <div class="progress mt-1" style="height: 4px; width: 60px;">
+                        <div class="progress-bar bg-primary" style="width: ${progressWidth}%"></div>
+                    </div>
+                    <small class="text-muted">${percentage}%</small>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // 如果有更多地区，显示总计信息
+    if (locationData.length > 8) {
+        const otherCount = locationData.length - 8;
+        const otherUsers = locationData.slice(8).reduce((sum, item) => sum + item.value, 0);
+
+        listElement.innerHTML += `
+            <div class="text-center text-muted mt-3 pt-3 border-top">
+                <small>还有 ${otherCount} 个地区的 ${otherUsers} 位用户</small>
+            </div>
+        `;
+    }
+}
+
+// 加载筛选后的操作记录
+async function loadFilteredLogs() {
+    try {
+        // 构建查询参数
+        const params = new URLSearchParams({
+            startDate: currentTimeFilter.startDate,
+            endDate: currentTimeFilter.endDate
+        });
+
+        const response = await fetch(`/api/logs?${params}`);
+        if (!response.ok) {
+            throw new Error('获取操作记录失败');
+        }
+
+        const filteredLogs = await response.json();
+
+        // 更新操作记录显示
+        renderFilteredLogs(filteredLogs);
+
+    } catch (error) {
+        console.error('加载筛选操作记录失败:', error);
+        // 如果API不支持时间筛选，使用客户端筛选
+        await loadLogs();
+        filterLogsByTimeRange();
+    }
+}
+
+// 渲染筛选后的操作记录
+function renderFilteredLogs(filteredLogs) {
+    const container = document.querySelector('#logs-table tbody');
+    if (!container) return;
+
+    if (filteredLogs.length === 0) {
+        container.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    <i class="bi bi-clock-history fs-1 d-block mb-2"></i>
+                    ${currentTimeFilter.displayText}暂无操作记录
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    container.innerHTML = filteredLogs.map(log => {
+        const { time, operator, action, sku, change } = formatLogEntry(log);
+        return `
+            <tr>
+                <td class="px-3 py-2">${new Date(log.timestamp).toLocaleString()}</td>
+                <td class="px-3 py-2">${operator}</td>
+                <td class="px-3 py-2">${action}</td>
+                <td class="px-3 py-2">${sku}</td>
+                <td class="px-3 py-2">${change}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// 客户端时间范围筛选操作记录
+function filterLogsByTimeRange() {
+    if (!logs || logs.length === 0) return;
+
+    const startDate = new Date(currentTimeFilter.startDate);
+    const endDate = new Date(currentTimeFilter.endDate);
+    endDate.setHours(23, 59, 59, 999); // 设置为当天结束
+
+    const filteredLogs = logs.filter(log => {
+        const logDate = new Date(log.timestamp);
+        return logDate >= startDate && logDate <= endDate;
+    });
+
+    renderFilteredLogs(filteredLogs);
+}
+
+// 显示控制台加载状态
+function showDashboardLoading() {
+    const statsCards = document.querySelectorAll('#dashboard-page .stats-number');
+    statsCards.forEach(card => {
+        card.innerHTML = '<i class="spinner-border spinner-border-sm"></i>';
+    });
+}
+
+// 隐藏控制台加载状态
+function hideDashboardLoading() {
+    // 加载状态会在数据更新时自动隐藏
+}
+
+// 显示操作记录加载状态
+function showLogsLoading() {
+    const container = document.querySelector('#logs-table tbody');
+    if (container) {
+        container.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">加载中...</span>
+                    </div>
+                    <div class="mt-2 text-muted">正在加载${currentTimeFilter.displayText}的操作记录...</div>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// 隐藏操作记录加载状态
+function hideLogsLoading() {
+    // 加载状态会在数据更新时自动隐藏
+}
+
+// ===== 时间格式验证和错误处理 =====
+
+// 验证日期格式
+function isValidDate(dateString) {
+    if (!dateString) return false;
+
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date) && dateString.match(/^\d{4}-\d{2}-\d{2}$/);
+}
+
+// 验证时间范围的合理性
+function validateTimeRangeLogic(startDate, endDate) {
+    const errors = [];
+
+    // 检查日期格式
+    if (!isValidDate(startDate)) {
+        errors.push('开始日期格式无效，请使用 YYYY-MM-DD 格式');
+    }
+
+    if (!isValidDate(endDate)) {
+        errors.push('结束日期格式无效，请使用 YYYY-MM-DD 格式');
+    }
+
+    if (errors.length > 0) {
+        return { valid: false, errors };
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const today = new Date();
+    const oneYearAgo = new Date();
+
+    today.setHours(23, 59, 59, 999);
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    // 检查开始日期是否晚于结束日期
+    if (start > end) {
+        errors.push('开始日期不能晚于结束日期');
+    }
+
+    // 检查日期是否超过今天
+    if (start > today) {
+        errors.push('开始日期不能超过今天');
+    }
+
+    if (end > today) {
+        errors.push('结束日期不能超过今天');
+    }
+
+    // 检查日期范围是否过大（超过1年）
+    if (start < oneYearAgo) {
+        errors.push('查询范围不能超过1年');
+    }
+
+    // 检查日期范围是否过大（超过90天）
+    const maxDays = 90;
+    const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    if (daysDiff > maxDays) {
+        errors.push(`查询范围不能超过${maxDays}天，当前选择了${daysDiff}天`);
+    }
+
+    return { valid: errors.length === 0, errors };
+}
+
+// 增强的日期范围验证
+function validateDateRange() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    if (!startDate || !endDate) {
+        hideDateRangeError();
+        return true;
+    }
+
+    const validation = validateTimeRangeLogic(startDate, endDate);
+
+    if (!validation.valid) {
+        showDateRangeError(validation.errors[0]); // 显示第一个错误
+        return false;
+    }
+
+    hideDateRangeError();
+
+    // 更新自定义时间筛选
+    currentTimeFilter.range = 'custom';
+    currentTimeFilter.startDate = startDate;
+    currentTimeFilter.endDate = endDate;
+    currentTimeFilter.displayText = getTimeRangeDisplayText('custom', { startDate, endDate });
+
+    // 移除快捷选项的激活状态
+    highlightActiveShortcut('');
+
+    // 更新当前选择显示
+    updateCurrentTimeRangeDisplay();
+
+    return true;
+}
+
+// 处理API错误响应
+function handleTimeFilterApiError(error, context = '') {
+    console.error(`时间筛选API错误 ${context}:`, error);
+
+    let errorMessage = '数据加载失败，请重试';
+
+    if (error.message) {
+        if (error.message.includes('网络')) {
+            errorMessage = '网络连接失败，请检查网络后重试';
+        } else if (error.message.includes('权限')) {
+            errorMessage = '没有权限访问该数据';
+        } else if (error.message.includes('参数')) {
+            errorMessage = '查询参数有误，请重新选择时间范围';
+        } else if (error.message.includes('超时')) {
+            errorMessage = '请求超时，请稍后重试';
+        }
+    }
+
+    showToast(errorMessage, 'error');
+
+    // 记录错误到控制台以便调试
+    console.error('时间筛选错误详情:', {
+        context,
+        error: error.message || error,
+        timeFilter: currentTimeFilter,
+        timestamp: new Date().toISOString()
+    });
+}
+
+// 防抖函数，避免频繁的API调用
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// 节流函数，限制API调用频率
+function throttle(func, limit) {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    }
+}
+
+// 带重试机制的API调用
+async function apiCallWithRetry(apiCall, maxRetries = 3, delay = 1000) {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            return await apiCall();
+        } catch (error) {
+            console.warn(`API调用失败，第${i + 1}次重试:`, error);
+
+            if (i === maxRetries - 1) {
+                throw error; // 最后一次重试失败，抛出错误
+            }
+
+            // 等待后重试
+            await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+        }
+    }
+}
+
+// 显示友好的错误提示
+function showFriendlyError(error, context) {
+    const friendlyMessages = {
+        'network': '网络连接不稳定，请检查网络后重试',
+        'timeout': '请求超时，请稍后重试',
+        'server': '服务器暂时无法响应，请稍后重试',
+        'permission': '您没有权限执行此操作',
+        'validation': '输入的数据格式不正确，请检查后重试',
+        'notfound': '请求的数据不存在',
+        'default': '操作失败，请重试'
+    };
+
+    let messageType = 'default';
+
+    if (error.message) {
+        const msg = error.message.toLowerCase();
+        if (msg.includes('network') || msg.includes('fetch')) {
+            messageType = 'network';
+        } else if (msg.includes('timeout')) {
+            messageType = 'timeout';
+        } else if (msg.includes('500') || msg.includes('server')) {
+            messageType = 'server';
+        } else if (msg.includes('403') || msg.includes('unauthorized')) {
+            messageType = 'permission';
+        } else if (msg.includes('400') || msg.includes('validation')) {
+            messageType = 'validation';
+        } else if (msg.includes('404') || msg.includes('not found')) {
+            messageType = 'notfound';
+        }
+    }
+
+    const message = friendlyMessages[messageType];
+    showToast(message, 'error');
+
+    // 在开发环境下显示详细错误信息
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.error(`详细错误信息 (${context}):`, error);
+    }
+}
+
+// ===== 性能优化和用户体验改进 =====
+
+// 时间筛选缓存机制
+const timeFilterCache = new Map();
+const CACHE_EXPIRY = 5 * 60 * 1000; // 5分钟缓存
+
+// 生成缓存键
+function generateCacheKey(page, startDate, endDate, additionalParams = {}) {
+    const params = { page, startDate, endDate, ...additionalParams };
+    return JSON.stringify(params);
+}
+
+// 获取缓存数据
+function getCachedData(cacheKey) {
+    const cached = timeFilterCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_EXPIRY) {
+        return cached.data;
+    }
+    return null;
+}
+
+// 设置缓存数据
+function setCachedData(cacheKey, data) {
+    timeFilterCache.set(cacheKey, {
+        data: data,
+        timestamp: Date.now()
+    });
+
+    // 清理过期缓存
+    if (timeFilterCache.size > 50) {
+        const now = Date.now();
+        for (const [key, value] of timeFilterCache.entries()) {
+            if (now - value.timestamp > CACHE_EXPIRY) {
+                timeFilterCache.delete(key);
+            }
+        }
+    }
+}
+
+// 带缓存的API调用
+async function cachedApiCall(cacheKey, apiCall) {
+    // 尝试从缓存获取数据
+    const cachedData = getCachedData(cacheKey);
+    if (cachedData) {
+        console.log('使用缓存数据:', cacheKey);
+        return cachedData;
+    }
+
+    // 缓存未命中，调用API
+    const data = await apiCall();
+    setCachedData(cacheKey, data);
+    return data;
+}
+
+// 优化的控制台时间筛选应用
+async function applyDashboardTimeFilter() {
+    try {
+        // 显示加载状态
+        showDashboardLoading();
+
+        const cacheKey = generateCacheKey('dashboard', currentTimeFilter.startDate, currentTimeFilter.endDate);
+
+        if (currentTimeFilter.range === 'today') {
+            // 今天的数据不使用缓存，保持实时性
+            await updateAnalyticsStats();
+        } else {
+            // 历史数据使用缓存
+            const data = await cachedApiCall(cacheKey, loadDashboardHistoricalData);
+            if (data) {
+                await updateDashboardWithRangeData(data);
+            }
+        }
+
+    } catch (error) {
+        handleTimeFilterApiError(error, '控制台时间筛选');
+    } finally {
+        hideDashboardLoading();
+    }
+}
+
+// 优化的操作记录时间筛选应用
+async function applyLogsTimeFilter() {
+    try {
+        showLogsLoading();
+
+        const cacheKey = generateCacheKey('logs', currentTimeFilter.startDate, currentTimeFilter.endDate);
+
+        const data = await cachedApiCall(cacheKey, async () => {
+            return await loadFilteredLogs();
+        });
+
+    } catch (error) {
+        handleTimeFilterApiError(error, '操作记录时间筛选');
+    } finally {
+        hideLogsLoading();
+    }
+}
+
+// 智能预加载
+function preloadTimeRangeData() {
+    // 预加载常用的时间范围数据
+    const commonRanges = ['yesterday', 'thisWeek', 'lastWeek'];
+
+    commonRanges.forEach(range => {
+        setTimeout(() => {
+            const dates = calculateDateRange(range);
+            const cacheKey = generateCacheKey('dashboard', dates.startDate, dates.endDate);
+
+            if (!getCachedData(cacheKey)) {
+                // 静默预加载，不显示加载状态
+                loadDashboardHistoricalDataSilent(dates.startDate, dates.endDate)
+                    .then(data => setCachedData(cacheKey, data))
+                    .catch(error => console.log('预加载失败:', error));
+            }
+        }, Math.random() * 3000); // 随机延迟避免同时请求
+    });
+}
+
+// 静默加载历史数据
+async function loadDashboardHistoricalDataSilent(startDate, endDate) {
+    try {
+        const params = new URLSearchParams({ startDate, endDate });
+        const response = await fetch(`/api/analytics/range?${params}`);
+
+        if (!response.ok) {
+            throw new Error('获取历史数据失败');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.log('静默加载失败:', error);
+        return null;
+    }
+}
+
+// 键盘快捷键支持
+function setupTimeFilterKeyboardShortcuts() {
+    document.addEventListener('keydown', function(e) {
+        // 只在时间筛选模态框打开时响应快捷键
+        const modal = document.getElementById('timeFilterModal');
+        if (!modal || !modal.classList.contains('show')) {
+            return;
+        }
+
+        // Ctrl/Cmd + 数字键选择快捷选项
+        if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '7') {
+            e.preventDefault();
+            const shortcuts = ['today', 'yesterday', 'dayBeforeYesterday', 'thisWeek', 'lastWeek', 'thisMonth', 'lastMonth'];
+            const index = parseInt(e.key) - 1;
+            if (shortcuts[index]) {
+                selectTimeShortcut(shortcuts[index]);
+            }
+        }
+
+        // Enter键应用筛选
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            applyTimeFilter();
+        }
+
+        // Escape键关闭模态框
+        if (e.key === 'Escape') {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('timeFilterModal'));
+            if (modal) {
+                modal.hide();
+            }
+        }
+    });
+}
+
+// 自动保存用户偏好
+function saveTimeFilterPreference() {
+    const preference = {
+        range: currentTimeFilter.range,
+        startDate: currentTimeFilter.startDate,
+        endDate: currentTimeFilter.endDate,
+        displayText: currentTimeFilter.displayText
+    };
+
+    try {
+        localStorage.setItem('timeFilterPreference', JSON.stringify(preference));
+    } catch (error) {
+        console.warn('保存时间筛选偏好失败:', error);
+    }
+}
+
+// 加载用户偏好
+function loadTimeFilterPreference() {
+    try {
+        const saved = localStorage.getItem('timeFilterPreference');
+        if (saved) {
+            const preference = JSON.parse(saved);
+
+            // 验证偏好数据的有效性
+            if (preference.range && preference.displayText) {
+                currentTimeFilter = { ...currentTimeFilter, ...preference };
+                updatePageTimeRangeDisplay();
+                return true;
+            }
+        }
+    } catch (error) {
+        console.warn('加载时间筛选偏好失败:', error);
+    }
+
+    return false;
+}
+
+// 初始化时间筛选功能
+function initializeTimeFilter() {
+    // 加载用户偏好
+    loadTimeFilterPreference();
+
+    // 设置键盘快捷键
+    setupTimeFilterKeyboardShortcuts();
+
+    // 预加载常用数据
+    setTimeout(preloadTimeRangeData, 2000);
+
+    // 定期清理缓存
+    setInterval(() => {
+        const now = Date.now();
+        for (const [key, value] of timeFilterCache.entries()) {
+            if (now - value.timestamp > CACHE_EXPIRY) {
+                timeFilterCache.delete(key);
+            }
+        }
+    }, 60000); // 每分钟清理一次
+}
+
+// 增强的应用时间筛选函数
+function applyTimeFilter() {
+    // 验证日期范围
+    if (!validateDateRange()) {
+        return;
+    }
+
+    // 保存用户偏好
+    saveTimeFilterPreference();
+
+    // 更新对应页面的时间范围显示
+    updatePageTimeRangeDisplay();
+
+    // 根据页面类型应用筛选
+    switch (currentFilterPage) {
+        case 'dashboard':
+            applyDashboardTimeFilter();
+            break;
+        case 'logs':
+            applyLogsTimeFilter();
+            break;
+        case 'inquiries':
+            applyInquiriesTimeFilter();
+            break;
+        default:
+            console.warn('未知的筛选页面:', currentFilterPage);
+    }
+
+    // 关闭模态框
+    const modal = bootstrap.Modal.getInstance(document.getElementById('timeFilterModal'));
+    modal.hide();
+
+    showToast(`已应用时间筛选：${currentTimeFilter.displayText}`, 'success');
+}
+
+// 在应用初始化时调用时间筛选初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 延迟初始化时间筛选功能，确保其他组件已加载
+    setTimeout(initializeTimeFilter, 1000);
+});
