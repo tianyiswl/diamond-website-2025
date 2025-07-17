@@ -6,7 +6,7 @@ echo "🚀 启动钻石网站CMS生产环境..."
 # 设置环境变量
 export NODE_ENV=production
 export TZ=Asia/Shanghai
-export PORT=3000
+export PORT=3001
 
 # 检查Node.js版本
 echo "📋 检查Node.js版本..."
