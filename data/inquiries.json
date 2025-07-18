@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": "INQ1752821589421587",
+    "name": "Andy",
+    "email": "tianyiswl006@gmail.com",
+    "phone": "13376223199",
+    "quantity": "",
+    "message": "页尾快速询价 - 姓名：Andy，电话：13376223199",
+    "productInfo": null,
+    "source": "footer_form",
+    "sourceDetails": null,
+    "status": "pending",
+    "createdAt": "2025-07-18T06:53:09.421Z",
+    "ip": "::ffff:127.0.0.1",
+    "logs": [
+      {
+        "action": "新询价提交",
+        "timestamp": "2025-07-18T06:53:09.422Z"
+      }
+    ]
+  }
+]

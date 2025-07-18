@@ -1167,11 +1167,11 @@
       }
     },
     "2025-07-18": {
-      "page_views": 13,
+      "page_views": 20,
       "unique_visitors": 2,
-      "product_clicks": 1,
-      "inquiries": 0,
-      "conversion_rate": "0.00",
+      "product_clicks": 2,
+      "inquiries": 3,
+      "conversion_rate": "15.00",
       "bounce_rate": 0,
       "avg_session_duration": 0,
       "top_products": [
@@ -1179,13 +1179,18 @@
           "id": "1752158905864",
           "name": "Turbo Cartridge S500W 56501970000 3886223 3801134 Compatible with Volvo Ship D12M D12C-A MP Marine 56509880000",
           "clicks": 1
+        },
+        {
+          "id": "1752160005058",
+          "name": "VGT 3798462 Electronic Actuator HW-3798463 P-3798462 for Volvo FL220 Dodge Ram",
+          "clicks": 1
         }
       ],
       "traffic_sources": {
-        "direct": 2,
+        "direct": 3,
         "search": 0,
         "social": 0,
-        "referral": 11
+        "referral": 17
       },
       "hourly_data": [
         {
@@ -1260,8 +1265,8 @@
         },
         {
           "hour": 14,
-          "views": 0,
-          "clicks": 0
+          "views": 7,
+          "clicks": 1
         },
         {
           "hour": 15,
@@ -1311,9 +1316,9 @@
       ],
       "geo_stats": {
         "China": {
-          "total": 13,
+          "total": 20,
           "regions": {
-            "Beijing": 13
+            "Beijing": 20
           }
         }
       }
@@ -1424,8 +1429,8 @@
       "first_visit": "2025-07-10",
       "last_visit": "2025-07-18",
       "total_visits": 2,
-      "total_page_views": 42,
-      "total_product_clicks": 12,
+      "total_page_views": 49,
+      "total_product_clicks": 13,
       "fingerprint": {
         "user_id": "user_1751342479307_l8wnnmkv2",
         "screen": "1920x1080",
