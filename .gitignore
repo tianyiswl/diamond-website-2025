@@ -1,186 +1,50 @@
-# Node.js 依赖
+﻿# === Node.js ===
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# 环境变量文件
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# === 动态数据文件（用户生成的数据）===
+data/analytics.json
+data/products.json
+data/inquiries.json
+data/logs.json
 
-# 日志文件
-logs/
-*.log
-/data/logs.json
+# === 保留静态配置文件 ===
+!data/admin-config.json
+!data/carousel.json
+!data/categories.json
+!data/company.json
 
-# 运行时数据
-pids/
-*.pid
-*.seed
-*.pid.lock
-
-# 上传文件（保留目录结构但忽略具体文件）
-uploads/*
+# === 上传文件 ===
+uploads/
 !uploads/.gitkeep
-!uploads/products/
-uploads/products/*
-!uploads/products/.gitkeep
 
-# 临时文件
+# === 日志和临时文件 ===
+*.log
+logs/
 .tmp/
 temp/
 *.tmp
-*.temp
+*.backup
+*.bak
 
-# 操作系统生成的文件
+# === 环境配置 ===
+.env.local
+.env.production.local
+
+# === 系统文件 ===
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# IDE 和编辑器文件
+# === IDE文件 ===
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
-.cursor/
 
-# 测试和调试文件
-test-*.html
-debug-*.html
-*.test.js
-coverage/
-
-# 备份文件
-*-backup-*
-server-backup-*.js
-*.bak
-*.old
-
-# 缓存文件
-.cache/
-*.cache
-
-# 构建输出
-dist/
-build/
-out/
-
-# 数据库文件（如果使用SQLite等）
-*.db
-*.sqlite
-*.sqlite3
-
-# 压缩文件
-*.zip
-*.tar.gz
-*.rar
-
-# 部署相关
-deployment-package/
-.deploy/
-
-# PM2 进程管理
-ecosystem.config.js
-.pm2/
-
-# SSL证书
-*.pem
-*.key
-*.crt
-*.csr
-
-# 监控和分析
-.nyc_output/
-coverage/
-*.lcov
-
-# ===================================
-# Git自动化工具相关文件
-# ===================================
-
-# Git钩子生成的临时文件
-.git-hooks-temp/
-.commit-template-temp
-.pre-commit-temp/
-.pre-push-temp/
-
-# 自动化脚本日志
-.git-automation.log
-.pre-commit.log
-.pre-push.log
-.commit-msg.log
-
-# 分支备份文件
-.branch-backup-*
-.git-backup/
-*.git-backup
-
-# 代码质量检查缓存
-.eslintcache
-.jshintcache
-.stylelintcache
-
-# 格式化工具缓存
-.prettierignore
-.prettier-cache/
-
-# 测试相关
-test-results/
-.jest-cache/
-.mocha-cache/
-
-# CI/CD 相关
-.github-actions-cache/
-.ci-temp/
-.deployment-temp/
-
-# 版本标签备份
-.version-backup
-.tag-backup-*
-
-# 自动化提交模板
-.gitmessage-template
-.commit-template-*
-
-# 代码统计和分析
-.code-analysis/
-.complexity-report/
-.dependency-check/
-
-# 安全扫描结果
-.security-scan/
-.vulnerability-report/
-
-# 性能测试结果
-.performance-test/
-.benchmark-results/
-
-# ===================================
-# 开发工具和配置
-# ===================================
-
-# Husky Git钩子
-.husky/_/
-
-# lint-staged 缓存
-.lintstagedrc*
-
-# commitizen 配置
-.czrc
-
-# 代码格式化配置（项目特定）
-.editorconfig-local
-.prettierrc-local
-
-# 其他
-.DS_Store
-Thumbs.db
+# === 测试文件 ===
+test-*.js
+*-test.js
+verify-*.js

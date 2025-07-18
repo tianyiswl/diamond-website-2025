@@ -1,0 +1,17 @@
+﻿{
+  "products": [
+    {
+      "id": "template-001",
+      "name": "示例产品",
+      "category": "涡轮增压器",
+      "description": "产品模板",
+      "price": "联系询价",
+      "image": "/assets/images/placeholder.jpg",
+      "isTemplate": true
+    }
+  ],
+  "categories": ["涡轮增压器", "共轨喷油器"],
+  "lastUpdated": "2025-01-01T00:00:00.000Z",
+  "version": "1.0.0",
+  "isTemplate": true
+}
