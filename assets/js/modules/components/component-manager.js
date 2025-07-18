@@ -401,8 +401,10 @@ class ComponentManager {
         const productsHref = isHomePage ? 'pages/products.html' : 'products.html';
         const contactHref = isHomePage ? '#contact' : '../index.html#contact';
 
-        return `
-            <!-- 页面加载动画 -->
+        // 检查是否已存在加载屏幕，避免重复创建
+        const existingLoading = document.getElementById('loading');
+        const loadingScreenHTML = existingLoading ? '' : `
+            <!-- 页面加载动画（备用） -->
             <div id="loading" class="loading-screen">
                 <div class="loading-content">
                     <div class="loading-logo">
@@ -414,7 +416,16 @@ class ComponentManager {
                     <p class="loading-text" data-i18n="common.loading">正在加载中...</p>
                 </div>
             </div>
+        `;
 
+        if (existingLoading) {
+            console.log('✅ 使用HTML中的静态加载屏幕');
+        } else {
+            console.log('⚠️ HTML中无加载屏幕，使用备用方案');
+        }
+
+        return `
+            ${loadingScreenHTML}
             <!-- 顶部导航 -->
             <header class="header">
                 <div class="nav-container">
@@ -1033,18 +1044,33 @@ class ComponentManager {
     }
 
     /**
-     * 隐藏加载屏幕
+     * 隐藏加载屏幕（优化版本）
      */
     hideLoadingScreen() {
+        // 检查是否已经隐藏过，避免重复操作
+        const loadingScreen = document.getElementById('loading');
+        if (!loadingScreen) {
+            console.log('✅ 加载屏幕已不存在，无需隐藏');
+            return;
+        }
+
+        if (loadingScreen.classList.contains('hidden') || loadingScreen.style.display === 'none') {
+            console.log('✅ 加载屏幕已隐藏，跳过重复操作');
+            return;
+        }
+
+        console.log('🎭 开始隐藏加载屏幕...');
+
+        // 使用CSS类进行平滑过渡
+        loadingScreen.classList.add('hidden');
+
+        // 延迟移除DOM元素
         setTimeout(() => {
-            const loadingScreen = document.getElementById('loading');
-            if (loadingScreen) {
-                loadingScreen.style.opacity = '0';
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                }, 300);
+            if (loadingScreen && loadingScreen.parentElement) {
+                loadingScreen.style.display = 'none';
+                console.log('✅ 加载屏幕已完全隐藏');
             }
-        }, 500);
+        }, 500); // 与CSS过渡时间匹配
     }
 
     /**

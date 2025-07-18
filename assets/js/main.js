@@ -317,83 +317,83 @@ window.addEventListener('scroll', () => {
     });
 });
 
-// 页面加载完成后隐藏加载动画（优化版本）
-window.addEventListener('load', () => {
-    const loading = document.getElementById('loading');
-    if (loading) {
-        // 快速隐藏，减少用户等待时间
-    setTimeout(() => {
-        loading.classList.add('hidden');
-        setTimeout(() => {
-            loading.style.display = 'none';
-            }, 300);
-        }, 200); // 从1000ms减少到200ms
-    }
-});
+// 🚫 已移除重复的加载动画隐藏逻辑
+// 现在由页面加载管理器统一处理加载屏幕的隐藏
 
-// 🔧 使用统一页面加载管理器处理加载动画隐藏（防重复执行）
+// 🔧 使用统一页面加载管理器处理加载动画隐藏（优化版本）
 if (window.PageLoadManager) {
     window.PageLoadManager.addToQueue('loading-animation-hide', function() {
-        const loading = document.getElementById('loading');
-        if (loading) {
-            // 给用户一个短暂的加载体验，然后快速隐藏
-            setTimeout(() => {
-                loading.classList.add('hidden');
-                setTimeout(() => {
-                    loading.style.display = 'none';
-                }, 300);
-            }, 300); // DOM加载完成后300ms就隐藏
-        }
+        // 延迟隐藏加载屏幕，确保用户看到完整的加载过程
+        setTimeout(() => {
+            if (window.componentManager && typeof window.componentManager.hideLoadingScreen === 'function') {
+                window.componentManager.hideLoadingScreen();
+            } else {
+                // 备用隐藏方法
+                const loading = document.getElementById('loading');
+                if (loading && !loading.classList.contains('hidden')) {
+                    loading.classList.add('hidden');
+                    setTimeout(() => {
+                        loading.style.display = 'none';
+                    }, 500);
+                }
+            }
 
-        // 初始化轮播图点击事件
-        if (typeof updateCarouselClickEvents === 'function') {
-            setTimeout(updateCarouselClickEvents, 100);
-        }
+            // 初始化轮播图点击事件
+            if (typeof updateCarouselClickEvents === 'function') {
+                setTimeout(updateCarouselClickEvents, 100);
+            }
 
-        console.log('✅ 加载动画隐藏处理完成');
-    }, ['domReady']);
+            console.log('✅ 加载动画隐藏处理完成');
+        }, 800); // 增加延迟时间，确保用户看到加载过程
+    }, ['domReady', 'componentsLoaded']); // 等待组件加载完成
 } else {
-    // 备用方案：如果页面加载管理器未就绪，使用原始方法
+    // 备用方案：延迟执行
     setTimeout(() => {
         if (window.PageLoadManager) {
+            // 重新尝试使用页面加载管理器
             window.PageLoadManager.addToQueue('loading-animation-hide', function() {
-                const loading = document.getElementById('loading');
-                if (loading) {
-                    setTimeout(() => {
-                        loading.classList.add('hidden');
-                        setTimeout(() => {
-                            loading.style.display = 'none';
-                        }, 300);
-                    }, 300);
-                }
+                setTimeout(() => {
+                    if (window.componentManager && typeof window.componentManager.hideLoadingScreen === 'function') {
+                        window.componentManager.hideLoadingScreen();
+                    } else {
+                        const loading = document.getElementById('loading');
+                        if (loading && !loading.classList.contains('hidden')) {
+                            loading.classList.add('hidden');
+                            setTimeout(() => {
+                                loading.style.display = 'none';
+                            }, 500);
+                        }
+                    }
 
-                if (typeof updateCarouselClickEvents === 'function') {
-                    setTimeout(updateCarouselClickEvents, 100);
-                }
+                    if (typeof updateCarouselClickEvents === 'function') {
+                        setTimeout(updateCarouselClickEvents, 100);
+                    }
 
-                console.log('✅ 加载动画隐藏处理完成');
-            }, ['domReady']);
+                    console.log('✅ 加载动画隐藏处理完成（延迟方案）');
+                }, 800);
+            }, ['domReady', 'componentsLoaded']);
         } else {
+            console.warn('⚠️ 页面加载管理器未找到，使用最后备用方案');
             // 最后备用方案
             document.addEventListener('DOMContentLoaded', () => {
-                const loading = document.getElementById('loading');
-                if (loading) {
-                    setTimeout(() => {
+                setTimeout(() => {
+                    const loading = document.getElementById('loading');
+                    if (loading && !loading.classList.contains('hidden')) {
                         loading.classList.add('hidden');
                         setTimeout(() => {
                             loading.style.display = 'none';
-                        }, 300);
-                    }, 300);
-                }
+                        }, 500);
+                    }
 
-                if (typeof updateCarouselClickEvents === 'function') {
-                    setTimeout(updateCarouselClickEvents, 100);
-                }
+                    if (typeof updateCarouselClickEvents === 'function') {
+                        setTimeout(updateCarouselClickEvents, 100);
+                    }
 
-                console.log('✅ 加载动画隐藏处理完成（备用方案）');
+                    console.log('✅ 加载动画隐藏处理完成（最后备用方案）');
+                }, 1000);
             });
         }
-    }, 100);
+    }, 200);
 }
 
 // 监听分类数据加载完成事件（主页）

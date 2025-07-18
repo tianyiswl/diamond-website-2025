@@ -111,14 +111,18 @@
             if (this.states[key] !== value) {
                 this.states[key] = value;
                 console.log(`📊 状态更新: ${key} = ${value}`);
-                
-                // 检查是否所有状态都已就绪
-                if (Object.values(this.states).every(state => state)) {
-                    this.states.allReady = true;
-                    console.log('🎉 所有组件加载完成！');
-                }
-                
-                this.processQueue();
+
+                // 防抖处理，避免频繁触发
+                clearTimeout(this._stateUpdateTimer);
+                this._stateUpdateTimer = setTimeout(() => {
+                    // 检查是否所有状态都已就绪
+                    if (Object.values(this.states).every(state => state)) {
+                        this.states.allReady = true;
+                        console.log('🎉 所有组件加载完成！');
+                    }
+
+                    this.processQueue();
+                }, 50); // 50ms防抖
             }
         },
         
@@ -321,16 +325,34 @@
         }
     };
     
-    // 统一的DOMContentLoaded处理器
+    // 统一的DOMContentLoaded处理器 - 增强版
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 统一页面加载管理器 - DOMContentLoaded');
-            window.PageLoadManager.setState('domReady', true);
+
+            // 延迟设置状态，确保所有同步脚本执行完毕
+            setTimeout(() => {
+                window.PageLoadManager.setState('domReady', true);
+            }, 10);
         });
     } else {
-        // 如果DOM已经加载完成
-        window.PageLoadManager.setState('domReady', true);
+        // 如果DOM已经加载完成，立即设置状态
+        setTimeout(() => {
+            window.PageLoadManager.setState('domReady', true);
+        }, 10);
     }
+
+    // 添加页面可见性变化监听，优化性能
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+            console.log('📱 页面变为可见状态');
+            // 页面重新可见时，检查是否需要重新初始化
+            if (!window.PageLoadManager.states.allReady) {
+                console.log('🔄 页面可见时检测到未完成的初始化，重新处理队列');
+                window.PageLoadManager.processQueue();
+            }
+        }
+    });
     
     console.log('📦 统一页面加载管理器已就绪');
 })();

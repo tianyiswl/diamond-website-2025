@@ -27,8 +27,83 @@
     <!-- 主页产品展示专用样式 -->
     <link rel="stylesheet" href="assets/css/homepage-products.css">
 
-    <!-- 特性标签样式优化 -->
+    <!-- 加载屏幕和特性标签样式优化 -->
     <style>
+        /* 加载屏幕样式 */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #002e5f 0%, #001a3a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: all 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loading-logo {
+            margin-bottom: 20px;
+        }
+
+        .loading-logo-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-company-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .loading-subtitle {
+            font-size: 16px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .loading-text {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
         /* 覆盖主页产品卡片的特性标签样式 */
         .feature-tag {
             background: linear-gradient(135deg, #00DC82 0%, #00b76c 100%) !important;
@@ -82,6 +157,19 @@
     </style>
 </head>
 <body>
+    <!-- 🚀 页面加载屏幕 - 在页面内容之前显示 -->
+    <div id="loading" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <img src="assets/images/logo/diamond-logo.png" alt="无锡皇德国际贸易有限公司" class="loading-logo-img">
+            </div>
+            <h2 class="loading-company-name">无锡皇德国际贸易有限公司</h2>
+            <p class="loading-subtitle">专业涡轮增压器和共轨喷油器配件供应商</p>
+            <div class="spinner"></div>
+            <p class="loading-text">正在加载中...</p>
+        </div>
+    </div>
+
     <!-- 页头组件容器 -->
     <div id="header-container"></div>
     
@@ -379,19 +467,33 @@
     <!-- 🔧 搜索功能修复模块 -->
     <script src="assets/js/search-fix.js"></script>
 
+    <!-- 🚀 页面导航优化器 -->
+    <script src="assets/js/navigation-optimizer.js"></script>
 
-    
+    <!-- 🔍 性能监控器 -->
+    <script src="assets/js/performance-monitor.js"></script>
+
     <script>
-        // 🏠 简化的主页产品展示初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🏠 主页初始化开始');
+        // 🏠 使用页面加载管理器统一初始化（移除重复的DOMContentLoaded）
+        if (window.PageLoadManager) {
+            window.PageLoadManager.addToQueue('homepage-init', function() {
+                console.log('🏠 主页初始化开始');
 
-            // 延迟执行，确保所有脚本加载完成
-            setTimeout(function() {
-                console.log('🚀 开始自动初始化产品展示...');
-                initHomepageProducts();
-            }, 500); // 增加延迟时间，确保所有资源加载完成
-        });
+                // 延迟执行，确保所有脚本加载完成
+                setTimeout(function() {
+                    console.log('🚀 开始自动初始化产品展示...');
+                    initHomepageProducts();
+                }, 200); // 减少延迟时间，提升响应速度
+            }, ['domReady']);
+        } else {
+            // 备用方案：传统方式
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('🏠 主页初始化开始（备用方案）');
+                setTimeout(function() {
+                    initHomepageProducts();
+                }, 500);
+            });
+        }
 
         // 🎯 统一的主页产品初始化函数
         async function initHomepageProducts() {

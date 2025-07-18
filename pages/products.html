@@ -417,6 +417,19 @@
     </style>
 </head>
 <body>
+    <!-- 🚀 页面加载屏幕 - 在页面内容之前显示 -->
+    <div id="loading" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <img src="../assets/images/logo/diamond-logo.png" alt="无锡皇德国际贸易有限公司" class="loading-logo-img">
+            </div>
+            <h2 class="loading-company-name">无锡皇德国际贸易有限公司</h2>
+            <p class="loading-subtitle">专业涡轮增压器和共轨喷油器配件供应商</p>
+            <div class="spinner"></div>
+            <p class="loading-text">正在加载中...</p>
+        </div>
+    </div>
+
     <!-- 页头组件容器 -->
     <div id="header-container"></div>
 
@@ -682,14 +695,21 @@
             // 加载产品数据
             await loadProductData();
             
-            // 快速隐藏加载屏幕
+            // 优化的加载屏幕隐藏逻辑
             setTimeout(() => {
-                const loadingScreen = document.getElementById('loading');
-                if (loadingScreen) {
-                    loadingScreen.classList.add('hidden');
-                    setTimeout(() => {
-                        loadingScreen.style.display = 'none';
-                    }, 300);
+                // 使用组件管理器的统一隐藏方法
+                if (window.componentManager && typeof window.componentManager.hideLoadingScreen === 'function') {
+                    window.componentManager.hideLoadingScreen();
+                } else {
+                    // 备用方案
+                    const loadingScreen = document.getElementById('loading');
+                    if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+                        console.log('🎭 产品页面 - 隐藏加载屏幕');
+                        loadingScreen.classList.add('hidden');
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                        }, 500);
+                    }
                 }
                 
                 // 检查搜索参数
@@ -1177,7 +1197,13 @@
     
     <!-- 🔧 产品页面搜索功能修复模块 -->
     <script src="../assets/js/product-search-fix.js"></script>
-    
+
+    <!-- 🚀 页面导航优化器 -->
+    <script src="../assets/js/navigation-optimizer.js"></script>
+
+    <!-- 🔍 性能监控器 -->
+    <script src="../assets/js/performance-monitor.js"></script>
+
     <!-- 主要JavaScript文件 -->
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/resource-checker.js"></script>

@@ -253,11 +253,30 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// 静态文件服务配置，添加缓存控制
+// 静态文件服务配置，优化缓存策略防止二次刷新
 app.use(express.static('.', {
-    maxAge: process.env.NODE_ENV === 'production' ? '1d' : '0', // 生产环境缓存1天
+    maxAge: process.env.NODE_ENV === 'production' ? '1h' : '0', // 生产环境缓存1小时（降低缓存时间）
     etag: true,
-    lastModified: true
+    lastModified: true,
+    // 添加缓存控制头
+    setHeaders: (res, path) => {
+        // JavaScript文件使用较短缓存时间，避免初始化问题
+        if (path.endsWith('.js')) {
+            res.setHeader('Cache-Control', process.env.NODE_ENV === 'production' ?
+                'public, max-age=1800' : 'no-cache'); // 生产环境30分钟
+        }
+        // HTML文件不缓存，确保最新内容
+        else if (path.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+        }
+        // CSS和图片可以缓存更长时间
+        else if (path.endsWith('.css') || path.match(/\.(jpg|jpeg|png|gif|ico|svg)$/)) {
+            res.setHeader('Cache-Control', process.env.NODE_ENV === 'production' ?
+                'public, max-age=86400' : 'no-cache'); // 生产环境1天
+        }
+    }
 }));
 
 // 确保必要的目录存在

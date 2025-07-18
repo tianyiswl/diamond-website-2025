@@ -1165,158 +1165,6 @@
           }
         }
       }
-    },
-    "2025-07-18": {
-      "page_views": 13,
-      "unique_visitors": 2,
-      "product_clicks": 1,
-      "inquiries": 0,
-      "conversion_rate": "0.00",
-      "bounce_rate": 0,
-      "avg_session_duration": 0,
-      "top_products": [
-        {
-          "id": "1752158905864",
-          "name": "Turbo Cartridge S500W 56501970000 3886223 3801134 Compatible with Volvo Ship D12M D12C-A MP Marine 56509880000",
-          "clicks": 1
-        }
-      ],
-      "traffic_sources": {
-        "direct": 2,
-        "search": 0,
-        "social": 0,
-        "referral": 11
-      },
-      "hourly_data": [
-        {
-          "hour": 0,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 1,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 2,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 3,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 4,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 5,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 6,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 7,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 8,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 9,
-          "views": 5,
-          "clicks": 0
-        },
-        {
-          "hour": 10,
-          "views": 4,
-          "clicks": 1
-        },
-        {
-          "hour": 11,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 12,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 13,
-          "views": 4,
-          "clicks": 0
-        },
-        {
-          "hour": 14,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 15,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 16,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 17,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 18,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 19,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 20,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 21,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 22,
-          "views": 0,
-          "clicks": 0
-        },
-        {
-          "hour": 23,
-          "views": 0,
-          "clicks": 0
-        }
-      ],
-      "geo_stats": {
-        "China": {
-          "total": 13,
-          "regions": {
-            "Beijing": 13
-          }
-        }
-      }
     }
   },
   "product_stats": {},
@@ -1367,10 +1215,6 @@
       "user_1751434119057_mr9k499t0",
       "user_1752755477540_ayshnm5wn",
       "user_1752755540294_1n9iwk15k"
-    ],
-    "2025-07-18": [
-      "user_1752667075650_iwxi3h3sh",
-      "user_1751342479307_l8wnnmkv2"
     ]
   },
   "user_records": {
@@ -1422,9 +1266,9 @@
     },
     "user_1751342479307_l8wnnmkv2": {
       "first_visit": "2025-07-10",
-      "last_visit": "2025-07-18",
+      "last_visit": "2025-07-14",
       "total_visits": 2,
-      "total_page_views": 42,
+      "total_page_views": 38,
       "total_product_clicks": 12,
       "fingerprint": {
         "user_id": "user_1751342479307_l8wnnmkv2",
@@ -1790,10 +1634,10 @@
     },
     "user_1752667075650_iwxi3h3sh": {
       "first_visit": "2025-07-17",
-      "last_visit": "2025-07-18",
-      "total_visits": 2,
-      "total_page_views": 18,
-      "total_product_clicks": 1,
+      "last_visit": "2025-07-17",
+      "total_visits": 1,
+      "total_page_views": 9,
+      "total_product_clicks": 0,
       "fingerprint": {
         "user_id": "user_1752667075650_iwxi3h3sh",
         "screen": "1920x1080",

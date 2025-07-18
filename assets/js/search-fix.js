@@ -46,27 +46,29 @@
         
         const searchTerm = searchInput.value.trim();
         console.log('🔍 执行搜索跳转，搜索词:', searchTerm);
-        
-        // 智能判断跳转路径
-        let targetUrl;
-        const currentPath = window.location.pathname;
-        
-        if (currentPath === '/' || 
-            currentPath.endsWith('index.html') || 
-            currentPath === '/diamond-website-new/' ||
-            currentPath === '/diamond-website-new/index.html') {
-            // 首页：跳转到 pages/products.html
-            targetUrl = `pages/products.html?search=${encodeURIComponent(searchTerm)}`;
-        } else if (currentPath.includes('/pages/')) {
-            // 在pages目录下的页面：跳转到 products.html
-            targetUrl = `products.html?search=${encodeURIComponent(searchTerm)}`;
+
+        // 使用导航优化器进行跳转
+        if (window.NavigationOptimizer) {
+            window.NavigationOptimizer.searchNavigate(searchTerm);
         } else {
-            // 其他情况：使用相对路径
-            targetUrl = `pages/products.html?search=${encodeURIComponent(searchTerm)}`;
+            // 备用方案：传统跳转
+            let targetUrl;
+            const currentPath = window.location.pathname;
+
+            if (currentPath === '/' ||
+                currentPath.endsWith('index.html') ||
+                currentPath === '/diamond-website-new/' ||
+                currentPath === '/diamond-website-new/index.html') {
+                targetUrl = `pages/products.html?search=${encodeURIComponent(searchTerm)}`;
+            } else if (currentPath.includes('/pages/')) {
+                targetUrl = `products.html?search=${encodeURIComponent(searchTerm)}`;
+            } else {
+                targetUrl = `pages/products.html?search=${encodeURIComponent(searchTerm)}`;
+            }
+
+            console.log('🎯 搜索跳转目标:', targetUrl);
+            window.location.href = targetUrl;
         }
-        
-        console.log('🎯 搜索跳转目标:', targetUrl);
-        window.location.href = targetUrl;
     }
     
     // 绑定搜索事件
