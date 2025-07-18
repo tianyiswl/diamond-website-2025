@@ -13,7 +13,7 @@ echo 第2步：添加所有文件到暂存区
 
 echo.
 echo 第3步：创建提交
-"C:\Program Files\Git\bin\git.exe" commit -m "fix: 修复产品页面重复脚本引用和清理无关文件 - 删除产品页面中重复的JavaScript脚本引用 - 清理临时文件、测试文件和备份文件 - 优化脚本加载顺序，避免冲突 - 修复页面加载问题，确保正常访问"
+"C:\Program Files\Git\bin\git.exe" commit -m "fix: 修复Git推送冲突前的本地更改提交 - 修复产品页面重复脚本引用问题 - 清理项目中的临时和测试文件 - 优化脚本加载顺序和页面性能 - 添加Git文件大小管理工具 - 准备与远程仓库合并"
 
 echo.
 echo 提交完成！
