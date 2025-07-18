@@ -13,7 +13,7 @@ echo 第2步：添加所有文件到暂存区
 
 echo.
 echo 第3步：创建提交
-"C:\Program Files\Git\bin\git.exe" commit -m "feat: 添加Git自动化解决方案和相关配置文件 - 安装完整的Git自动化工具集 - 添加一键提交、分支管理、自动备份脚本 - 配置Git钩子（pre-commit, pre-push, commit-msg） - 添加Git别名和快捷命令 - 创建详细的使用指南和文档 - 优化项目结构和配置文件 - 修复敏感信息检测的误报问题"
+"C:\Program Files\Git\bin\git.exe" commit -m "fix: 修复产品页面重复脚本引用和清理无关文件 - 删除产品页面中重复的JavaScript脚本引用 - 清理临时文件、测试文件和备份文件 - 优化脚本加载顺序，避免冲突 - 修复页面加载问题，确保正常访问"
 
 echo.
 echo 提交完成！
