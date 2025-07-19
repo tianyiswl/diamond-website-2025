@@ -1309,9 +1309,6 @@ function initContactForms() {
   console.log("✅ 所有联系表单初始化完成");
 }
 
-// 导出函数到全局作用域
-window.initContactForms = initContactForms;
-
 // 处理表单提交
 function handleFormSubmit(event) {
   event.preventDefault();
@@ -1535,38 +1532,14 @@ function showNotification(message, type = "info") {
   // 创建通知元素
   const notification = document.createElement("div");
   notification.className = `notification notification-${type}`;
-
-  // 根据类型选择图标
-  let icon = "";
-  if (type === "success") {
-    icon =
-      '<i class="fas fa-check-circle" style="margin-right: 8px; font-size: 16px;"></i>';
-  } else if (type === "error") {
-    icon =
-      '<i class="fas fa-exclamation-circle" style="margin-right: 8px; font-size: 16px;"></i>';
-  } else {
-    icon =
-      '<i class="fas fa-info-circle" style="margin-right: 8px; font-size: 16px;"></i>';
-  }
-
   notification.innerHTML = `
         <div class="notification-content">
-            <div class="notification-message">
-                ${icon}
-                <span>${message}</span>
-            </div>
+            <span class="notification-message">${message}</span>
             <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
                 <i class="fas fa-times"></i>
             </button>
         </div>
     `;
-
-  // 检测是否为移动设备
-  const isMobile =
-    window.innerWidth <= 768 ||
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
 
   // 添加CSS动画样式（如果不存在）
   if (!document.querySelector("#notification-animations")) {
@@ -1581,89 +1554,45 @@ function showNotification(message, type = "info") {
                 from { opacity: 1; transform: translateX(0); }
                 to { opacity: 0; transform: translateX(100%); }
             }
-            @keyframes slideInDown {
-                from { opacity: 0; transform: translateY(-100%); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            @keyframes slideOutUp {
-                from { opacity: 1; transform: translateY(0); }
-                to { opacity: 0; transform: translateY(-100%); }
-            }
         `;
     document.head.appendChild(style);
   }
 
-  // 根据设备类型设置样式和动画
-  if (isMobile) {
-    notification.style.cssText = `
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        left: 15px;
-        z-index: 10000;
-        max-width: none;
-        min-width: auto;
-        padding: 16px 18px;
-        border-radius: 10px;
-        animation: slideInDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        backdrop-filter: blur(10px);
-        transform: translateZ(0);
-        will-change: transform, opacity;
-    `;
-  } else {
-    notification.style.cssText = `
+  // 添加样式
+  notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
         z-index: 10000;
-        max-width: 420px;
-        min-width: 300px;
-        padding: 18px 22px;
-        border-radius: 12px;
-        animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        backdrop-filter: blur(10px);
-        transform: translateZ(0);
-        will-change: transform, opacity;
+        max-width: 400px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideInRight 0.3s ease;
+        font-family: 'Microsoft YaHei', sans-serif;
     `;
-  }
 
-  // 根据类型设置颜色和效果
+  // 根据类型设置颜色
   if (type === "success") {
-    notification.style.background =
-      "linear-gradient(135deg, #00b76c, #28a745, #20c997)";
+    notification.style.background = "linear-gradient(135deg, #28a745, #20c997)";
     notification.style.color = "white";
-    notification.style.border = "1px solid rgba(40, 167, 69, 0.3)";
-    notification.style.boxShadow =
-      "0 8px 25px rgba(40, 167, 69, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15)";
   } else if (type === "error") {
     notification.style.background = "linear-gradient(135deg, #dc3545, #fd7e14)";
     notification.style.color = "white";
-    notification.style.border = "1px solid rgba(220, 53, 69, 0.3)";
-    notification.style.boxShadow =
-      "0 8px 25px rgba(220, 53, 69, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15)";
   } else {
     notification.style.background = "linear-gradient(135deg, #007bff, #6f42c1)";
     notification.style.color = "white";
-    notification.style.border = "1px solid rgba(0, 123, 255, 0.3)";
-    notification.style.boxShadow =
-      "0 8px 25px rgba(0, 123, 255, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15)";
   }
 
   document.body.appendChild(notification);
 
-  // 6秒后自动关闭
+  // 5秒后自动关闭
   setTimeout(() => {
     if (notification.parentNode) {
-      // 根据设备类型使用不同的退出动画
-      const exitAnimation = isMobile
-        ? "slideOutUp 0.3s ease"
-        : "slideOutRight 0.3s ease";
-      notification.style.animation = exitAnimation;
+      notification.style.animation = "slideOutRight 0.3s ease";
       setTimeout(() => notification.remove(), 300);
     }
-  }, 6000);
+  }, 5000);
 }
 
 // 显示备用联系方式
@@ -1672,7 +1601,7 @@ function showAlternativeContact() {
     window.companyInfo?.contact?.whatsapp?.replace(/\D/g, "") ||
     "8613656157230";
   const phone =
-    window.companyInfo?.contact?.phone?.replace(/\D/g, "") || "8613376223199";
+    window.companyInfo?.contact?.phone?.replace(/\D/g, "") || "8613656157230";
   const email =
     window.companyInfo?.contact?.email || "sales03@diamond-auto.com";
 

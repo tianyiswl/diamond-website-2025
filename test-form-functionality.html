@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>询价表单功能测试</title>
+    <style>
+      body {
+        font-family: "Microsoft YaHei", sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .test-container {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .test-title {
+        color: #007bff;
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .test-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+      }
+      .test-section h3 {
+        color: #333;
+        margin-bottom: 15px;
+      }
+      .test-button {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 5px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+      }
+      .test-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+      }
+      .test-button.success {
+        background: linear-gradient(135deg, #28a745, #20c997);
+      }
+      .test-button.error {
+        background: linear-gradient(135deg, #dc3545, #fd7e14);
+      }
+      .test-results {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        font-family: monospace;
+        font-size: 12px;
+      }
+      .device-info {
+        background: #e3f2fd;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .timer {
+        font-weight: bold;
+        color: #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-container">
+      <h1 class="test-title">📝 询价表单功能测试</h1>
+
+      <div class="device-info">
+        <h4>🔍 设备信息检测</h4>
+        <p><strong>屏幕宽度:</strong> <span id="screenWidth"></span>px</p>
+        <p><strong>用户代理:</strong> <span id="userAgent"></span></p>
+        <p><strong>设备类型:</strong> <span id="deviceType"></span></p>
+        <p><strong>预期动画:</strong> <span id="expectedAnimation"></span></p>
+      </div>
+
+      <div class="test-section">
+        <h3>🎨 通知消息测试</h3>
+        <p>测试不同类型的通知消息显示效果和6秒自动消失功能：</p>
+        <button class="test-button success" onclick="testSuccessNotification()">
+          ✅ 测试成功通知
+        </button>
+        <button class="test-button error" onclick="testErrorNotification()">
+          ❌ 测试错误通知
+        </button>
+        <button class="test-button" onclick="testInfoNotification()">
+          ℹ️ 测试信息通知
+        </button>
+        <div class="test-results" id="notificationResults"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>📱 移动端动画测试</h3>
+        <p>测试移动端和桌面端的不同动画效果：</p>
+        <button class="test-button" onclick="testMobileAnimation()">
+          📱 模拟移动端通知
+        </button>
+        <button class="test-button" onclick="testDesktopAnimation()">
+          💻 模拟桌面端通知
+        </button>
+        <div class="test-results" id="animationResults"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>⏱️ 计时器测试</h3>
+        <p>验证通知消息6秒自动消失功能：</p>
+        <button class="test-button" onclick="testTimingFunction()">
+          ⏰ 开始计时测试
+        </button>
+        <div class="test-results" id="timingResults"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>🔗 表单提交测试</h3>
+        <p>测试实际的表单提交功能（需要在主页面进行）：</p>
+        <button class="test-button" onclick="openMainPage()">
+          🏠 打开主页测试表单
+        </button>
+        <div class="test-results" id="formResults">
+          <p><strong>测试步骤：</strong></p>
+          <ol>
+            <li>在主页面填写询价表单</li>
+            <li>点击提交按钮</li>
+            <li>观察加载状态显示</li>
+            <li>验证成功通知的绿色渐变效果</li>
+            <li>确认6秒后自动消失</li>
+            <li>测试移动端响应式效果</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 显示设备信息
+      function updateDeviceInfo() {
+        document.getElementById("screenWidth").textContent = window.innerWidth;
+        document.getElementById("userAgent").textContent = navigator.userAgent;
+
+        const isMobile =
+          window.innerWidth <= 768 ||
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+          );
+        document.getElementById("deviceType").textContent = isMobile
+          ? "移动设备"
+          : "桌面设备";
+        document.getElementById("expectedAnimation").textContent = isMobile
+          ? "slideInDown/slideOutUp"
+          : "slideInRight/slideOutRight";
+      }
+
+      // 通知消息函数（复制自主文件）
+      function showNotification(message, type = "info") {
+        const existingNotification = document.querySelector(".notification");
+        if (existingNotification) {
+          existingNotification.remove();
+        }
+
+        const isMobile =
+          window.innerWidth <= 768 ||
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+          );
+
+        const notification = document.createElement("div");
+        notification.className = `notification notification-${type}`;
+
+        let icon = "";
+        if (type === "success") {
+          icon =
+            '<i class="fas fa-check-circle" style="margin-right: 8px; font-size: 16px;"></i>';
+        } else if (type === "error") {
+          icon =
+            '<i class="fas fa-exclamation-circle" style="margin-right: 8px; font-size: 16px;"></i>';
+        } else {
+          icon =
+            '<i class="fas fa-info-circle" style="margin-right: 8px; font-size: 16px;"></i>';
+        }
+
+        notification.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-message">
+                        ${icon}
+                        <span>${message}</span>
+                    </div>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+        // 添加动画样式
+        if (!document.querySelector("#notification-animations")) {
+          const style = document.createElement("style");
+          style.id = "notification-animations";
+          style.textContent = `
+                    @keyframes slideInRight {
+                        from { opacity: 0; transform: translateX(100%); }
+                        to { opacity: 1; transform: translateX(0); }
+                    }
+                    @keyframes slideOutRight {
+                        from { opacity: 1; transform: translateX(0); }
+                        to { opacity: 0; transform: translateX(100%); }
+                    }
+                    @keyframes slideInDown {
+                        from { opacity: 0; transform: translateY(-100%); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    @keyframes slideOutUp {
+                        from { opacity: 1; transform: translateY(0); }
+                        to { opacity: 0; transform: translateY(-100%); }
+                    }
+                    .notification-content {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 10px;
+                    }
+                    .notification-close {
+                        background: none;
+                        border: none;
+                        color: inherit;
+                        cursor: pointer;
+                        font-size: 14px;
+                        padding: 5px;
+                        border-radius: 3px;
+                        transition: background-color 0.2s;
+                    }
+                    .notification-close:hover {
+                        background-color: rgba(255,255,255,0.2);
+                    }
+                `;
+          document.head.appendChild(style);
+        }
+
+        // 根据设备类型设置样式和动画
+        if (isMobile) {
+          notification.style.cssText = `
+                    position: fixed;
+                    top: 15px;
+                    right: 15px;
+                    left: 15px;
+                    z-index: 10000;
+                    max-width: none;
+                    min-width: auto;
+                    padding: 16px 18px;
+                    border-radius: 10px;
+                    animation: slideInDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                    font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    backdrop-filter: blur(10px);
+                    transform: translateZ(0);
+                    will-change: transform, opacity;
+                `;
+        } else {
+          notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 10000;
+                    max-width: 420px;
+                    min-width: 300px;
+                    padding: 18px 22px;
+                    border-radius: 12px;
+                    animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                    font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    backdrop-filter: blur(10px);
+                    transform: translateZ(0);
+                    will-change: transform, opacity;
+                `;
+        }
+
+        // 根据类型设置颜色和效果
+        if (type === "success") {
+          notification.style.background =
+            "linear-gradient(135deg, #00b76c, #28a745, #20c997)";
+          notification.style.color = "white";
+          notification.style.border = "1px solid rgba(40, 167, 69, 0.3)";
+          notification.style.boxShadow =
+            "0 8px 25px rgba(40, 167, 69, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15)";
+        } else if (type === "error") {
+          notification.style.background =
+            "linear-gradient(135deg, #dc3545, #fd7e14)";
+          notification.style.color = "white";
+          notification.style.border = "1px solid rgba(220, 53, 69, 0.3)";
+          notification.style.boxShadow =
+            "0 8px 25px rgba(220, 53, 69, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15)";
+        } else {
+          notification.style.background =
+            "linear-gradient(135deg, #007bff, #6f42c1)";
+          notification.style.color = "white";
+          notification.style.border = "1px solid rgba(0, 123, 255, 0.3)";
+          notification.style.boxShadow =
+            "0 8px 25px rgba(0, 123, 255, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15)";
+        }
+
+        document.body.appendChild(notification);
+
+        // 6秒后自动关闭
+        setTimeout(() => {
+          if (notification.parentNode) {
+            const exitAnimation = isMobile
+              ? "slideOutUp 0.3s ease"
+              : "slideOutRight 0.3s ease";
+            notification.style.animation = exitAnimation;
+            setTimeout(() => notification.remove(), 300);
+          }
+        }, 6000);
+
+        return notification;
+      }
+
+      // 测试函数
+      function testSuccessNotification() {
+        const startTime = Date.now();
+        showNotification(
+          "📧 询价信息发送成功！我们将在24小时内回复您。",
+          "success",
+        );
+        document.getElementById("notificationResults").innerHTML +=
+          `<p>[${new Date().toLocaleTimeString()}] 成功通知已显示，开始6秒倒计时...</p>`;
+      }
+
+      function testErrorNotification() {
+        showNotification("❌ 发送失败，请稍后重试或直接联系我们。", "error");
+        document.getElementById("notificationResults").innerHTML +=
+          `<p>[${new Date().toLocaleTimeString()}] 错误通知已显示</p>`;
+      }
+
+      function testInfoNotification() {
+        showNotification("ℹ️ 这是一条信息提示消息", "info");
+        document.getElementById("notificationResults").innerHTML +=
+          `<p>[${new Date().toLocaleTimeString()}] 信息通知已显示</p>`;
+      }
+
+      function testMobileAnimation() {
+        // 临时修改窗口宽度检测
+        const originalWidth = window.innerWidth;
+        Object.defineProperty(window, "innerWidth", {
+          value: 500,
+          configurable: true,
+        });
+        showNotification("📱 这是移动端动画效果测试", "info");
+        Object.defineProperty(window, "innerWidth", {
+          value: originalWidth,
+          configurable: true,
+        });
+        document.getElementById("animationResults").innerHTML +=
+          `<p>[${new Date().toLocaleTimeString()}] 移动端动画测试 (slideInDown)</p>`;
+      }
+
+      function testDesktopAnimation() {
+        Object.defineProperty(window, "innerWidth", {
+          value: 1200,
+          configurable: true,
+        });
+        showNotification("💻 这是桌面端动画效果测试", "info");
+        document.getElementById("animationResults").innerHTML +=
+          `<p>[${new Date().toLocaleTimeString()}] 桌面端动画测试 (slideInRight)</p>`;
+      }
+
+      function testTimingFunction() {
+        const startTime = Date.now();
+        showNotification("⏰ 计时测试：这条消息将在6秒后自动消失", "info");
+
+        let countdown = 6;
+        const timer = setInterval(() => {
+          countdown--;
+          document.getElementById("timingResults").innerHTML =
+            `<p class="timer">倒计时: ${countdown} 秒</p>`;
+
+          if (countdown <= 0) {
+            clearInterval(timer);
+            const actualTime = (Date.now() - startTime) / 1000;
+            document.getElementById("timingResults").innerHTML +=
+              `<p>✅ 测试完成！实际消失时间: ${actualTime.toFixed(1)} 秒</p>`;
+          }
+        }, 1000);
+      }
+
+      function openMainPage() {
+        window.open("http://localhost:3002", "_blank");
+        document.getElementById("formResults").innerHTML +=
+          `<p>[${new Date().toLocaleTimeString()}] 主页已在新标签页打开，请进行表单测试</p>`;
+      }
+
+      // 页面加载时更新设备信息
+      window.addEventListener("load", updateDeviceInfo);
+      window.addEventListener("resize", updateDeviceInfo);
+    </script>
+  </body>
+</html>

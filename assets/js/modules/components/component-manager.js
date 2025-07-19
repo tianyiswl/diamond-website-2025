@@ -43,6 +43,11 @@ class ComponentManager {
       // 🌍 监听语言切换事件，更新动态内容
       this.bindLanguageChangeListener();
 
+      // 🔧 通知全局加载屏幕组件已就绪
+      if (window.GlobalLoadingScreen) {
+        window.GlobalLoadingScreen.setState("componentsReady", true);
+      }
+
       return true;
     } catch (error) {
       console.error("❌ 组件管理器初始化失败:", error);
@@ -195,9 +200,9 @@ class ComponentManager {
     this.companyInfo = {
       name: "无锡皇德国际贸易有限公司",
       description: "专业涡轮增压器和共轨喷油器配件供应商",
-      phone: "+86-510-8888-8888",
-      email: "info@diamond-company.com",
-      address: "江苏省无锡市",
+      phone: "+86 133 7622 3199",
+      email: "sales03@diamond-auto.com",
+      address: "无锡市锡山区东港镇黄土塘村工业园区创业路107号",
     };
     console.log("🏢 使用默认公司信息");
   }
@@ -543,10 +548,10 @@ class ComponentManager {
                                 <h4 data-i18n="nav.contact">联系我们</h4>
                                 <div class="contact-info">
                                     <div class="contact-details">
-                                        <p><strong data-i18n="contact.info.phone">电话:</strong> <a href="tel:${this.companyInfo?.contact?.phone || "+86 182 1757 6072"}">${this.companyInfo?.contact?.phone || "+86 182 1757 6072"}</a></p>
-                                        <p><strong data-i18n="contact.info.wechat">微信:</strong> ${this.companyInfo?.contact?.whatsapp || "+86 182 1757 6072"}</p>
-                                        <p><strong data-i18n="contact.info.whatsapp">WhatsApp:</strong> <a href="${this.companyInfo?.social?.whatsapp || "https://wa.me/8618217576072"}">${this.companyInfo?.contact?.whatsapp || "+86 182 1757 6072"}</a></p>
-                                        <p><strong data-i18n="contact.info.email">邮箱:</strong> <a href="mailto:${this.companyInfo?.contact?.email || "ciki@diamond-auto.com"}">${this.companyInfo?.contact?.email || "ciki@diamond-auto.com"}</a></p>
+                                        <p><strong data-i18n="contact.info.phone">电话:</strong> <a href="tel:${this.companyInfo?.contact?.phone || "+86 133 7622 3199"}">${this.companyInfo?.contact?.phone || "+86 133 7622 3199"}</a></p>
+                                        <p><strong data-i18n="contact.info.wechat">微信:</strong> ${this.companyInfo?.contact?.whatsapp || "+86 136 5615 7230"}</p>
+                                        <p><strong data-i18n="contact.info.whatsapp">WhatsApp:</strong> <a href="${this.companyInfo?.social?.whatsapp || "https://wa.me/8613656157230"}">${this.companyInfo?.contact?.whatsapp || "+86 136 5615 7230"}</a></p>
+                                        <p><strong data-i18n="contact.info.email">邮箱:</strong> <a href="mailto:${this.companyInfo?.contact?.email || "sales03@diamond-auto.com"}">${this.companyInfo?.contact?.email || "sales03@diamond-auto.com"}</a></p>
                                     </div>
                                 </div>
                             </div>
@@ -593,7 +598,7 @@ class ComponentManager {
                 <a href="${this.companyInfo?.social?.whatsapp || "https://wa.me/8618217576072"}" class="floating-whatsapp" target="_blank" title="WhatsApp咨询">
                     <i class="fab fa-whatsapp"></i>
                 </a>
-                <a href="tel:${this.companyInfo?.contact?.phone || "+86 182 1757 6072"}" class="floating-phone" title="拨打电话">
+                <a href="tel:${this.companyInfo?.contact?.phone || "+86 133 7622 3199"}" class="floating-phone" title="拨打电话">
                     <i class="fa fa-phone"></i>
                 </a>
             </div>

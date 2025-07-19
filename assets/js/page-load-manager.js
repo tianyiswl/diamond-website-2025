@@ -342,10 +342,20 @@
     document.addEventListener("DOMContentLoaded", function () {
       console.log("🚀 统一页面加载管理器 - DOMContentLoaded");
       window.PageLoadManager.setState("domReady", true);
+
+      // 🔧 通知全局加载屏幕DOM已就绪
+      if (window.GlobalLoadingScreen) {
+        window.GlobalLoadingScreen.setState("domReady", true);
+      }
     });
   } else {
     // 如果DOM已经加载完成
     window.PageLoadManager.setState("domReady", true);
+
+    // 🔧 通知全局加载屏幕DOM已就绪
+    if (window.GlobalLoadingScreen) {
+      window.GlobalLoadingScreen.setState("domReady", true);
+    }
   }
 
   console.log("📦 统一页面加载管理器已就绪");

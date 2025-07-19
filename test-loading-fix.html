@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>页面加载修复效果测试</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+
+      .test-container {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .test-title {
+        color: #002e5f;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .test-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+      }
+
+      .test-section h3 {
+        color: #007bff;
+        margin-bottom: 15px;
+        font-size: 20px;
+      }
+
+      .test-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .test-link {
+        display: block;
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .test-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+      }
+
+      .test-link i {
+        margin-right: 8px;
+      }
+
+      .language-test {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      }
+
+      .checklist {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+      }
+
+      .checklist h4 {
+        color: #495057;
+        margin-bottom: 15px;
+      }
+
+      .checklist ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .checklist li {
+        padding: 8px 0;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+
+      .checklist li::before {
+        content: "✅ ";
+        color: #28a745;
+        font-weight: bold;
+        margin-right: 8px;
+      }
+
+      .status-indicator {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        z-index: 1000;
+      }
+
+      .instructions {
+        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .instructions h4 {
+        margin-bottom: 10px;
+      }
+
+      .instructions p {
+        margin: 5px 0;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="status-indicator">🚀 测试页面已就绪</div>
+
+    <div class="test-container">
+      <h1 class="test-title">🎯 页面加载修复效果测试</h1>
+
+      <div class="instructions">
+        <h4>📋 测试说明</h4>
+        <p><strong>修复前的问题：</strong></p>
+        <p>• 页面内容先显示，然后显示加载动画，最后显示最终内容（闪烁）</p>
+        <p>• 英文页面先显示中文，然后切换到英文（语言闪烁）</p>
+        <p><strong>修复后的期望效果：</strong></p>
+        <p>• 页面跳转时立即显示加载动画</p>
+        <p>• 所有内容完全准备好后一次性显示，无任何闪烁</p>
+        <p>• 多语言内容预加载，避免语言切换闪烁</p>
+      </div>
+
+      <div class="test-section">
+        <h3>🏠 主要页面测试</h3>
+        <div class="test-links">
+          <a href="/" class="test-link">
+            <i class="fas fa-home"></i>
+            主页测试
+          </a>
+          <a href="/pages/products.html" class="test-link">
+            <i class="fas fa-box"></i>
+            产品页面测试
+          </a>
+          <a href="/pages/product-detail.html?id=1" class="test-link">
+            <i class="fas fa-info-circle"></i>
+            产品详情测试
+          </a>
+          <a href="/pages/privacy.html" class="test-link">
+            <i class="fas fa-shield-alt"></i>
+            隐私政策测试
+          </a>
+          <a href="/pages/terms.html" class="test-link">
+            <i class="fas fa-file-contract"></i>
+            服务条款测试
+          </a>
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h3>🌍 多语言切换测试</h3>
+        <div class="test-links">
+          <a href="/?lang=en-US" class="test-link language-test">
+            <i class="fas fa-globe"></i>
+            英文主页测试
+          </a>
+          <a
+            href="/pages/products.html?lang=en-US"
+            class="test-link language-test"
+          >
+            <i class="fas fa-globe"></i>
+            英文产品页测试
+          </a>
+          <a
+            href="/pages/product-detail.html?id=1&lang=en-US"
+            class="test-link language-test"
+          >
+            <i class="fas fa-globe"></i>
+            英文详情页测试
+          </a>
+        </div>
+      </div>
+
+      <div class="checklist">
+        <h4>🔍 测试检查清单</h4>
+        <ul>
+          <li>页面跳转时立即显示加载屏幕（无内容闪烁）</li>
+          <li>加载屏幕显示公司logo和进度条</li>
+          <li>加载进度从0%到100%平滑过渡</li>
+          <li>所有内容完全加载后才显示最终页面</li>
+          <li>英文页面不会先显示中文内容</li>
+          <li>语言切换时无内容闪烁</li>
+          <li>产品卡片和组件正常显示</li>
+          <li>页面功能完全正常（搜索、筛选等）</li>
+          <li>移动端和桌面端都正常工作</li>
+          <li>页面加载速度合理（2-3秒内完成）</li>
+        </ul>
+      </div>
+
+      <div class="test-section">
+        <h3>🛠️ 开发者工具检查</h3>
+        <p>打开浏览器开发者工具（F12），查看控制台输出：</p>
+        <ul style="margin-left: 20px">
+          <li>应该看到 "🚀 全局加载屏幕已创建并显示"</li>
+          <li>应该看到 "🎯 初始化页面渲染协调器"</li>
+          <li>应该看到各个加载状态的更新日志</li>
+          <li>应该看到 "🎉 所有内容加载完成，隐藏加载屏幕"</li>
+          <li>不应该有错误信息</li>
+        </ul>
+      </div>
+
+      <div class="test-section">
+        <h3>📱 移动端测试</h3>
+        <p>使用开发者工具切换到移动设备模式，或在手机上访问：</p>
+        <div class="test-links">
+          <a
+            href="/"
+            class="test-link"
+            style="
+              background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+            "
+          >
+            <i class="fas fa-mobile-alt"></i>
+            移动端主页测试
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 简单的测试辅助脚本
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("🧪 测试页面已加载");
+
+        // 监听页面跳转
+        document.querySelectorAll(".test-link").forEach((link) => {
+          link.addEventListener("click", function (e) {
+            console.log("🔗 测试链接点击:", this.textContent.trim());
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

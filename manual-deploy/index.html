@@ -347,7 +347,8 @@
                   class="inquiry-form"
                   id="inquiryForm"
                   method="POST"
-                  action="/api/inquiries-form"
+                  action="javascript:void(0)"
+                  onsubmit="return false;"
                 >
                   <!-- 第一行：姓名和邮箱并排 -->
                   <div class="form-row">
@@ -442,14 +443,35 @@
     <!-- 页脚组件容器 -->
     <div id="footer-container"></div>
 
-    <!-- 🚀 全局加载屏幕 - 必须最先加载，立即显示加载动画 -->
-    <script src="assets/js/global-loading-screen.js"></script>
+    <!-- 🔧 早期语言检测脚本 - 在所有其他脚本之前执行，避免语言闪烁 -->
+    <script>
+      (function () {
+        "use strict";
+        console.log("🌍 早期语言检测开始...");
 
-    <!-- 🚨 快速修复脚本 - 防止加载卡住 -->
-    <script src="quick-fix-loading.js"></script>
+        // 检测用户偏好语言
+        const preferredLang =
+          localStorage.getItem("preferred-language") ||
+          navigator.language ||
+          navigator.userLanguage ||
+          "zh-CN";
 
-    <!-- 🎯 页面渲染协调器 - 统一管理所有组件的加载顺序 -->
-    <script src="assets/js/page-render-coordinator.js"></script>
+        console.log("🌍 检测到用户偏好语言:", preferredLang);
+
+        // 立即设置HTML lang属性，避免闪烁
+        const langCode = preferredLang.split("-")[0];
+        document.documentElement.lang = langCode;
+
+        // 在window对象上设置早期语言信息，供后续脚本使用
+        window.earlyLanguageDetection = {
+          preferredLanguage: preferredLang,
+          langCode: langCode,
+          timestamp: Date.now(),
+        };
+
+        console.log("✅ 早期语言检测完成，HTML lang已设置为:", langCode);
+      })();
+    </script>
 
     <!-- 🚀 统一页面加载管理器 - 必须最先加载 -->
     <script src="assets/js/page-load-manager.js"></script>
@@ -545,11 +567,6 @@
           renderHomepageProducts(activeProducts, showcase);
 
           console.log("🎉 主页产品展示加载完成");
-
-          // 🔧 通知全局加载屏幕内容已就绪
-          if (window.GlobalLoadingScreen) {
-            window.GlobalLoadingScreen.setState("contentReady", true);
-          }
         } catch (error) {
           console.error("❌ 产品加载失败:", error);
           showcase.innerHTML = `
@@ -562,11 +579,6 @@
                         </button>
                     </div>
                 `;
-
-          // 即使失败也要通知加载屏幕
-          if (window.GlobalLoadingScreen) {
-            window.GlobalLoadingScreen.setState("contentReady", true);
-          }
         }
       }
 
@@ -831,9 +843,5 @@
       });
     </script>
     <script src="./assets/js/resource-checker.js"></script>
-
-    <!-- 🔍 临时调试脚本 -->
-    <script src="./debug-loading-states.js"></script>
   </body>
 </html>
-<

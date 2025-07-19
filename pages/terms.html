@@ -1,320 +1,488 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="terms.title">服务条款</title>
-    <meta name="description" content="无锡皇德国际贸易有限公司服务条款，了解我们的涡轮增压器产品销售、技术支持和售后服务条款。专业B2B贸易服务条款。">
-    <meta name="keywords" content="服务条款,涡轮增压器,售后服务,质量保证,无锡皇德国际,B2B贸易">
-    
+    <meta
+      name="description"
+      content="无锡皇德国际贸易有限公司服务条款，了解我们的涡轮增压器产品销售、技术支持和售后服务条款。专业B2B贸易服务条款。"
+    />
+    <meta
+      name="keywords"
+      content="服务条款,涡轮增压器,售后服务,质量保证,无锡皇德国际,B2B贸易"
+    />
+
     <!-- 图标 -->
-    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/logo/diamond-logo.png">
-    <link rel="apple-touch-icon" href="../assets/images/logo/diamond-logo.png">
-    
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../assets/images/logo/diamond-logo.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="../assets/images/logo/diamond-logo.png"
+    />
+
     <!-- 字体图标 -->
-    <link rel="stylesheet" href="../assets/css/font-awesome.min.css">
-    
+    <link rel="stylesheet" href="../assets/css/font-awesome.min.css" />
+
     <!-- 样式文件 -->
-    <link rel="stylesheet" href="../assets/css/main.css">
-    
+    <link rel="stylesheet" href="../assets/css/main.css" />
+
     <!-- 国际化样式 -->
-    <link rel="stylesheet" href="../assets/css/i18n-styles.css">
-    
+    <link rel="stylesheet" href="../assets/css/i18n-styles.css" />
+
     <style>
-        /* 页面专用样式 */
+      /* 页面专用样式 */
+      .static-page {
+        padding-top: 120px;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      }
+
+      .page-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .page-header {
+        text-align: center;
+        margin-bottom: 50px;
+      }
+
+      .page-header h1 {
+        font-size: 36px;
+        color: #002e5f;
+        margin-bottom: 15px;
+      }
+
+      .page-header p {
+        font-size: 18px;
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      .content-card {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 40px;
+      }
+
+      .info-box {
+        margin-bottom: 40px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-left: 4px solid #002e5f;
+        border-radius: 5px;
+      }
+
+      .content-section h2 {
+        font-size: 28px;
+        color: #002e5f;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #002e5f;
+        padding-bottom: 10px;
+        margin-top: 40px;
+      }
+
+      .content-section h3 {
+        font-size: 22px;
+        color: #333;
+        margin-top: 30px;
+        margin-bottom: 15px;
+      }
+
+      .content-section p {
+        margin-bottom: 20px;
+        font-size: 16px;
+        line-height: 1.6;
+        color: #333;
+      }
+
+      .content-section ul {
+        margin-bottom: 30px;
+        font-size: 16px;
+        line-height: 1.6;
+        padding-left: 30px;
+      }
+
+      .content-section li {
+        margin-bottom: 10px;
+      }
+
+      .highlight-box {
+        background: #e3f2fd;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 30px;
+        border-left: 4px solid #2196f3;
+      }
+
+      .warning-box {
+        background: #fff3cd;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 30px;
+        border-left: 4px solid #ffc107;
+      }
+
+      .success-box {
+        background: #d4edda;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 30px;
+        border-left: 4px solid #28a745;
+      }
+
+      .process-steps {
+        display: grid;
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .step-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #28a745;
+      }
+
+      .step-item h4 {
+        color: #28a745;
+        margin-bottom: 8px;
+      }
+
+      .step-item p {
+        margin: 0;
+        font-size: 15px;
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+      }
+
+      .back-link:hover {
+        color: #0056b3;
+        transform: translateX(-5px);
+      }
+
+      @media (max-width: 768px) {
         .static-page {
-            padding-top: 120px;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+          padding-top: 140px;
         }
-        
-        .page-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        .page-header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        
+
         .page-header h1 {
-            font-size: 36px;
-            color: #002e5f;
-            margin-bottom: 15px;
+          font-size: 28px;
         }
-        
-        .page-header p {
-            font-size: 18px;
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-        
+
         .content-card {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
+          padding: 25px;
         }
-        
-        .info-box {
-            margin-bottom: 40px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-left: 4px solid #002e5f;
-            border-radius: 5px;
-        }
-        
+
         .content-section h2 {
-            font-size: 28px;
-            color: #002e5f;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #002e5f;
-            padding-bottom: 10px;
-            margin-top: 40px;
+          font-size: 24px;
         }
-        
+
         .content-section h3 {
-            font-size: 22px;
-            color: #333;
-            margin-top: 30px;
-            margin-bottom: 15px;
+          font-size: 20px;
         }
-        
-        .content-section p {
-            margin-bottom: 20px;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #333;
-        }
-        
-        .content-section ul {
-            margin-bottom: 30px;
-            font-size: 16px;
-            line-height: 1.6;
-            padding-left: 30px;
-        }
-        
-        .content-section li {
-            margin-bottom: 10px;
-        }
-        
-        .highlight-box {
-            background: #e3f2fd;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 30px;
-            border-left: 4px solid #2196f3;
-        }
-        
-        .warning-box {
-            background: #fff3cd;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 30px;
-            border-left: 4px solid #ffc107;
-        }
-        
-        .success-box {
-            background: #d4edda;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 30px;
-            border-left: 4px solid #28a745;
-        }
-        
-        .process-steps {
-            display: grid;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .step-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #28a745;
-        }
-        
-        .step-item h4 {
-            color: #28a745;
-            margin-bottom: 8px;
-        }
-        
-        .step-item p {
-            margin: 0;
-            font-size: 15px;
-        }
-        
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-        }
-        
-        .back-link:hover {
-            color: #0056b3;
-            transform: translateX(-5px);
-        }
-        
-        @media (max-width: 768px) {
-            .static-page {
-                padding-top: 140px;
-            }
-            
-            .page-header h1 {
-                font-size: 28px;
-            }
-            
-            .content-card {
-                padding: 25px;
-            }
-            
-            .content-section h2 {
-                font-size: 24px;
-            }
-            
-            .content-section h3 {
-                font-size: 20px;
-            }
-        }
+      }
     </style>
-</head>
-<body class="static-page">
+  </head>
+  <body class="static-page">
     <!-- 页头组件容器 -->
     <div id="header-container"></div>
 
     <!-- 主要内容 -->
     <main class="page-container">
-        <a href="../index.html" class="back-link">
-            <i class="fas fa-arrow-left"></i>
-            <span data-i18n="terms.back_home">返回首页</span>
-        </a>
+      <a href="../index.html" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span data-i18n="terms.back_home">返回首页</span>
+      </a>
 
-        <!-- 页面标题 -->
-        <div class="page-header">
-            <h1 data-i18n="terms.title">服务条款</h1>
-            <p data-i18n="terms.subtitle">欢迎使用无锡皇德国际贸易有限公司的涡轮增压器供应服务。使用我们的服务即表示您同意遵守以下条款和条件。</p>
+      <!-- 页面标题 -->
+      <div class="page-header">
+        <h1 data-i18n="terms.title">服务条款</h1>
+        <p data-i18n="terms.subtitle">
+          欢迎使用无锡皇德国际贸易有限公司的涡轮增压器供应服务。使用我们的服务即表示您同意遵守以下条款和条件。
+        </p>
+      </div>
+
+      <!-- 服务条款内容 -->
+      <div class="content-card">
+        <div class="info-box">
+          <p style="font-size: 16px; color: #666; margin: 0">
+            <strong data-i18n="terms.effective_date">生效日期</strong>：<span
+              data-i18n="terms.effective_date_value"
+              >2024年1月1日</span
+            >
+            | <strong data-i18n="terms.last_updated">最后更新</strong>：<span
+              data-i18n="terms.last_updated_value"
+              >2024年12月15日</span
+            ><br />
+            <span data-i18n="terms.applies_to"
+              >本服务条款适用于通过我们网站、电话、邮件等渠道进行的所有商业活动。</span
+            >
+          </p>
         </div>
 
-        <!-- 服务条款内容 -->
-        <div class="content-card">
-            <div class="info-box">
-                <p style="font-size: 16px; color: #666; margin: 0;">
-                    <strong data-i18n="terms.effective_date">生效日期</strong>：<span data-i18n="terms.effective_date_value">2024年1月1日</span> | <strong data-i18n="terms.last_updated">最后更新</strong>：<span data-i18n="terms.last_updated_value">2024年12月15日</span><br>
-                    <span data-i18n="terms.applies_to">本服务条款适用于通过我们网站、电话、邮件等渠道进行的所有商业活动。</span>
-                </p>
+        <div class="content-section">
+          <h2 data-i18n="terms.section1.title">1. 服务范围</h2>
+
+          <h3 data-i18n="terms.section1.subtitle1">1.1 产品销售服务</h3>
+          <ul>
+            <li>
+              <strong data-i18n="terms.section1.item1"
+                >涡轮增压器总成：各品牌新品、再制造产品销售</strong
+              >
+            </li>
+            <li>
+              <strong data-i18n="terms.section1.item2"
+                >涡轮增压器配件：叶轮、壳体、执行器、传感器等精密配件</strong
+              >
+            </li>
+            <li>
+              <strong data-i18n="terms.section1.item3"
+                >共轨喷油器：博世、德尔福、电装等品牌喷油器及配件</strong
+              >
+            </li>
+            <li>
+              <strong data-i18n="terms.section1.item4"
+                >维修工具：专业维修设备和检测工具</strong
+              >
+            </li>
+            <li>
+              <strong data-i18n="terms.section1.item5"
+                >技术资料：维修手册、技术图纸、培训资料</strong
+              >
+            </li>
+          </ul>
+
+          <h3 data-i18n="terms.section1.subtitle2">1.2 技术咨询服务</h3>
+          <ul>
+            <li data-i18n="terms.section1.service1">产品选型和兼容性咨询</li>
+            <li data-i18n="terms.section1.service2">故障诊断和维修指导</li>
+            <li data-i18n="terms.section1.service3">安装调试技术支持</li>
+            <li data-i18n="terms.section1.service4">产品使用培训服务</li>
+          </ul>
+
+          <h2 data-i18n="terms.section3.title">2. 用户资格和注册</h2>
+
+          <h3 data-i18n="terms.section3.subtitle1">2.1 用户资格要求</h3>
+          <ul>
+            <li>
+              <strong data-i18n="terms.section3.user1"
+                >企业用户：具有合法经营资质的汽车维修企业、配件经销商、贸易公司</strong
+              >
+            </li>
+            <li>
+              <strong data-i18n="terms.section3.user2"
+                >专业技术人员：具备相关技术知识和经验的维修技师、工程师</strong
+              >
+            </li>
+            <li>
+              <strong data-i18n="terms.section3.user3"
+                >个人用户：年满18周岁，具有完全民事行为能力的自然人</strong
+              >
+            </li>
+            <li>
+              <strong data-i18n="terms.section3.user4"
+                >国际用户：符合当地法律法规要求的境外客户</strong
+              >
+            </li>
+          </ul>
+
+          <h2 data-i18n="terms.section_product.title">3. 产品和价格</h2>
+
+          <h3 data-i18n="terms.section_product.subtitle1">3.1 产品信息</h3>
+          <div class="highlight-box">
+            <p
+              style="margin-bottom: 15px"
+              data-i18n="terms.section_product.intro"
+            >
+              我们努力确保网站上的产品信息准确，但由于技术限制和产品更新频繁，可能存在以下情况：
+            </p>
+            <ul style="margin: 0">
+              <li>
+                <strong data-i18n="terms.section_product.tech_params"
+                  >技术参数：</strong
+                ><span data-i18n="terms.section_product.tech_params_details"
+                  >以产品实物和官方技术文档为准</span
+                >
+              </li>
+              <li>
+                <strong data-i18n="terms.section_product.product_images"
+                  >产品图片：</strong
+                ><span data-i18n="terms.section_product.product_images_details"
+                  >仅供参考，实际产品可能略有差异</span
+                >
+              </li>
+              <li>
+                <strong data-i18n="terms.section_product.stock_status"
+                  >库存状态：</strong
+                ><span data-i18n="terms.section_product.stock_status_details"
+                  >实时更新，但可能存在延迟</span
+                >
+              </li>
+              <li>
+                <strong data-i18n="terms.section_product.compatibility"
+                  >适配信息：</strong
+                ><span data-i18n="terms.section_product.compatibility_details"
+                  >建议购买前确认车型兼容性</span
+                >
+              </li>
+            </ul>
+          </div>
+
+          <h2 data-i18n="terms.section_order.title">4. 订单和支付</h2>
+
+          <h3 data-i18n="terms.section_order.subtitle1">4.1 订单流程</h3>
+          <div class="process-steps">
+            <div class="step-item">
+              <h4 data-i18n="terms.section_order.step1_title">1️⃣ 产品询价</h4>
+              <p data-i18n="terms.section_order.step1_desc">
+                提交产品需求，获取详细报价
+              </p>
             </div>
-
-            <div class="content-section">
-                <h2 data-i18n="terms.section1.title">1. 服务范围</h2>
-
-                <h3 data-i18n="terms.section1.subtitle1">1.1 产品销售服务</h3>
-                <ul>
-                    <li><strong data-i18n="terms.section1.item1">涡轮增压器总成：各品牌新品、再制造产品销售</strong></li>
-                    <li><strong data-i18n="terms.section1.item2">涡轮增压器配件：叶轮、壳体、执行器、传感器等精密配件</strong></li>
-                    <li><strong data-i18n="terms.section1.item3">共轨喷油器：博世、德尔福、电装等品牌喷油器及配件</strong></li>
-                    <li><strong data-i18n="terms.section1.item4">维修工具：专业维修设备和检测工具</strong></li>
-                    <li><strong data-i18n="terms.section1.item5">技术资料：维修手册、技术图纸、培训资料</strong></li>
-                </ul>
-
-                <h3 data-i18n="terms.section1.subtitle2">1.2 技术咨询服务</h3>
-                <ul>
-                    <li data-i18n="terms.section1.service1">产品选型和兼容性咨询</li>
-                    <li data-i18n="terms.section1.service2">故障诊断和维修指导</li>
-                    <li data-i18n="terms.section1.service3">安装调试技术支持</li>
-                    <li data-i18n="terms.section1.service4">产品使用培训服务</li>
-                </ul>
-
-                <h2 data-i18n="terms.section3.title">2. 用户资格和注册</h2>
-
-                <h3 data-i18n="terms.section3.subtitle1">2.1 用户资格要求</h3>
-                <ul>
-                    <li><strong data-i18n="terms.section3.user1">企业用户：具有合法经营资质的汽车维修企业、配件经销商、贸易公司</strong></li>
-                    <li><strong data-i18n="terms.section3.user2">专业技术人员：具备相关技术知识和经验的维修技师、工程师</strong></li>
-                    <li><strong data-i18n="terms.section3.user3">个人用户：年满18周岁，具有完全民事行为能力的自然人</strong></li>
-                    <li><strong data-i18n="terms.section3.user4">国际用户：符合当地法律法规要求的境外客户</strong></li>
-                </ul>
-
-                <h2 data-i18n="terms.section_product.title">3. 产品和价格</h2>
-
-                <h3 data-i18n="terms.section_product.subtitle1">3.1 产品信息</h3>
-                <div class="highlight-box">
-                    <p style="margin-bottom: 15px;" data-i18n="terms.section_product.intro">我们努力确保网站上的产品信息准确，但由于技术限制和产品更新频繁，可能存在以下情况：</p>
-                    <ul style="margin: 0;">
-                        <li><strong data-i18n="terms.section_product.tech_params">技术参数：</strong><span data-i18n="terms.section_product.tech_params_details">以产品实物和官方技术文档为准</span></li>
-                        <li><strong data-i18n="terms.section_product.product_images">产品图片：</strong><span data-i18n="terms.section_product.product_images_details">仅供参考，实际产品可能略有差异</span></li>
-                        <li><strong data-i18n="terms.section_product.stock_status">库存状态：</strong><span data-i18n="terms.section_product.stock_status_details">实时更新，但可能存在延迟</span></li>
-                        <li><strong data-i18n="terms.section_product.compatibility">适配信息：</strong><span data-i18n="terms.section_product.compatibility_details">建议购买前确认车型兼容性</span></li>
-                    </ul>
-                </div>
-
-                <h2 data-i18n="terms.section_order.title">4. 订单和支付</h2>
-
-                <h3 data-i18n="terms.section_order.subtitle1">4.1 订单流程</h3>
-                <div class="process-steps">
-                    <div class="step-item">
-                        <h4 data-i18n="terms.section_order.step1_title">1️⃣ 产品询价</h4>
-                        <p data-i18n="terms.section_order.step1_desc">提交产品需求，获取详细报价</p>
-                    </div>
-                    <div class="step-item">
-                        <h4 data-i18n="terms.section_order.step2_title">2️⃣ 订单确认</h4>
-                        <p data-i18n="terms.section_order.step2_desc">确认产品规格、数量、价格和交期</p>
-                    </div>
-                    <div class="step-item">
-                        <h4 data-i18n="terms.section_order.step3_title">3️⃣ 合同签署</h4>
-                        <p data-i18n="terms.section_order.step3_desc">签署正式采购合同或订单协议</p>
-                    </div>
-                    <div class="step-item">
-                        <h4 data-i18n="terms.section_order.step4_title">4️⃣ 付款安排</h4>
-                        <p data-i18n="terms.section_order.step4_desc">按约定方式和期限完成付款</p>
-                    </div>
-                    <div class="step-item">
-                        <h4 data-i18n="terms.section_order.step5_title">5️⃣ 发货配送</h4>
-                        <p data-i18n="terms.section_order.step5_desc">安排发货并提供物流跟踪信息</p>
-                    </div>
-                </div>
-
-                <h2 data-i18n="terms.section2.title">5. 质量保证和售后服务</h2>
-
-                <h3 data-i18n="terms.section2.subtitle1">5.1 质量保证</h3>
-                <div class="success-box">
-                    <h4 style="color: #155724; margin-bottom: 15px;" data-i18n="terms.section2.intro">我们的质量承诺</h4>
-                    <ul style="margin: 0; color: #155724;">
-                        <li><strong data-i18n="terms.section2.warranty1">正品保证：所有产品均为正品，提供品牌授权证明</strong></li>
-                        <li><strong data-i18n="terms.section2.warranty2">质量检测：出厂前进行严格的质量检测</strong></li>
-                        <li><strong data-i18n="terms.section2.warranty3">包装保护：采用专业包装，确保运输安全</strong></li>
-                        <li><strong data-i18n="terms.section2.warranty4">质量追溯：建立完整的产品质量追溯体系</strong></li>
-                        <li><strong data-i18n="terms.section2.warranty5">持续改进：</strong><span data-i18n="terms.section2.warranty5_details">不断改进产品质量和服务水平</span></li>
-                    </ul>
-                </div>
-
-                <h2 data-i18n="terms.contact.title">6. 联系我们</h2>
-
-                <div class="highlight-box">
-                    <p><strong data-i18n="terms.contact.intro">如果您对本服务条款有任何疑问，请通过以下方式联系我们：</strong></p>
-                    <ul style="margin-bottom: 0;" id="contactInfo">
-                        <!-- 联系信息 -->
-                        <li><strong data-i18n="terms.contact.company">公司名称：</strong><span id="companyName">无锡皇德国际贸易有限公司</span></li>
-                        <li><strong data-i18n="terms.contact.phone">电话：</strong><a href="tel:+8613656157230" style="color: #2196f3;" id="contactPhone">13656157230</a></li>
-                        <li><strong data-i18n="terms.contact.email">邮箱：</strong><a href="mailto:sales03@diamond-auto.com" style="color: #2196f3;" id="contactEmail">sales03@diamond-auto.com</a></li>
-                        <li><strong data-i18n="terms.contact.address">地址：</strong><span id="contactAddress" data-i18n="contact.address_full">无锡市锡山区东港镇黄土塘村创业路107号</span></li>
-                        <li><strong data-i18n="terms.contact.whatsapp">WhatsApp：</strong><a href="https://wa.me/8613656157230" style="color: #25d366;" target="_blank" id="contactWhatsApp">+86 13656157230</a></li>
-                        <li><strong data-i18n="terms.contact.hours">营业时间：</strong><span id="businessHours" data-i18n="terms.contact.hours_value">周一至周六 8:00-18:00</span></li>
-                    </ul>
-                </div>
+            <div class="step-item">
+              <h4 data-i18n="terms.section_order.step2_title">2️⃣ 订单确认</h4>
+              <p data-i18n="terms.section_order.step2_desc">
+                确认产品规格、数量、价格和交期
+              </p>
             </div>
+            <div class="step-item">
+              <h4 data-i18n="terms.section_order.step3_title">3️⃣ 合同签署</h4>
+              <p data-i18n="terms.section_order.step3_desc">
+                签署正式采购合同或订单协议
+              </p>
+            </div>
+            <div class="step-item">
+              <h4 data-i18n="terms.section_order.step4_title">4️⃣ 付款安排</h4>
+              <p data-i18n="terms.section_order.step4_desc">
+                按约定方式和期限完成付款
+              </p>
+            </div>
+            <div class="step-item">
+              <h4 data-i18n="terms.section_order.step5_title">5️⃣ 发货配送</h4>
+              <p data-i18n="terms.section_order.step5_desc">
+                安排发货并提供物流跟踪信息
+              </p>
+            </div>
+          </div>
+
+          <h2 data-i18n="terms.section2.title">5. 质量保证和售后服务</h2>
+
+          <h3 data-i18n="terms.section2.subtitle1">5.1 质量保证</h3>
+          <div class="success-box">
+            <h4
+              style="color: #155724; margin-bottom: 15px"
+              data-i18n="terms.section2.intro"
+            >
+              我们的质量承诺
+            </h4>
+            <ul style="margin: 0; color: #155724">
+              <li>
+                <strong data-i18n="terms.section2.warranty1"
+                  >正品保证：所有产品均为正品，提供品牌授权证明</strong
+                >
+              </li>
+              <li>
+                <strong data-i18n="terms.section2.warranty2"
+                  >质量检测：出厂前进行严格的质量检测</strong
+                >
+              </li>
+              <li>
+                <strong data-i18n="terms.section2.warranty3"
+                  >包装保护：采用专业包装，确保运输安全</strong
+                >
+              </li>
+              <li>
+                <strong data-i18n="terms.section2.warranty4"
+                  >质量追溯：建立完整的产品质量追溯体系</strong
+                >
+              </li>
+              <li>
+                <strong data-i18n="terms.section2.warranty5">持续改进：</strong
+                ><span data-i18n="terms.section2.warranty5_details"
+                  >不断改进产品质量和服务水平</span
+                >
+              </li>
+            </ul>
+          </div>
+
+          <h2 data-i18n="terms.contact.title">6. 联系我们</h2>
+
+          <div class="highlight-box">
+            <p>
+              <strong data-i18n="terms.contact.intro"
+                >如果您对本服务条款有任何疑问，请通过以下方式联系我们：</strong
+              >
+            </p>
+            <ul style="margin-bottom: 0" id="contactInfo">
+              <!-- 联系信息 -->
+              <li>
+                <strong data-i18n="terms.contact.company">公司名称：</strong
+                ><span id="companyName">无锡皇德国际贸易有限公司</span>
+              </li>
+              <li>
+                <strong data-i18n="terms.contact.phone">电话：</strong
+                ><a
+                  href="tel:+8613656157230"
+                  style="color: #2196f3"
+                  id="contactPhone"
+                  >13656157230</a
+                >
+              </li>
+              <li>
+                <strong data-i18n="terms.contact.email">邮箱：</strong
+                ><a
+                  href="mailto:sales03@diamond-auto.com"
+                  style="color: #2196f3"
+                  id="contactEmail"
+                  >sales03@diamond-auto.com</a
+                >
+              </li>
+              <li>
+                <strong data-i18n="terms.contact.address">地址：</strong
+                ><span id="contactAddress" data-i18n="contact.address_full"
+                  >无锡市锡山区东港镇黄土塘村创业路107号</span
+                >
+              </li>
+              <li>
+                <strong data-i18n="terms.contact.whatsapp">WhatsApp：</strong
+                ><a
+                  href="https://wa.me/8613656157230"
+                  style="color: #25d366"
+                  target="_blank"
+                  id="contactWhatsApp"
+                  >+86 13656157230</a
+                >
+              </li>
+              <li>
+                <strong data-i18n="terms.contact.hours">营业时间：</strong
+                ><span id="businessHours" data-i18n="terms.contact.hours_value"
+                  >周一至周六 8:00-18:00</span
+                >
+              </li>
+            </ul>
+          </div>
         </div>
+      </div>
     </main>
 
     <!-- 页脚组件容器 -->
@@ -323,30 +491,39 @@
     <!-- 脚本文件 -->
     <!-- 🔧 早期语言检测脚本 - 在所有其他脚本之前执行，避免语言闪烁 -->
     <script>
-        (function() {
-            'use strict';
-            console.log('🌍 早期语言检测开始...');
+      (function () {
+        "use strict";
+        console.log("🌍 早期语言检测开始...");
 
-            // 检测用户偏好语言
-            const preferredLang = localStorage.getItem('preferred-language') ||
-                                 (navigator.language || navigator.userLanguage || 'zh-CN');
+        // 检测用户偏好语言
+        const preferredLang =
+          localStorage.getItem("preferred-language") ||
+          navigator.language ||
+          navigator.userLanguage ||
+          "zh-CN";
 
-            console.log('🌍 检测到用户偏好语言:', preferredLang);
+        console.log("🌍 检测到用户偏好语言:", preferredLang);
 
-            // 立即设置HTML lang属性，避免闪烁
-            const langCode = preferredLang.split('-')[0];
-            document.documentElement.lang = langCode;
+        // 立即设置HTML lang属性，避免闪烁
+        const langCode = preferredLang.split("-")[0];
+        document.documentElement.lang = langCode;
 
-            // 在window对象上设置早期语言信息，供后续脚本使用
-            window.earlyLanguageDetection = {
-                preferredLanguage: preferredLang,
-                langCode: langCode,
-                timestamp: Date.now()
-            };
+        // 在window对象上设置早期语言信息，供后续脚本使用
+        window.earlyLanguageDetection = {
+          preferredLanguage: preferredLang,
+          langCode: langCode,
+          timestamp: Date.now(),
+        };
 
-            console.log('✅ 早期语言检测完成，HTML lang已设置为:', langCode);
-        })();
+        console.log("✅ 早期语言检测完成，HTML lang已设置为:", langCode);
+      })();
     </script>
+
+    <!-- 🚀 全局加载屏幕 - 必须最先加载，立即显示加载动画 -->
+    <script src="../assets/js/global-loading-screen.js"></script>
+
+    <!-- 🎯 页面渲染协调器 - 统一管理所有组件的加载顺序 -->
+    <script src="../assets/js/page-render-coordinator.js"></script>
 
     <!-- 🚀 统一页面加载管理器（优先加载，防止页面多次刷新） -->
     <script src="../assets/js/page-load-manager.js"></script>
@@ -361,195 +538,202 @@
     <script src="../assets/js/modules/services/company-service.js"></script>
     <script src="../assets/js/modules/components/component-manager.js"></script>
     <script src="../assets/js/unified-component-loader.js"></script>
-    
+
     <!-- 🔧 搜索功能修复模块 -->
     <script src="../assets/js/search-fix.js"></script>
-    
+
     <script src="../assets/js/main.js"></script>
-    
+
     <!-- 使用条款页面初始化脚本 -->
     <script>
-        // 初始化页面组件和动态内容
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 使用条款页面 - 开始初始化...');
+      // 初始化页面组件和动态内容
+      document.addEventListener("DOMContentLoaded", async function () {
+        console.log("🚀 使用条款页面 - 开始初始化...");
 
-            try {
-                // 等待组件管理器初始化
-                let componentManager = window.componentManager;
-                if (!componentManager) {
-                    console.log('⏳ 等待组件管理器初始化...');
-                    // 等待最多3秒
-                    for (let i = 0; i < 30; i++) {
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                        componentManager = window.componentManager;
-                        if (componentManager) break;
-                    }
-                }
-
-                if (!componentManager) {
-                    throw new Error('组件管理器初始化失败');
-                }
-
-                // 初始化页头页尾组件
-                await componentManager.init(false);
-
-                // 加载公司信息并更新联系信息
-                await loadContactInfo();
-
-                console.log('✅ 使用条款页面 - 初始化完成');
-
-            } catch (error) {
-                console.error('❌ 使用条款页面初始化失败:', error);
+        try {
+          // 等待组件管理器初始化
+          let componentManager = window.componentManager;
+          if (!componentManager) {
+            console.log("⏳ 等待组件管理器初始化...");
+            // 等待最多3秒
+            for (let i = 0; i < 30; i++) {
+              await new Promise((resolve) => setTimeout(resolve, 100));
+              componentManager = window.componentManager;
+              if (componentManager) break;
             }
-        });
+          }
 
-        // 加载并更新联系信息
-        async function loadContactInfo() {
-            try {
-                console.log('📞 正在加载联系信息...');
-                
-                // 从后台获取公司信息
-                const response = await fetch('/api/company');
-                const companyData = await response.json();
-                
-                if (companyData.success && companyData.data) {
-                    const company = companyData.data;
-                    const contact = company.contact || {};
-                    const businessHours = company.businessHours || {};
-                    
-                    console.log('🏢 获取到公司数据:', company);
-                    console.log('📞 获取到联系信息:', contact);
-                    
-                    // 更新公司名称 - 支持多语言
-                    const companyNameElement = document.getElementById('companyName');
-                    if (companyNameElement) {
-                        // 获取当前语言
-                        let companyName = company.name || '无锡皇德国际贸易有限公司';
-                        if (window.i18nManager && window.i18nManager.getCurrentLanguage) {
-                            const currentLangInfo = window.i18nManager.getCurrentLanguage();
-                            const currentLang = currentLangInfo.code || currentLangInfo;
-                            if (currentLang === 'en-US') {
-                                companyName = 'Wuxi Huangde International Trading Co., Ltd.';
-                            }
-                        }
-                        companyNameElement.textContent = companyName;
-                    }
-                    
-                    // 更新电话
-                    const phoneElement = document.getElementById('contactPhone');
-                    if (phoneElement && contact.phone) {
-                        // 清理电话号码格式，移除空格和+86
-                        const cleanPhone = contact.phone.replace(/\s+/g, '').replace(/\+86/, '');
-                        phoneElement.textContent = cleanPhone;
-                        phoneElement.href = `tel:+86${cleanPhone}`;
-                    }
-                    
-                    // 更新邮箱
-                    const emailElement = document.getElementById('contactEmail');
-                    if (emailElement && contact.email) {
-                        emailElement.textContent = contact.email;
-                        emailElement.href = `mailto:${contact.email}`;
-                    }
-                    
-                    // 更新地址 - 支持多语言
-                    const addressElement = document.getElementById('contactAddress');
-                    if (addressElement && contact.address) {
-                        // 获取本地化地址
-                        let address = contact.address;
-                        if (window.i18nManager && window.i18nManager.getCurrentLanguage) {
-                            const currentLangInfo = window.i18nManager.getCurrentLanguage();
-                            const currentLang = currentLangInfo.code || currentLangInfo; // 兼容新旧版本
-                            if (currentLang === 'en-US') {
-                                address = window.i18nManager.t('contact.address_full') ||
-                                         'No. 107, Chuangye Road, Industrial Park, Huangtutang Village, Donggang Town, Xishan District, Wuxi City';
-                            } else {
-                                // 中文地址，移除邮编部分
-                                const addressParts = contact.address.split('邮编:');
-                                address = addressParts[0].trim();
-                            }
-                        }
+          if (!componentManager) {
+            throw new Error("组件管理器初始化失败");
+          }
 
-                        // 格式化地址显示
-                        const formattedAddress = formatAddressForDisplay(address, currentLang);
-                        addressElement.innerHTML = formattedAddress;
-                    }
-                    
-                    // 更新WhatsApp
-                    const whatsappElement = document.getElementById('contactWhatsApp');
-                    if (whatsappElement && contact.whatsapp) {
-                        whatsappElement.textContent = contact.whatsapp;
-                        // 生成WhatsApp链接，移除+号和空格
-                        const whatsappNumber = contact.whatsapp.replace(/\+/g, '').replace(/\s+/g, '');
-                        whatsappElement.href = `https://wa.me/${whatsappNumber}`;
-                    }
-                    
-                    // 更新营业时间
-                    const businessHoursElement = document.getElementById('businessHours');
-                    if (businessHoursElement) {
-                        // 组合工作日和周末时间
-                        let hoursText = '';
-                        if (businessHours.weekdays) {
-                            hoursText += businessHours.weekdays;
-                        }
-                        if (businessHours.weekend) {
-                            if (hoursText) hoursText += ', ';
-                            hoursText += businessHours.weekend;
-                        }
-                        if (hoursText) {
-                            businessHoursElement.textContent = hoursText;
-                        }
-                    }
-                    
-                    console.log('✅ 使用条款页面联系信息更新完成');
-                } else {
-                    throw new Error('无法获取公司信息');
-                }
+          // 初始化页头页尾组件
+          await componentManager.init(false);
 
-            } catch (error) {
-                console.error('❌ 加载联系信息失败:', error);
-                // 保持现有的硬编码信息作为后备
-                console.log('🔄 使用后备联系信息');
-            }
+          // 加载公司信息并更新联系信息
+          await loadContactInfo();
+
+          console.log("✅ 使用条款页面 - 初始化完成");
+        } catch (error) {
+          console.error("❌ 使用条款页面初始化失败:", error);
         }
+      });
 
-        // 格式化地址显示的辅助函数
-        function formatAddressForDisplay(address, currentLang) {
-            if (!address) return '';
+      // 加载并更新联系信息
+      async function loadContactInfo() {
+        try {
+          console.log("📞 正在加载联系信息...");
 
-            if (currentLang === 'en-US') {
-                // 英文地址格式化：按指定格式显示
-                const parts = address.split(',').map(part => part.trim());
+          // 从后台获取公司信息
+          const response = await fetch("/api/company");
+          const companyData = await response.json();
 
-                if (parts.length >= 3) {
-                    // 标准3行格式
-                    const line1 = parts[0] + ','; // No. 107 Chuangye Road,
-                    const line2 = parts[1] + ','; // Industrial Park Donggang Town,
-                    const line3 = parts[2];       // Xishan District Wuxi City
-                    return `${line1}<br>${line2}<br>${line3}`;
-                } else if (parts.length === 2) {
-                    // 2行格式
-                    const line1 = parts[0] + ',';
-                    const line2 = parts[1];
-                    return `${line1}<br>${line2}`;
-                } else {
-                    // 单行格式
-                    return parts[0];
+          if (companyData.success && companyData.data) {
+            const company = companyData.data;
+            const contact = company.contact || {};
+            const businessHours = company.businessHours || {};
+
+            console.log("🏢 获取到公司数据:", company);
+            console.log("📞 获取到联系信息:", contact);
+
+            // 更新公司名称 - 支持多语言
+            const companyNameElement = document.getElementById("companyName");
+            if (companyNameElement) {
+              // 获取当前语言
+              let companyName = company.name || "无锡皇德国际贸易有限公司";
+              if (window.i18nManager && window.i18nManager.getCurrentLanguage) {
+                const currentLangInfo = window.i18nManager.getCurrentLanguage();
+                const currentLang = currentLangInfo.code || currentLangInfo;
+                if (currentLang === "en-US") {
+                  companyName = "Wuxi Huangde International Trading Co., Ltd.";
                 }
-            } else {
-                // 中文地址格式化：按空格分行
-                return address.replace(/\s+/g, '<br>');
+              }
+              companyNameElement.textContent = companyName;
             }
+
+            // 更新电话
+            const phoneElement = document.getElementById("contactPhone");
+            if (phoneElement && contact.phone) {
+              // 清理电话号码格式，移除空格和+86
+              const cleanPhone = contact.phone
+                .replace(/\s+/g, "")
+                .replace(/\+86/, "");
+              phoneElement.textContent = cleanPhone;
+              phoneElement.href = `tel:+86${cleanPhone}`;
+            }
+
+            // 更新邮箱
+            const emailElement = document.getElementById("contactEmail");
+            if (emailElement && contact.email) {
+              emailElement.textContent = contact.email;
+              emailElement.href = `mailto:${contact.email}`;
+            }
+
+            // 更新地址 - 支持多语言
+            const addressElement = document.getElementById("contactAddress");
+            if (addressElement && contact.address) {
+              // 获取本地化地址
+              let address = contact.address;
+              if (window.i18nManager && window.i18nManager.getCurrentLanguage) {
+                const currentLangInfo = window.i18nManager.getCurrentLanguage();
+                const currentLang = currentLangInfo.code || currentLangInfo; // 兼容新旧版本
+                if (currentLang === "en-US") {
+                  address =
+                    window.i18nManager.t("contact.address_full") ||
+                    "No. 107, Chuangye Road, Industrial Park, Huangtutang Village, Donggang Town, Xishan District, Wuxi City";
+                } else {
+                  // 中文地址，移除邮编部分
+                  const addressParts = contact.address.split("邮编:");
+                  address = addressParts[0].trim();
+                }
+              }
+
+              // 格式化地址显示
+              const formattedAddress = formatAddressForDisplay(
+                address,
+                currentLang,
+              );
+              addressElement.innerHTML = formattedAddress;
+            }
+
+            // 更新WhatsApp
+            const whatsappElement = document.getElementById("contactWhatsApp");
+            if (whatsappElement && contact.whatsapp) {
+              whatsappElement.textContent = contact.whatsapp;
+              // 生成WhatsApp链接，移除+号和空格
+              const whatsappNumber = contact.whatsapp
+                .replace(/\+/g, "")
+                .replace(/\s+/g, "");
+              whatsappElement.href = `https://wa.me/${whatsappNumber}`;
+            }
+
+            // 更新营业时间
+            const businessHoursElement =
+              document.getElementById("businessHours");
+            if (businessHoursElement) {
+              // 组合工作日和周末时间
+              let hoursText = "";
+              if (businessHours.weekdays) {
+                hoursText += businessHours.weekdays;
+              }
+              if (businessHours.weekend) {
+                if (hoursText) hoursText += ", ";
+                hoursText += businessHours.weekend;
+              }
+              if (hoursText) {
+                businessHoursElement.textContent = hoursText;
+              }
+            }
+
+            console.log("✅ 使用条款页面联系信息更新完成");
+          } else {
+            throw new Error("无法获取公司信息");
+          }
+        } catch (error) {
+          console.error("❌ 加载联系信息失败:", error);
+          // 保持现有的硬编码信息作为后备
+          console.log("🔄 使用后备联系信息");
         }
+      }
 
-        // 🌍 监听语言切换事件，重新更新联系信息
-        document.addEventListener('i18n:changed', function(event) {
-            console.log('🌍 使用条款页面监听到语言切换事件:', event.detail);
+      // 格式化地址显示的辅助函数
+      function formatAddressForDisplay(address, currentLang) {
+        if (!address) return "";
 
-            // 重新加载并更新联系信息
-            setTimeout(() => {
-                loadContactInfo();
-            }, 100);
-        });
+        if (currentLang === "en-US") {
+          // 英文地址格式化：按指定格式显示
+          const parts = address.split(",").map((part) => part.trim());
+
+          if (parts.length >= 3) {
+            // 标准3行格式
+            const line1 = parts[0] + ","; // No. 107 Chuangye Road,
+            const line2 = parts[1] + ","; // Industrial Park Donggang Town,
+            const line3 = parts[2]; // Xishan District Wuxi City
+            return `${line1}<br>${line2}<br>${line3}`;
+          } else if (parts.length === 2) {
+            // 2行格式
+            const line1 = parts[0] + ",";
+            const line2 = parts[1];
+            return `${line1}<br>${line2}`;
+          } else {
+            // 单行格式
+            return parts[0];
+          }
+        } else {
+          // 中文地址格式化：按空格分行
+          return address.replace(/\s+/g, "<br>");
+        }
+      }
+
+      // 🌍 监听语言切换事件，重新更新联系信息
+      document.addEventListener("i18n:changed", function (event) {
+        console.log("🌍 使用条款页面监听到语言切换事件:", event.detail);
+
+        // 重新加载并更新联系信息
+        setTimeout(() => {
+          loadContactInfo();
+        }, 100);
+      });
     </script>
-</body>
-</html> 
+  </body>
+</html>

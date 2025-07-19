@@ -1255,14 +1255,35 @@
       setTimeout(initPageSpecificFeatures, 500);
     </script>
 
-    <!-- 🚀 全局加载屏幕 - 必须最先加载，立即显示加载动画 -->
-    <script src="../assets/js/global-loading-screen.js"></script>
+    <!-- 🔧 早期语言检测脚本 - 在所有其他脚本之前执行，避免语言闪烁 -->
+    <script>
+      (function () {
+        "use strict";
+        console.log("🌍 早期语言检测开始...");
 
-    <!-- 🚨 快速修复脚本 - 防止加载卡住 -->
-    <script src="../quick-fix-loading.js"></script>
+        // 检测用户偏好语言
+        const preferredLang =
+          localStorage.getItem("preferred-language") ||
+          navigator.language ||
+          navigator.userLanguage ||
+          "zh-CN";
 
-    <!-- 🎯 页面渲染协调器 - 统一管理所有组件的加载顺序 -->
-    <script src="../assets/js/page-render-coordinator.js"></script>
+        console.log("🌍 检测到用户偏好语言:", preferredLang);
+
+        // 立即设置HTML lang属性，避免闪烁
+        const langCode = preferredLang.split("-")[0];
+        document.documentElement.lang = langCode;
+
+        // 在window对象上设置早期语言信息，供后续脚本使用
+        window.earlyLanguageDetection = {
+          preferredLanguage: preferredLang,
+          langCode: langCode,
+          timestamp: Date.now(),
+        };
+
+        console.log("✅ 早期语言检测完成，HTML lang已设置为:", langCode);
+      })();
+    </script>
 
     <!-- 🚀 统一页面加载管理器 - 必须最先加载 -->
     <script src="../assets/js/page-load-manager.js"></script>
