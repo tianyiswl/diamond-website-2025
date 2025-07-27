@@ -1,0 +1,36 @@
+{
+  "fixTime": "2025-07-20T11:39:24.354Z",
+  "originalConsistencyRate": "25.0%",
+  "newConsistencyRate": "100.0%",
+  "totalProducts": 4,
+  "totalFiles": 6,
+  "totalReferences": 10,
+  "validReferences": 10,
+  "backupFile": "./data/products.json.backup-1753011564345",
+  "fixedProducts": [
+    {
+      "id": "1752160005058",
+      "name": "VGT 3798462 Electronic Actuator HW-3798463 P-3798462 for Volvo FL220 Dodge Ram",
+      "mainImage": "/uploads/products/1752939200611-38879355.jpg",
+      "imageCount": 2
+    },
+    {
+      "id": "1752159819591",
+      "name": "S500W Turbo Charger 3886223 3818410 56509880000 For 2006-08 Volvo D12 w/D12M",
+      "mainImage": "/uploads/products/1752939200629-256410535.jpg",
+      "imageCount": 2
+    },
+    {
+      "id": "1752158905864",
+      "name": "Turbo Cartridge S500W 56501970000 3886223 3801134 Compatible with Volvo Ship D12M D12C-A MP Marine 56509880000",
+      "mainImage": "/uploads/products/1752939200635-334821784.jpg",
+      "imageCount": 1
+    },
+    {
+      "id": "1752939200656",
+      "name": "T481042-0028 WASTEGATE,REGULATOR,54.1 HG VACUUM,MODEL CA-2501,FOR VHP-GL,REBUILT,WAUKESHA,208372N ",
+      "mainImage": "/uploads/products/1752939200638-769435788.jpg",
+      "imageCount": 1
+    }
+  ]
+}

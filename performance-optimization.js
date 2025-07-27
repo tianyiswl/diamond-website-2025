@@ -35,7 +35,34 @@ class SmartCacheManager {
   }
 
   /**
-   * 获取缓存数据
+   * 🔧 获取不同文件类型的缓存TTL
+   */
+  getCacheTTL(filePath) {
+    if (filePath.includes('analytics.json')) {
+      return 2 * 60 * 1000; // Analytics数据2分钟缓存（更频繁更新）
+    }
+    if (filePath.includes('company.json') || filePath.includes('categories.json')) {
+      return 30 * 60 * 1000; // 配置数据30分钟缓存（变化较少）
+    }
+    if (filePath.includes('inquiries.json')) {
+      return 1 * 60 * 1000; // 询价数据1分钟缓存（需要较新数据）
+    }
+    return this.config.ttl; // 默认5分钟缓存
+  }
+
+  /**
+   * 🔧 检查是否应该输出缓存日志
+   */
+  shouldLogCacheHit(filePath) {
+    const isDebugMode = process.env.NODE_ENV === 'development';
+    const isAnalyticsFile = filePath.includes('analytics.json');
+
+    // 只在调试模式下且非analytics文件时输出日志
+    return isDebugMode && !isAnalyticsFile;
+  }
+
+  /**
+   * 获取缓存数据 - 优化版本
    */
   get(key) {
     const cached = this.cache.get(key);
@@ -45,8 +72,9 @@ class SmartCacheManager {
       return null;
     }
 
-    // 检查TTL
-    if (Date.now() - cached.timestamp > this.config.ttl) {
+    // 🔧 使用动态TTL检查
+    const ttl = this.getCacheTTL(key);
+    if (Date.now() - cached.timestamp > ttl) {
       this.cache.delete(key);
       this.stats.misses++;
       return null;
@@ -60,6 +88,12 @@ class SmartCacheManager {
     }
 
     this.stats.hits++;
+
+    // 🔧 智能日志输出
+    if (this.shouldLogCacheHit(key)) {
+      console.log('🎯 缓存命中:', key);
+    }
+
     return cached.data;
   }
 
@@ -182,6 +216,19 @@ class SmartCacheManager {
       cacheSize: this.cache.size,
       runtime: Math.round(runtime / 1000) + "s",
     };
+  }
+
+  /**
+   * 删除指定缓存项
+   * @param {string} key - 缓存键
+   */
+  delete(key) {
+    const deleted = this.cache.delete(key);
+    this.fileStats.delete(key);
+    if (deleted) {
+      console.log(`🗑️ 已删除缓存项: ${key}`);
+    }
+    return deleted;
   }
 
   /**

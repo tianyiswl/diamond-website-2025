@@ -1,0 +1,187 @@
+{
+  "summary": {
+    "totalTests": 25,
+    "passedTests": 25,
+    "failedTests": 0,
+    "successRate": "100.00%",
+    "timestamp": "2025-07-27T01:01:11.757Z"
+  },
+  "results": [
+    {
+      "testName": "数据库连接",
+      "passed": true,
+      "message": "PostgreSQL连接成功",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.482Z"
+    },
+    {
+      "testName": "产品数量一致性",
+      "passed": true,
+      "message": "原始: 4, 数据库: 4",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.557Z"
+    },
+    {
+      "testName": "分类数量一致性",
+      "passed": true,
+      "message": "原始: 5, 数据库: 5",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.557Z"
+    },
+    {
+      "testName": "公司信息存在",
+      "passed": true,
+      "message": "公司信息已迁移",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.558Z"
+    },
+    {
+      "testName": "产品 T481042-0028 WASTEGATE,REGULATOR,54.1 HG VACUUM,MODEL CA-2501,FOR VHP-GL,REBUILT,WAUKESHA,208372N  - 名称",
+      "passed": true,
+      "message": "匹配",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.558Z"
+    },
+    {
+      "testName": "产品 T481042-0028 WASTEGATE,REGULATOR,54.1 HG VACUUM,MODEL CA-2501,FOR VHP-GL,REBUILT,WAUKESHA,208372N  - SKU",
+      "passed": true,
+      "message": "匹配",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.558Z"
+    },
+    {
+      "testName": "产品 T481042-0028 WASTEGATE,REGULATOR,54.1 HG VACUUM,MODEL CA-2501,FOR VHP-GL,REBUILT,WAUKESHA,208372N  - 价格",
+      "passed": true,
+      "message": "匹配",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.559Z"
+    },
+    {
+      "testName": "产品 VGT 3798462 Electronic Actuator HW-3798463 P-3798462 for Volvo FL220 Dodge Ram - 名称",
+      "passed": true,
+      "message": "匹配",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.559Z"
+    },
+    {
+      "testName": "产品 VGT 3798462 Electronic Actuator HW-3798463 P-3798462 for Volvo FL220 Dodge Ram - SKU",
+      "passed": true,
+      "message": "匹配",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.559Z"
+    },
+    {
+      "testName": "产品 VGT 3798462 Electronic Actuator HW-3798463 P-3798462 for Volvo FL220 Dodge Ram - 价格",
+      "passed": true,
+      "message": "匹配",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.559Z"
+    },
+    {
+      "testName": "产品 S500W Turbo Charger 3886223 3818410 56509880000 For 2006-08 Volvo D12 w/D12M - 名称",
+      "passed": true,
+      "message": "匹配",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.559Z"
+    },
+    {
+      "testName": "产品 S500W Turbo Charger 3886223 3818410 56509880000 For 2006-08 Volvo D12 w/D12M - SKU",
+      "passed": true,
+      "message": "匹配",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.559Z"
+    },
+    {
+      "testName": "产品 S500W Turbo Charger 3886223 3818410 56509880000 For 2006-08 Volvo D12 w/D12M - 价格",
+      "passed": true,
+      "message": "匹配",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.559Z"
+    },
+    {
+      "testName": "产品详细验证",
+      "passed": true,
+      "message": "成功匹配 3 个产品",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.559Z"
+    },
+    {
+      "testName": "公开产品API",
+      "passed": true,
+      "message": "响应结构正确",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.707Z"
+    },
+    {
+      "testName": "公开产品API - 数据量",
+      "passed": true,
+      "message": "返回 4 条记录",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.707Z"
+    },
+    {
+      "testName": "分类API",
+      "passed": true,
+      "message": "响应结构正确",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.715Z"
+    },
+    {
+      "testName": "分类API - 数据量",
+      "passed": true,
+      "message": "返回 5 条记录",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.715Z"
+    },
+    {
+      "testName": "公司信息API",
+      "passed": true,
+      "message": "响应结构正确",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.726Z"
+    },
+    {
+      "testName": "轮播图API",
+      "passed": true,
+      "message": "响应结构正确",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.732Z"
+    },
+    {
+      "testName": "轮播图API - 数据量",
+      "passed": true,
+      "message": "返回 4 条记录",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.732Z"
+    },
+    {
+      "testName": "健康检查API",
+      "passed": true,
+      "message": "响应结构正确",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.736Z"
+    },
+    {
+      "testName": "产品详情API",
+      "passed": true,
+      "message": "成功获取产品: Turbo Cartridge S500W 56501970000 3886223 3801134 Compatible with Volvo Ship D12M D12C-A MP Marine 56509880000",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.756Z"
+    },
+    {
+      "testName": "产品图片数据",
+      "passed": true,
+      "message": "包含 1 张图片",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.756Z"
+    },
+    {
+      "testName": "产品分类数据",
+      "passed": "涡轮配件",
+      "message": "分类: 涡轮配件",
+      "data": null,
+      "timestamp": "2025-07-27T01:01:11.756Z"
+    }
+  ],
+  "errors": []
+}

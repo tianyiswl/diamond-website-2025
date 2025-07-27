@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 最终修复验证 - Diamond Website</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .verification-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .verification-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .card-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ffd700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        .status-ok { color: #4CAF50; font-weight: bold; }
+        .status-error { color: #f44336; font-weight: bold; }
+        .status-warning { color: #ff9800; font-weight: bold; }
+        .status-pending { color: #2196F3; font-weight: bold; }
+        .button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .button.primary { background: linear-gradient(45deg, #2196F3, #1976D2); }
+        .button.success { background: linear-gradient(45deg, #4CAF50, #45a049); }
+        .button.warning { background: linear-gradient(45deg, #ff9800, #f57c00); }
+        .summary {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .summary h2 {
+            margin-top: 0;
+            color: #ffd700;
+        }
+        .logs {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 最终修复验证</h1>
+        
+        <div class="verification-grid">
+            <div class="verification-card">
+                <div class="card-title">
+                    <span>🌐</span>
+                    <span>服务器和API状态</span>
+                </div>
+                <div class="test-item">
+                    <span>Node.js服务器</span>
+                    <span id="server-status" class="status-pending">检查中...</span>
+                </div>
+                <div class="test-item">
+                    <span>产品API</span>
+                    <span id="products-api-status" class="status-pending">检查中...</span>
+                </div>
+                <div class="test-item">
+                    <span>分类API</span>
+                    <span id="categories-api-status" class="status-pending">检查中...</span>
+                </div>
+            </div>
+            
+            <div class="verification-card">
+                <div class="card-title">
+                    <span>🏠</span>
+                    <span>主页功能状态</span>
+                </div>
+                <div class="test-item">
+                    <span>轮播图</span>
+                    <span id="carousel-status" class="status-pending">检查中...</span>
+                </div>
+                <div class="test-item">
+                    <span>产品展示</span>
+                    <span id="homepage-products-status" class="status-pending">检查中...</span>
+                </div>
+                <div class="test-item">
+                    <span>页面导航</span>
+                    <span id="homepage-navigation-status" class="status-pending">检查中...</span>
+                </div>
+            </div>
+            
+            <div class="verification-card">
+                <div class="card-title">
+                    <span>📜</span>
+                    <span>修复脚本状态</span>
+                </div>
+                <div class="test-item">
+                    <span>双重刷新修复</span>
+                    <span id="double-refresh-fix-status" class="status-pending">检查中...</span>
+                </div>
+                <div class="test-item">
+                    <span>页面跳转修复</span>
+                    <span id="page-transition-fix-status" class="status-pending">检查中...</span>
+                </div>
+                <div class="test-item">
+                    <span>组件管理器</span>
+                    <span id="component-manager-status" class="status-pending">检查中...</span>
+                </div>
+            </div>
+            
+            <div class="verification-card">
+                <div class="card-title">
+                    <span>🔗</span>
+                    <span>页面访问测试</span>
+                </div>
+                <div class="test-item">
+                    <span>产品页面</span>
+                    <span id="products-page-status" class="status-pending">检查中...</span>
+                </div>
+                <div class="test-item">
+                    <span>关于页面</span>
+                    <span id="about-page-status" class="status-pending">检查中...</span>
+                </div>
+                <div class="test-item">
+                    <span>联系页面</span>
+                    <span id="contact-page-status" class="status-pending">检查中...</span>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <button class="button success" onclick="runFullVerification()">🔍 完整验证</button>
+            <a href="/" class="button primary" target="_blank">🏠 测试主页</a>
+            <a href="/pages/products.html" class="button primary" target="_blank">📦 测试产品页</a>
+            <a href="/pages/about.html" class="button primary" target="_blank">ℹ️ 测试关于页</a>
+            <button class="button warning" onclick="clearLogs()">🗑️ 清除日志</button>
+        </div>
+        
+        <div class="summary" id="summary" style="display: none;">
+            <h2>📊 验证结果总结</h2>
+            <div id="summary-content"></div>
+        </div>
+        
+        <div class="logs" id="logs">
+            <div style="color: #4CAF50;">[启动] 🎉 最终修复验证工具已启动</div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {};
+        
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                success: '#4CAF50',
+                error: '#f44336',
+                warning: '#ff9800',
+                info: '#2196F3'
+            };
+            
+            const entry = document.createElement('div');
+            entry.innerHTML = `<span style="color: #888;">[${timestamp}]</span> <span style="color: ${colors[type] || colors.info};">${message}</span>`;
+            logs.appendChild(entry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function updateStatus(elementId, status, success = true) {
+            const element = document.getElementById(elementId);
+            element.textContent = status;
+            element.className = success ? 'status-ok' : 'status-error';
+            testResults[elementId] = success;
+        }
+        
+        async function checkServerAndAPI() {
+            log('🌐 检查服务器和API状态...', 'info');
+            
+            try {
+                // 检查服务器
+                const serverResponse = await fetch('/');
+                updateStatus('server-status', serverResponse.ok ? '✅ 正常' : '❌ 异常', serverResponse.ok);
+                log(`服务器状态: ${serverResponse.ok ? '正常' : '异常'}`, serverResponse.ok ? 'success' : 'error');
+                
+                // 检查产品API
+                const productsResponse = await fetch('/api/public/products');
+                if (productsResponse.ok) {
+                    const data = await productsResponse.json();
+                    const count = data.products ? data.products.length : 0;
+                    updateStatus('products-api-status', `✅ ${count}个产品`, true);
+                    log(`产品API: 正常 (${count}个产品)`, 'success');
+                } else {
+                    updateStatus('products-api-status', '❌ 异常', false);
+                    log('产品API: 异常', 'error');
+                }
+                
+                // 检查分类API
+                const categoriesResponse = await fetch('/api/public/categories');
+                if (categoriesResponse.ok) {
+                    const categories = await categoriesResponse.json();
+                    updateStatus('categories-api-status', `✅ ${categories.length || 0}个分类`, true);
+                    log(`分类API: 正常 (${categories.length || 0}个分类)`, 'success');
+                } else {
+                    updateStatus('categories-api-status', '❌ 异常', false);
+                    log('分类API: 异常', 'error');
+                }
+                
+            } catch (error) {
+                log(`API检查失败: ${error.message}`, 'error');
+                updateStatus('server-status', '❌ 离线', false);
+                updateStatus('products-api-status', '❌ 失败', false);
+                updateStatus('categories-api-status', '❌ 失败', false);
+            }
+        }
+        
+        function checkHomepageFunctionality() {
+            log('🏠 检查主页功能状态...', 'info');
+            
+            // 检查轮播图
+            const carouselExists = typeof CarouselManager !== 'undefined';
+            updateStatus('carousel-status', carouselExists ? '✅ 已加载' : '❌ 未加载', carouselExists);
+            log(`轮播图管理器: ${carouselExists ? '已加载' : '未加载'}`, carouselExists ? 'success' : 'error');
+            
+            // 检查产品展示函数
+            const homepageProductsExists = typeof window.loadHomepageProducts === 'function';
+            updateStatus('homepage-products-status', homepageProductsExists ? '✅ 已配置' : '❌ 未配置', homepageProductsExists);
+            log(`主页产品加载: ${homepageProductsExists ? '已配置' : '未配置'}`, homepageProductsExists ? 'success' : 'error');
+            
+            // 检查导航
+            const navExists = document.querySelector('nav') !== null;
+            updateStatus('homepage-navigation-status', navExists ? '✅ 存在' : '❌ 缺失', navExists);
+            log(`页面导航: ${navExists ? '存在' : '缺失'}`, navExists ? 'success' : 'error');
+        }
+        
+        function checkFixScripts() {
+            log('📜 检查修复脚本状态...', 'info');
+            
+            // 检查双重刷新修复
+            const doubleRefreshExists = typeof window.PageExecutionState !== 'undefined';
+            updateStatus('double-refresh-fix-status', doubleRefreshExists ? '✅ 已加载' : '❌ 未加载', doubleRefreshExists);
+            log(`双重刷新修复: ${doubleRefreshExists ? '已加载' : '未加载'}`, doubleRefreshExists ? 'success' : 'error');
+            
+            // 检查页面跳转修复
+            const pageTransitionExists = typeof window.forceRemoveLoadingScreens !== 'undefined';
+            updateStatus('page-transition-fix-status', pageTransitionExists ? '✅ 已加载' : '❌ 未加载', pageTransitionExists);
+            log(`页面跳转修复: ${pageTransitionExists ? '已加载' : '未加载'}`, pageTransitionExists ? 'success' : 'error');
+            
+            // 检查组件管理器
+            const componentManagerExists = typeof window.componentManager !== 'undefined';
+            updateStatus('component-manager-status', componentManagerExists ? '✅ 已加载' : '❌ 未加载', componentManagerExists);
+            log(`组件管理器: ${componentManagerExists ? '已加载' : '未加载'}`, componentManagerExists ? 'success' : 'error');
+        }
+        
+        async function checkPageAccess() {
+            log('🔗 检查页面访问状态...', 'info');
+            
+            const pages = [
+                { id: 'products-page-status', url: '/pages/products.html', name: '产品页面' },
+                { id: 'about-page-status', url: '/pages/about.html', name: '关于页面' },
+                { id: 'contact-page-status', url: '/pages/contact.html', name: '联系页面' }
+            ];
+            
+            for (const page of pages) {
+                try {
+                    const response = await fetch(page.url);
+                    updateStatus(page.id, response.ok ? '✅ 可访问' : '❌ 不可访问', response.ok);
+                    log(`${page.name}: ${response.ok ? '可访问' : '不可访问'}`, response.ok ? 'success' : 'error');
+                } catch (error) {
+                    updateStatus(page.id, '❌ 失败', false);
+                    log(`${page.name}: 访问失败`, 'error');
+                }
+            }
+        }
+        
+        function showSummary() {
+            const summary = document.getElementById('summary');
+            const content = document.getElementById('summary-content');
+            
+            const totalTests = Object.keys(testResults).length;
+            const passedTests = Object.values(testResults).filter(result => result).length;
+            const failedTests = totalTests - passedTests;
+            
+            const successRate = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0;
+            
+            let summaryHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0;">
+                    <div style="background: rgba(76, 175, 80, 0.2); padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 2em; font-weight: bold; color: #4CAF50;">${passedTests}</div>
+                        <div>通过测试</div>
+                    </div>
+                    <div style="background: rgba(244, 67, 54, 0.2); padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 2em; font-weight: bold; color: #f44336;">${failedTests}</div>
+                        <div>失败测试</div>
+                    </div>
+                    <div style="background: rgba(33, 150, 243, 0.2); padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 2em; font-weight: bold; color: #2196F3;">${successRate}%</div>
+                        <div>成功率</div>
+                    </div>
+                </div>
+            `;
+            
+            if (successRate >= 90) {
+                summaryHTML += `<div style="color: #4CAF50; font-size: 1.2em; font-weight: bold;">🎉 修复成功！网站功能基本恢复正常。</div>`;
+            } else if (successRate >= 70) {
+                summaryHTML += `<div style="color: #ff9800; font-size: 1.2em; font-weight: bold;">⚠️ 部分功能需要进一步修复。</div>`;
+            } else {
+                summaryHTML += `<div style="color: #f44336; font-size: 1.2em; font-weight: bold;">❌ 仍有重要功能需要修复。</div>`;
+            }
+            
+            content.innerHTML = summaryHTML;
+            summary.style.display = 'block';
+        }
+        
+        async function runFullVerification() {
+            log('🔍 开始完整验证...', 'info');
+            testResults = {};
+            
+            await checkServerAndAPI();
+            checkHomepageFunctionality();
+            checkFixScripts();
+            await checkPageAccess();
+            
+            showSummary();
+            log('✅ 完整验证完成', 'success');
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '<div style="color: #4CAF50;">[清除] 🗑️ 日志已清除</div>';
+        }
+        
+        // 页面加载完成后自动运行验证
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(runFullVerification, 1000);
+        });
+    </script>
+</body>
+</html>

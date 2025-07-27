@@ -1,0 +1,22 @@
+{
+  "checkTime": "2025-07-20T11:39:55.447Z",
+  "summary": {
+    "totalProducts": 4,
+    "actualFiles": 6,
+    "totalReferences": 10,
+    "validReferences": 10,
+    "invalidReferences": 0,
+    "orphanedFiles": 0,
+    "consistencyRate": "100.0"
+  },
+  "issues": [],
+  "actualFiles": [
+    "1752939200611-38879355.jpg",
+    "1752939200626-246380395.jpg",
+    "1752939200629-256410535.jpg",
+    "1752939200633-646887524.jpg",
+    "1752939200635-334821784.jpg",
+    "1752939200638-769435788.jpg"
+  ],
+  "orphanedFiles": []
+}

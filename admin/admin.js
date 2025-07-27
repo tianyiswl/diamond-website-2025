@@ -1,10 +1,52 @@
 // 全局变量
 let currentPage = 'dashboard';
 let products = [];
-let categories = [];
-let logs = [];
 let selectedFiles = [];
 let selectedImages = [];
+
+// 🏷️ 静态产品分类数据 - 后台管理使用中文显示，支持多种字段映射
+const staticCategories = [
+    { id: 'all', name: '全部产品', englishName: 'All Products' },
+    { id: 'turbocharger', name: '涡轮增压器', englishName: 'Turbocharger' },
+    { id: 'actuator', name: '执行器', englishName: 'Actuator' },
+    { id: 'injector', name: '共轨喷油器', englishName: 'Common Rail Injector' },
+    { id: 'turbo-parts', name: '涡轮配件', englishName: 'Turbo Parts' },
+    { id: 'others', name: '其他', englishName: 'Others' }
+];
+
+// 🔍 分类查找辅助函数 - 支持多种字段匹配
+function findCategoryByProduct(product) {
+    if (!product) return null;
+
+    // 优先使用 categoryId 字段（数据库格式）
+    if (product.categoryId) {
+        return staticCategories.find(c => c.id === product.categoryId);
+    }
+
+    // 兼容 category 字段（旧格式）
+    if (product.category) {
+        // 如果是对象格式（包含关联的分类信息）
+        if (typeof product.category === 'object' && product.category.name) {
+            return staticCategories.find(c => c.name === product.category.name || c.englishName === product.category.name);
+        }
+
+        // 如果是字符串格式
+        if (typeof product.category === 'string') {
+            return staticCategories.find(c =>
+                c.id === product.category ||
+                c.name === product.category ||
+                c.englishName === product.category
+            );
+        }
+    }
+
+    // 兼容 categoryName 字段（API返回格式）
+    if (product.categoryName) {
+        return staticCategories.find(c => c.name === product.categoryName || c.englishName === product.categoryName);
+    }
+
+    return null;
+}
 
 // 分页相关变量
 let currentPageNum = 1;
@@ -23,20 +65,20 @@ let currentFilters = {
 let draggedElement = null;
 let draggedIndex = null;
 
-// 预设的产品特性
+// 预设的产品特性 - 精简英文显示
 const presetFeatures = [
-    '原厂品质',
-    '钻石品质',
-    '高性能',
-    '精准控制',
-    '精密喷射',
-    '配件齐全',
-    '专业工具',
-    '高端产品',
-    '现货充足',
-    '原厂正品',
-    '高精度',
-    '长寿命'
+    'OEM Quality',
+    'Diamond Grade',
+    'High Power',
+    'Precise',
+    'Injection',
+    'Complete Kit',
+    'Pro Tools',
+    'Premium',
+    'In Stock',
+    'Original',
+    'High Precision',
+    'Durable'
 ];
 
 // 初始化 - 国外服务器优化版本，避免竞态条件
@@ -161,17 +203,264 @@ function redirectToLogin() {
     }, 100);
 }
 
-// 应用初始化
-function initializeApp() {
+// 🚀 数据加载状态管理 - 防止重复加载
+const loadingStates = {
+    inquiries: false,
+    products: false,
+    stats: false,
+    geoStats: false,
+    permissions: false
+};
+
+// 应用初始化 - 优化版本，避免重复数据加载
+async function initializeApp() {
+    console.log('🚀 开始应用初始化，防重复加载版本');
+
+    // 设置事件监听器（不涉及数据加载）
     setupEventListeners();
-    loadCategories();
-    loadProducts();
-    loadLogs();
-    loadInquiriesCount(); // 添加询价统计加载
-    updateStats();
-    updateGeoStats(); // 添加地理位置统计初始化
-    checkAdminPermissions(); // 检查管理员权限
-    showPage('dashboard');
+    populateCategoryFilters(); // 填充分类筛选器
+    initializeFormDefaults(); // 初始化表单默认值
+
+    // 恢复用户上次访问的页面，如果没有则默认显示控制台
+    const lastPage = getLastVisitedPage();
+    const isPageRestored = lastPage !== 'dashboard' && localStorage.getItem('lastVisitedPage');
+
+    // 调试信息
+    console.log('🔄 页面状态恢复调试信息:');
+    console.log('- localStorage中保存的页面:', localStorage.getItem('lastVisitedPage'));
+    console.log('- getLastVisitedPage()返回:', lastPage);
+    console.log('- 是否为页面恢复:', isPageRestored);
+    console.log('- 即将显示页面:', lastPage);
+
+    // 先显示页面，再按需加载数据
+    showPage(lastPage);
+
+    // 🎯 根据当前页面按需加载数据，避免不必要的请求
+    await loadDataForCurrentPage(lastPage);
+
+    // 如果恢复了非默认页面，显示提示
+    if (isPageRestored) {
+        setTimeout(() => {
+            showToast(`已恢复到上次访问的页面：${getPageDisplayName(lastPage)}`, 'info', 3000);
+        }, 1000);
+    }
+}
+
+// 🎯 按需数据加载函数 - 根据页面只加载必要的数据
+async function loadDataForCurrentPage(page) {
+    console.log('🎯 按需加载数据，当前页面:', page);
+
+    try {
+        // 所有页面都需要的基础数据
+        if (!loadingStates.permissions) {
+            loadingStates.permissions = true;
+            await checkAdminPermissions();
+        }
+
+        // 根据页面类型加载特定数据
+        switch (page) {
+            case 'dashboard':
+                // 控制台页面需要统计数据
+                await Promise.all([
+                    loadDashboardData(),
+                    loadBasicStats()
+                ]);
+                break;
+
+            case 'products':
+                // 产品页面需要产品数据
+                if (!loadingStates.products) {
+                    loadingStates.products = true;
+                    await loadProducts();
+                }
+                break;
+
+            case 'inquiries':
+                // 询价页面需要询价数据
+                if (!loadingStates.inquiries) {
+                    loadingStates.inquiries = true;
+                    await loadInquiries();
+                }
+                break;
+
+            case 'admins':
+                // 管理员页面需要管理员数据
+                await loadAdmins();
+                break;
+
+            default:
+                // 其他页面只加载基础统计
+                await loadBasicStats();
+                break;
+        }
+
+        console.log('✅ 页面数据加载完成:', page);
+
+    } catch (error) {
+        console.error('❌ 页面数据加载失败:', error);
+        showToast('数据加载失败，请刷新页面重试', 'error');
+    }
+}
+
+// 🔄 基础统计数据加载（轻量级）
+async function loadBasicStats() {
+    if (loadingStates.stats) return;
+
+    loadingStates.stats = true;
+    try {
+        // 只加载必要的统计数据，不加载完整列表
+        await Promise.all([
+            loadInquiriesCount(), // 只获取数量，不加载完整列表
+            updateStats() // 基础统计
+        ]);
+    } catch (error) {
+        console.error('基础统计加载失败:', error);
+    }
+}
+
+// 🏠 控制台专用数据加载
+async function loadDashboardData() {
+    try {
+        await Promise.all([
+            updateAnalyticsStats(),
+            updateGeoStats()
+        ]);
+    } catch (error) {
+        console.error('控制台数据加载失败:', error);
+    }
+}
+
+// 保存当前访问的页面到本地存储
+function saveLastVisitedPage(page) {
+    try {
+        localStorage.setItem('lastVisitedPage', page);
+        console.log('💾 saveLastVisitedPage() 成功保存:', page);
+    } catch (error) {
+        console.warn('❌ 保存页面状态失败:', error);
+    }
+}
+
+// 获取上次访问的页面
+function getLastVisitedPage() {
+    try {
+        const lastPage = localStorage.getItem('lastVisitedPage');
+        console.log('📖 getLastVisitedPage() localStorage中的值:', lastPage);
+
+        // 验证页面是否有效
+        const validPages = ['dashboard', 'products', 'add-product', 'inquiries', 'admin-management'];
+        if (lastPage && validPages.includes(lastPage)) {
+            console.log('✅ 页面有效，返回:', lastPage);
+            return lastPage;
+        } else {
+            console.log('❌ 页面无效或不存在，返回默认页面');
+        }
+    } catch (error) {
+        console.warn('❌ 获取页面状态失败:', error);
+    }
+    // 默认返回控制台
+    console.log('🏠 返回默认页面: dashboard');
+    return 'dashboard';
+}
+
+// 更新页面标题
+function updatePageTitle(page) {
+    const pageTitles = {
+        'dashboard': '控制台 - 无锡皇德国际贸易有限公司后台管理',
+        'products': '产品管理 - 无锡皇德国际贸易有限公司后台管理',
+        'add-product': '添加产品 - 无锡皇德国际贸易有限公司后台管理',
+        'inquiries': '询价管理 - 无锡皇德国际贸易有限公司后台管理',
+        'admin-management': '管理员管理 - 无锡皇德国际贸易有限公司后台管理'
+    };
+
+    const title = pageTitles[page] || '后台管理 - 无锡皇德国际贸易有限公司';
+    document.title = title;
+}
+
+// 获取页面显示名称
+function getPageDisplayName(page) {
+    const pageNames = {
+        'dashboard': '控制台',
+        'products': '产品管理',
+        'add-product': '添加产品',
+        'inquiries': '询价管理',
+        'admin-management': '管理员管理'
+    };
+    return pageNames[page] || '未知页面';
+}
+
+// 清除保存的页面状态（调试用）
+function clearLastVisitedPage() {
+    try {
+        localStorage.removeItem('lastVisitedPage');
+        console.log('页面状态已清除');
+        showToast('页面状态已清除，刷新后将回到控制台', 'success');
+    } catch (error) {
+        console.warn('清除页面状态失败:', error);
+    }
+}
+
+// 初始化表单默认值
+function initializeFormDefaults() {
+    // 设置产品价格默认值为99
+    const priceInput = document.getElementById('product-price');
+    if (priceInput && !priceInput.value) {
+        priceInput.value = '99';
+    }
+
+    // 初始化字符计数器
+    initCharCounters();
+
+    // 初始化进度跟踪
+    initProgressTracking();
+
+    // 初始化工具提示
+    initTooltips();
+}
+
+// 初始化字符计数器
+function initCharCounters() {
+    const nameInput = document.getElementById('product-name');
+    const nameCounter = document.getElementById('name-char-count');
+
+    if (nameInput && nameCounter) {
+        nameInput.addEventListener('input', function() {
+            const length = this.value.length;
+            const maxLength = this.getAttribute('maxlength') || 120;
+            nameCounter.textContent = `${length}/${maxLength}`;
+
+            // 更新计数器颜色
+            nameCounter.className = 'input-group-text char-counter';
+            if (length > maxLength * 0.8) {
+                nameCounter.classList.add('warning');
+            }
+            if (length > maxLength * 0.95) {
+                nameCounter.classList.remove('warning');
+                nameCounter.classList.add('danger');
+            }
+        });
+    }
+}
+
+// 初始化进度跟踪
+function initProgressTracking() {
+    // 监听所有表单输入变化
+    const form = document.getElementById('addProductForm');
+    if (form) {
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('input', updateFormProgress);
+            input.addEventListener('change', updateFormProgress);
+        });
+    }
+}
+
+// 初始化工具提示
+function initTooltips() {
+    // 初始化Bootstrap工具提示
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
 }
 
 // 设置事件监听器
@@ -253,23 +542,7 @@ function setupEventListeners() {
         });
     }
 
-    // 添加分类表单提交
-    const addCategoryForm = document.getElementById('add-category-form');
-    if (addCategoryForm) {
-        addCategoryForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            submitCategory();
-        });
-    }
 
-    // 编辑分类表单提交
-    const editCategoryForm = document.getElementById('edit-category-form');
-    if (editCategoryForm) {
-        editCategoryForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            updateCategory();
-        });
-    }
 
     // 搜索和筛选
     const searchInput = document.getElementById('search-products');
@@ -286,9 +559,7 @@ function setupEventListeners() {
     if (statusFilter) {
         statusFilter.addEventListener('change', filterProducts);
     }
-    if (logFilter) {
-        logFilter.addEventListener('change', filterLogs);
-    }
+
 
     // 设置产品分类变化监听器
     setupProductCategoryListeners();
@@ -347,71 +618,140 @@ function handleEditProductCategoryChange() {
     }
 }
 
-// 页面切换
-function showPage(page) {
+// 页面切换 - 优化版本，支持按需数据加载
+async function showPage(page) {
+    // 调试信息
+    console.log('📄 showPage() 被调用:');
+    console.log('- 目标页面:', page);
+    console.log('- 当前页面:', currentPage);
+
     // 隐藏所有页面
     document.querySelectorAll('.page-content').forEach(el => {
         el.style.display = 'none';
     });
-    
+
     // 移除所有导航激活状态
     document.querySelectorAll('.nav-link').forEach(el => {
         el.classList.remove('active');
     });
-    
+
     // 显示目标页面
     const targetPage = document.getElementById(page + '-page');
     if (targetPage) {
         targetPage.style.display = 'block';
+        console.log('✅ 页面元素已显示:', page + '-page');
+    } else {
+        console.warn('❌ 找不到页面元素:', page + '-page');
     }
-    
+
     // 激活导航
     const targetNav = document.querySelector(`[data-page="${page}"]`);
     if (targetNav) {
         targetNav.classList.add('active');
+        console.log('✅ 导航已激活:', `[data-page="${page}"]`);
+    } else {
+        console.warn('❌ 找不到导航元素:', `[data-page="${page}"]`);
     }
-    
+
     currentPage = page;
-    
-    // 页面特定初始化
-    if (page === 'products') {
-        // 使用分页加载产品
-        loadProductsWithPagination(1, true);
-    } else if (page === 'add-product') {
-        loadCategoriesForForm();
-        // 重新设置产品分类变化监听器
-        setupProductCategoryListeners();
-    } else if (page === 'categories') {
-        // 如果分类数据还没加载，先加载再渲染
-        if (categories.length === 0) {
-            loadCategories().then(() => renderCategories());
-        } else {
-            renderCategories();
+
+    // 保存当前页面状态到本地存储
+    saveLastVisitedPage(page);
+    console.log('💾 页面状态已保存到localStorage:', page);
+
+    // 更新页面标题
+    updatePageTitle(page);
+
+    // 🎯 优化的页面特定初始化 - 避免重复加载
+    await loadDataForPageSwitch(page);
+}
+
+// 🔄 页面切换时的数据加载 - 防重复版本
+async function loadDataForPageSwitch(page) {
+    try {
+        console.log('🔄 页面切换数据加载:', page);
+
+        switch (page) {
+            case 'products':
+                // 只有在产品数据未加载时才加载
+                if (!loadingStates.products) {
+                    loadingStates.products = true;
+                    await loadProductsWithPagination(1, true);
+                }
+                break;
+
+            case 'add-product':
+                // 重新设置产品分类变化监听器
+                setupProductCategoryListeners();
+                // 确保分类选择器已填充
+                populateCategoryFilters();
+                break;
+
+            case 'inquiries':
+                // 询价页面需要初始化管理功能和加载数据
+                if (!loadingStates.inquiries) {
+                    loadingStates.inquiries = true;
+                    initInquiryManagement(); // 初始化会自动调用 loadInquiries()
+                } else {
+                    // 如果已经初始化过，只刷新数据
+                    console.log('🔄 询价数据已加载，跳过重复加载');
+                }
+                break;
+
+            case 'admins':
+                // 管理员数据每次都需要刷新（安全考虑）
+                await loadAdmins();
+                break;
+
+            case 'dashboard':
+                // 控制台数据需要实时更新
+                if (!loadingStates.stats) {
+                    await loadDashboardData();
+                }
+                break;
+
+            default:
+                console.log('📄 页面无需特殊数据加载:', page);
+                break;
         }
-    } else if (page === 'logs') {
-        renderLogs();
-    } else if (page === 'inquiries') {
-        initInquiryManagement();
-    } else if (page === 'admins') {
-        loadAdmins();
+    } catch (error) {
+        console.error('❌ 页面切换数据加载失败:', error);
+        showToast('页面数据加载失败，请重试', 'error');
     }
 }
 
-// 加载分类数据
-async function loadCategories() {
-    try {
-        const response = await fetch('/api/categories');
-        if (response.ok) {
-            categories = await response.json();
-            populateCategoryFilters();
-            // 如果当前在分类管理页面，重新渲染分类列表
-            if (currentPage === 'categories') {
-                renderCategories();
-            }
-        }
-    } catch (error) {
-        console.error('加载分类失败:', error);
-        showToast('加载分类失败', 'error');
+// 填充分类筛选器 - 使用静态分类数据
+function populateCategoryFilters() {
+    const filterSelect = document.getElementById('filter-category');
+    const formSelect = document.getElementById('product-category');
+
+    if (filterSelect) {
+        // 为产品筛选器设置选项（包含"所有分类"选项）
+        filterSelect.innerHTML = staticCategories.map(cat =>
+            `<option value="${cat.id === 'all' ? '' : cat.id}">${cat.name}</option>`
+        ).join('');
+    }
+
+    if (formSelect) {
+        // 为添加产品表单设置选项（不包含"全部产品"选项）
+        formSelect.innerHTML = staticCategories
+            .filter(cat => cat.id !== 'all')
+            .map(cat => `<option value="${cat.id}">${cat.name}</option>`)
+            .join('');
+
+        // 设置默认值为涡轮增压器
+        formSelect.value = 'turbocharger';
+    }
+}
+
+// 填充编辑产品表单的分类选择器
+function populateEditCategorySelector() {
+    const editSelect = document.getElementById('editProductCategory');
+    if (editSelect) {
+        editSelect.innerHTML = staticCategories
+            .filter(cat => cat.id !== 'all')
+            .map(cat => `<option value="${cat.id}">${cat.name}</option>`)
+            .join('');
     }
 }
 
@@ -442,24 +782,41 @@ async function loadProductsWithPagination(page = 1, resetPage = false) {
             sortOrder: currentFilters.sortOrder
         });
         
-        const response = await fetch(`/api/products?${params}`);
+        const response = await fetch(`/api/admin-db/products?${params}`);
         if (response.ok) {
             const result = await response.json();
-            
+
+            // 🔧 修复分页数据映射 - API字段名与前端期望不一致
+            const normalizedPagination = {
+                current: result.pagination.page,           // API: page -> 前端: current
+                total: result.pagination.totalPages,      // API: totalPages -> 前端: total
+                limit: result.pagination.limit,           // ✅ 一致
+                totalItems: result.pagination.total,      // API: total -> 前端: totalItems
+                hasNext: result.pagination.hasNext,       // ✅ 一致
+                hasPrev: result.pagination.hasPrev,       // ✅ 一致
+                nextPage: result.pagination.hasNext ? result.pagination.page + 1 : null,
+                prevPage: result.pagination.hasPrev ? result.pagination.page - 1 : null
+            };
+
+            console.log('🔧 分页数据映射:', {
+                原始API数据: result.pagination,
+                标准化后: normalizedPagination
+            });
+
             // 更新全局变量
             products = result.data;
-            totalPages = result.pagination.total;
-            totalProducts = result.pagination.totalItems;
-            
+            totalPages = normalizedPagination.total;        // 总页数
+            totalProducts = normalizedPagination.totalItems; // 总产品数
+
             // 渲染产品列表
             renderProducts();
-            
+
             // 渲染分页组件
-            renderPagination(result.pagination);
-            
+            renderPagination(normalizedPagination);
+
             // 更新产品信息显示
-            updateProductsInfo(result.pagination);
-            
+            updateProductsInfo(normalizedPagination);
+
             // 更新统计数据
             updateStats();
             
@@ -482,7 +839,7 @@ async function loadProducts() {
     } else {
         // 对于非产品页面，仍然使用简单加载（仅用于统计）
         try {
-            const response = await fetch('/api/products?limit=1');
+            const response = await fetch('/api/admin-db/products?limit=1');
             if (response.ok) {
                 const result = await response.json();
                 totalProducts = result.pagination.totalItems;
@@ -541,110 +898,55 @@ function formatActionDescription(log) {
     return description;
 }
 
-// 格式化操作记录
-function formatLogEntry(log) {
-    // 格式化时间
-    const date = new Date(log.timestamp);
-    const time = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-    
-    // 基本信息
-    let operator = log.user || '管理员';
-    let action = '';
-    let sku = '';
-    let change = '';
-    
-    switch(log.action) {
-        case 'view_product':
-            action = '查看产品';
-            sku = log.details.productId || '-';
-            change = '-';
-            break;
-            
-        case 'update_inquiry_status':
-            action = '更新询价';
-            sku = log.details.inquiryId || '-';
-            change = `${log.details.oldStatus} → ${log.details.newStatus}`;
-            break;
-            
-        case 'delete_inquiry':
-            action = '删除询价';
-            sku = log.details.inquiry_id || '-';
-            change = '已删除';
-            break;
-            
-        case 'create_inquiry':
-            action = '新询价';
-            sku = log.details.productId || '-';
-            change = log.details.quantity ? `数量: ${log.details.quantity}` : '-';
-            break;
-            
-        case 'update_product':
-            action = '更新产品';
-            sku = log.details.sku || '-';
-            change = log.details.changes || '-';
-            break;
-            
-        case 'delete_product':
-            action = '删除产品';
-            sku = log.details.sku || '-';
-            change = '已删除';
-            break;
-            
-        default:
-            action = log.action;
-            sku = '-';
-            change = '-';
-    }
-    
-    return { time, operator, action, sku, change };
-}
 
-// 加载操作记录
-async function loadLogs() {
-    try {
-        const response = await fetch('/api/logs');
-        const logs = await response.json();
-        
-        const logsTableBody = document.querySelector('#logs-table tbody');
-        logsTableBody.innerHTML = '';
-        
-        logs.forEach(log => {
-            const { time, operator, action, sku, change } = formatLogEntry(log);
-            const row = document.createElement('tr');
-            
-            row.innerHTML = `
-                <td class="px-3 py-2">${time}</td>
-                <td class="px-3 py-2">${operator}</td>
-                <td class="px-3 py-2">${action}</td>
-                <td class="px-3 py-2">${sku}</td>
-                <td class="px-3 py-2">${change}</td>
-            `;
-            
-            logsTableBody.appendChild(row);
-        });
-        
-    } catch (error) {
-        console.error('加载操作记录失败:', error);
-        showToast('加载操作记录失败', 'error');
-    }
-}
 
-// 加载询价统计数据
+
+
+// 🔢 加载询价统计数据 - 优化版本，避免重复请求
+let inquiriesCountCache = null;
+let inquiriesCountCacheTime = 0;
+const INQUIRIES_COUNT_CACHE_TTL = 60000; // 1分钟缓存
+
 async function loadInquiriesCount() {
     try {
+        // 检查缓存
+        const now = Date.now();
+        if (inquiriesCountCache && (now - inquiriesCountCacheTime) < INQUIRIES_COUNT_CACHE_TTL) {
+            console.log('🎯 使用询价统计缓存数据');
+            updateInquiriesCountDisplay(inquiriesCountCache);
+            return;
+        }
+
+        console.log('📊 加载询价统计数据...');
         const response = await fetch('/api/inquiries');
         if (response.ok) {
             const inquiries = await response.json();
-            // 更新待处理询价数量
-            const pendingCount = inquiries.filter(inquiry => inquiry.status === 'pending').length;
-            const countElement = document.getElementById('pending-inquiries-count');
-            if (countElement) {
-                countElement.textContent = pendingCount;
-            }
+
+            // 缓存数据
+            inquiriesCountCache = inquiries;
+            inquiriesCountCacheTime = now;
+
+            updateInquiriesCountDisplay(inquiries);
         }
     } catch (error) {
         console.error('加载询价统计失败:', error);
     }
+}
+
+// 更新询价统计显示
+function updateInquiriesCountDisplay(inquiries) {
+    // 更新待处理询价数量
+    const pendingCount = inquiries.filter(inquiry => inquiry.status === 'pending').length;
+    const countElement = document.getElementById('pending-inquiries-count');
+    if (countElement) {
+        countElement.textContent = pendingCount;
+    }
+}
+
+// 清除询价统计缓存
+function clearInquiriesCountCache() {
+    inquiriesCountCache = null;
+    inquiriesCountCacheTime = 0;
 }
 
 // 注意：updateStats 函数已移动到文件末尾的分页功能区域，以支持分页统计
@@ -899,7 +1201,7 @@ function renderProducts() {
         // 使用统一的管理卡片生成方法
         return productCardManager.createManageCard(product, {
             imagePath: '../',
-            categories: categories
+            categories: staticCategories
         });
     }).join('');
 }
@@ -910,7 +1212,19 @@ function renderProductsLegacy() {
     if (!container) return;
     
     container.innerHTML = products.map(product => {
-        const category = categories.find(c => c.id === product.category);
+        // 🔍 使用新的分类查找函数
+        const category = findCategoryByProduct(product);
+
+        // 🐛 调试信息
+        if (!category) {
+            console.log('🔍 分类查找调试:', {
+                productName: product.name,
+                categoryId: product.categoryId,
+                category: product.category,
+                categoryName: product.categoryName,
+                availableCategories: staticCategories.map(c => c.id)
+            });
+        }
         
         // 处理图片显示 - 兼容新旧数据格式
         let imageUrl = 'https://via.placeholder.com/200x200/e2e8f0/64748b?text=暂无图片';
@@ -926,9 +1240,9 @@ function renderProductsLegacy() {
         const tags = product.tags ? product.tags.split(',') : [];
         const tagBadges = tags.map(tag => {
             const tagConfig = {
-                'new': { class: 'bg-primary', text: '新品' },
-                'hot': { class: 'bg-danger', text: '热门' },
-                'recommend': { class: 'bg-success', text: '推荐' }
+                'new': { class: 'bg-primary', text: 'New' },
+                'hot': { class: 'bg-danger', text: 'Hot' },
+                'recommend': { class: 'bg-success', text: 'Recommend' }
             };
             const config = tagConfig[tag] || { class: 'bg-secondary', text: tag };
             return `<span class="badge ${config.class} me-1" style="font-size: 10px;">${config.text}</span>`;
@@ -980,278 +1294,19 @@ function renderProductsLegacy() {
     `}).join('');
 }
 
-// 渲染分类列表
-function renderCategories() {
-    const container = document.getElementById('categories-list');
-    if (!container) return;
-    
-    if (categories.length === 0) {
-        container.innerHTML = `
-            <div class="col-12 text-center text-muted py-5">
-                <i class="bi bi-tags fs-1 d-block mb-2"></i>
-                还没有分类数据
-                <div class="mt-3">
-                    <button class="btn btn-primary" onclick="showAddCategoryModal()">
-                        <i class="bi bi-plus-lg me-2"></i>添加第一个分类
-                    </button>
-                </div>
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = categories.map(category => {
-        // 优先使用服务器返回的count值，如果没有则计算
-        const productCount = category.count !== undefined ? category.count :
-                           products.filter(p => p.category === category.id).length;
-        return `
-        <div class="col-lg-4 col-md-6">
-            <div class="category-card">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div>
-                        <h5 class="mb-1">${category.name}</h5>
-                        <small class="text-muted">ID: ${category.id}</small>
-                    </div>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="editCategory('${category.id}')">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-outline-danger" onclick="deleteCategory('${category.id}')">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                <p class="text-muted mb-3">${category.description || '暂无描述'}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge bg-primary">${productCount} 个产品</span>
-                    <small class="text-muted">
-                        创建于 ${category.createdAt ? new Date(category.createdAt).toLocaleDateString() : '未知'}
-                    </small>
-                </div>
-            </div>
-        </div>
-    `}).join('');
-}
 
-// 渲染操作记录
-function renderLogs() {
-    const container = document.getElementById('logs-table-body');
-    if (!container) return;
-    
-    if (logs.length === 0) {
-        container.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center text-muted py-4">
-                    <i class="bi bi-clock-history fs-1 d-block mb-2"></i>
-                    暂无操作记录
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    const filteredLogs = filterLogsByType();
-    
-    container.innerHTML = filteredLogs.map(log => {
-        const actionClass = log.action === 'create' ? 'text-success' : 
-                           log.action === 'update' ? 'text-warning' : 
-                           log.action === 'delete' ? 'text-danger' : '';
-        
-        const actionText = log.action === 'create' ? '创建' : 
-                          log.action === 'update' ? '更新' : 
-                          log.action === 'delete' ? '删除' : log.action;
-        
-        return `
-        <tr>
-            <td>${new Date(log.timestamp).toLocaleString()}</td>
-            <td><span class="log-user">${log.user || '管理员'}</span></td>
-            <td><span class="fw-bold ${actionClass}">${actionText}</span></td>
-            <td>${log.target || '产品'}</td>
-            <td>${log.description || log.details || '无描述'}</td>
-            <td><small class="text-muted">${log.ip || '127.0.0.1'}</small></td>
-        </tr>
-    `}).join('');
-}
 
-// 填充分类选择器
-function populateCategoryFilters() {
-    const filterSelect = document.getElementById('filter-category');
-    const formSelect = document.getElementById('product-category');
-    
-    if (filterSelect) {
-        filterSelect.innerHTML = '<option value="">所有分类</option>' +
-            categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
-    }
-    
-    if (formSelect) {
-        // 为添加产品表单设置选项和默认值
-        formSelect.innerHTML = 
-            '<option value="turbocharger" selected>涡轮增压器</option>' +
-            '<option value="actuator">执行器</option>' +
-            '<option value="injector">共轨喷油器</option>' +
-            '<option value="turbo-parts">涡轮配件</option>' +
-            '<option value="others">其他</option>';
-    }
-}
 
-// 为表单加载分类
-function loadCategoriesForForm() {
-    populateCategoryFilters();
-}
 
-// 显示添加分类模态框
-function showAddCategoryModal() {
-    const modal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
-    document.getElementById('add-category-form').reset();
-    modal.show();
-}
 
-// 显示编辑分类模态框
-function editCategory(categoryId) {
-    const category = categories.find(c => c.id === categoryId);
-    if (!category) return;
-    
-    document.getElementById('edit-category-original-id').value = category.id;
-    document.getElementById('edit-category-id').value = category.id;
-    document.getElementById('edit-category-name').value = category.name;
-    document.getElementById('edit-category-description').value = category.description || '';
-    
-    const modal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
-    modal.show();
-}
 
-// 提交分类
-async function submitCategory() {
-    const form = document.getElementById('add-category-form');
-    const formData = new FormData(form);
-    
-    // 验证分类ID格式
-    const categoryId = formData.get('id');
-    if (!/^[a-z0-9-]+$/.test(categoryId)) {
-        showToast('分类ID只能包含小写字母、数字和连字符', 'error');
-        return;
-    }
-    
-    // 检查ID是否已存在
-    if (categories.find(c => c.id === categoryId)) {
-        showToast('分类ID已存在', 'error');
-        return;
-    }
-    
-    try {
-        const response = await fetch('/api/categories', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: formData.get('id'),
-                name: formData.get('name'),
-                description: formData.get('description')
-            })
-        });
-        
-        if (response.ok) {
-            const result = await response.json();
-            showToast('分类添加成功！', 'success');
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
-            modal.hide();
-            loadCategories();
-            addLog('create', '分类', `分类: ${result.name} (${result.id})`);
-        } else {
-            const error = await response.json();
-            showToast(error.error || '添加分类失败', 'error');
-        }
-    } catch (error) {
-        console.error('提交分类失败:', error);
-        showToast('提交失败，请重试', 'error');
-    }
-}
 
-// 更新分类
-async function updateCategory() {
-    const form = document.getElementById('edit-category-form');
-    const formData = new FormData(form);
-    const originalId = document.getElementById('edit-category-original-id').value;
-    const newId = formData.get('id');
-    
-    // 验证分类ID格式
-    if (!/^[a-z0-9-]+$/.test(newId)) {
-        showToast('分类ID只能包含小写字母、数字和连字符', 'error');
-        return;
-    }
-    
-    // 如果ID发生变化，检查新ID是否已存在
-    if (newId !== originalId && categories.find(c => c.id === newId)) {
-        showToast('新的分类ID已存在', 'error');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/api/categories/${originalId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: newId,
-                name: formData.get('name'),
-                description: formData.get('description')
-            })
-        });
-        
-        if (response.ok) {
-            const result = await response.json();
-            showToast('分类更新成功！', 'success');
-            const modal = bootstrap.Modal.getInstance(document.getElementById('editCategoryModal'));
-            modal.hide();
-            loadCategories();
-            loadProductsWithPagination(currentPageNum); // 重新加载产品以更新分类显示，保持当前页面
-            addLog('update', '分类', `分类: ${result.name} (${result.id})`);
-        } else {
-            const error = await response.json();
-            showToast(error.error || '更新分类失败', 'error');
-        }
-    } catch (error) {
-        console.error('更新分类失败:', error);
-        showToast('更新失败，请重试', 'error');
-    }
-}
 
-// 删除分类
-async function deleteCategory(categoryId) {
-    const category = categories.find(c => c.id === categoryId);
-    if (!category) return;
-    
-    // 检查是否有产品使用此分类
-    const productsUsingCategory = products.filter(p => p.category === categoryId);
-    if (productsUsingCategory.length > 0) {
-        showToast(`无法删除分类，还有 ${productsUsingCategory.length} 个产品使用此分类`, 'error');
-        return;
-    }
-    
-    if (!confirm(`确定要删除分类"${category.name}"吗？此操作无法撤销。`)) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/api/categories/${categoryId}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.ok) {
-            showToast('分类删除成功', 'success');
-            loadCategories();
-            addLog('delete', '分类', `分类: ${category.name} (${category.id})`);
-        } else {
-            const error = await response.json();
-            showToast(error.error || '删除分类失败', 'error');
-        }
-    } catch (error) {
-        console.error('删除分类失败:', error);
-        showToast('删除失败，请重试', 'error');
-    }
-}
+
+
+
+
+
 
 // 删除产品
 async function deleteProduct(productId) {
@@ -1268,7 +1323,7 @@ async function deleteProduct(productId) {
     showLoadingState();
     
     try {
-        const response = await fetch(`/api/products/${productId}`, {
+        const response = await fetch(`/api/admin-db/products/${productId}`, {
             method: 'DELETE'
         });
         
@@ -1277,7 +1332,7 @@ async function deleteProduct(productId) {
             // 智能页面处理：先获取最新的产品总数，然后决定跳转到哪一页
             try {
                 // 先获取删除后的最新产品总数
-                const statsResponse = await fetch('/api/products?page=1&limit=1');
+                const statsResponse = await fetch('/api/admin-db/products?page=1&limit=1');
                 const statsData = await statsResponse.json();
                 const totalProductsAfterDelete = statsData.pagination.total;
                 
@@ -1292,7 +1347,7 @@ async function deleteProduct(productId) {
                 loadProductsWithPagination(currentPageNum);
             }
             
-            addLog('delete', '产品', `产品: ${product.name} (${product.sku || product.id})`);
+
         } else {
             const error = await response.json();
             showToast(error.error || '删除产品失败', 'error');
@@ -1497,10 +1552,10 @@ function getFormData() {
     formData.append('meta_description', document.getElementById('product-meta-description').value);
     formData.append('meta_keywords', document.getElementById('product-meta-keywords').value);
     
-    // 产品标签和标记（后端需要这些字段）
-    formData.append('isNew', 'true'); // 默认为新品
-    formData.append('isHot', 'false'); 
-    formData.append('isRecommend', 'false');
+    // 产品标签和标记（从UI界面读取）
+    formData.append('isNew', document.getElementById('addIsNew').checked ? 'true' : 'false');
+    formData.append('isHot', document.getElementById('addIsHot').checked ? 'true' : 'false');
+    formData.append('isRecommend', document.getElementById('addIsRecommend').checked ? 'true' : 'false');
     formData.append('badges', ''); // 空的badges字段
     
     // 图片处理 - 使用正确的图片数据源
@@ -1600,17 +1655,84 @@ function fillProductForm(product) {
     }
 }
 
+// 基本信息变化处理
+function onBasicInfoChange() {
+    updateFormProgress();
+    updatePreview();
+    showSmartSuggestions();
+}
+
+// 分类变化处理
+function onCategoryChange() {
+    const category = document.getElementById('product-category').value;
+    updateStepProgress(1);
+    updatePreview();
+
+    // 显示分类相关建议
+    showCategorySuggestions(category);
+}
+
+// 品牌变化处理
+function onBrandChange() {
+    updateStepProgress(1);
+    updatePreview();
+}
+
+// 价格变化处理
+function onPriceChange() {
+    updateStepProgress(1);
+    updatePreview();
+}
+
+// 保修期变化处理
+function onWarrantyChange() {
+    updateStepProgress(1);
+    updatePreview();
+}
+
+// 清空基本信息
+function clearBasicInfo() {
+    if (confirm('确定要清空基本信息吗？')) {
+        document.getElementById('product-name').value = '';
+        document.getElementById('product-model').value = '';
+        document.getElementById('product-category').value = 'turbocharger';
+        document.getElementById('product-brand').value = 'Diamond-Auto';
+        document.getElementById('product-price').value = '99';
+        document.getElementById('product-warranty').value = '12';
+
+        updateFormProgress();
+        updatePreview();
+        hideSmartSuggestions();
+    }
+}
+
+// 生成基本信息
+function generateBasicInfo() {
+    const name = document.getElementById('product-name').value;
+    const category = document.getElementById('product-category').value;
+
+    if (!name) {
+        alert('请先输入产品名称');
+        return;
+    }
+
+    // 根据产品名称和分类智能填充信息
+    // 这里可以添加更复杂的逻辑
+    showSmartSuggestions();
+}
+
 // 重置表单
 function resetForm() {
     const form = document.getElementById('addProductForm');
     if (form) {
         form.reset();
-        
-        // 重置为默认值
+
+        // 重置为默认值 - 使用英文显示
         document.getElementById('product-brand').value = 'Diamond-Auto';
         document.getElementById('product-category').value = 'turbocharger';
         document.getElementById('product-warranty').value = '12';
-        
+        document.getElementById('product-price').value = '99'; // 默认价格99
+
         // 清除特性标签选择
         document.querySelectorAll('.feature-tag').forEach(btn => {
             btn.classList.remove('active');
@@ -1638,6 +1760,320 @@ function resetForm() {
         // 清除全局变量
         selectedFiles = [];
         selectedImages = [];
+
+        // 重置进度和预览
+        updateFormProgress();
+        updatePreview();
+        hideSmartSuggestions();
+    }
+}
+
+// 更新表单进度
+function updateFormProgress() {
+    // 手动填写区域字段（基本信息 + 产品详情）
+    const manualFields = [
+        'product-name', 'product-model', 'product-category', 'product-brand', 'product-price', 'product-warranty', // 基本信息
+        'product-oe', 'product-compatibility', 'product-notes', 'product-features' // 产品详情
+    ];
+
+    const descriptionFields = ['product-description'];
+    const seoFields = ['product-meta-description', 'product-meta-keywords'];
+
+    // 计算手动填写区域完成度
+    let manualCompleted = 0;
+    manualFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field && field.value.trim()) {
+            manualCompleted++;
+        }
+    });
+
+    // 计算图片完成度（包含在手动填写区域）
+    let imagesCompleted = 0;
+    const imageContainer = document.getElementById('addImageContainer');
+    if (imageContainer && imageContainer.children.length > 0) {
+        imagesCompleted = 1;
+        manualCompleted++; // 图片也算在手动填写区域
+    }
+
+    // 计算描述完成度
+    let descriptionCompleted = 0;
+    descriptionFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field && field.value.trim()) {
+            descriptionCompleted++;
+        }
+    });
+
+    // 计算SEO完成度
+    let seoCompleted = 0;
+    seoFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field && field.value.trim()) {
+            seoCompleted++;
+        }
+    });
+
+    // 更新进度显示
+    const manualStatus = document.getElementById('manual-fields-status');
+    const descriptionStatus = document.getElementById('description-status');
+    const seoStatus = document.getElementById('seo-status');
+    const overallStatus = document.getElementById('overall-status');
+
+    const totalManualFields = manualFields.length + 1; // +1 for images
+    if (manualStatus) manualStatus.textContent = `${manualCompleted}/${totalManualFields}`;
+    if (descriptionStatus) descriptionStatus.textContent = `${descriptionCompleted}/${descriptionFields.length}`;
+    if (seoStatus) seoStatus.textContent = `${seoCompleted}/${seoFields.length}`;
+
+    // 更新进度条和整体完成度
+    const totalFields = totalManualFields + descriptionFields.length + seoFields.length;
+    const totalCompleted = manualCompleted + descriptionCompleted + seoCompleted;
+    const progressPercent = Math.round((totalCompleted / totalFields) * 100);
+
+    if (overallStatus) overallStatus.textContent = `${progressPercent}%`;
+
+    const progressBar = document.getElementById('form-progress-bar');
+    if (progressBar) {
+        progressBar.style.width = `${progressPercent}%`;
+        progressBar.className = 'progress-bar';
+        if (progressPercent >= 100) {
+            progressBar.classList.add('bg-success');
+        } else if (progressPercent >= 75) {
+            progressBar.classList.add('bg-info');
+        } else if (progressPercent >= 50) {
+            progressBar.classList.add('bg-warning');
+        } else {
+            progressBar.classList.add('bg-danger');
+        }
+    }
+
+    // 更新步骤指示器
+    updateStepIndicators(manualCompleted, totalManualFields, descriptionCompleted, seoCompleted);
+}
+
+// 更新步骤指示器
+function updateStepIndicators(manualCompleted, totalManualFields, descriptionCompleted, seoCompleted) {
+    const steps = document.querySelectorAll('.step-item');
+
+    steps.forEach((step, index) => {
+        step.classList.remove('active', 'completed');
+
+        switch(index) {
+            case 0: // 手动填写区域
+                if (manualCompleted >= totalManualFields * 0.8) {
+                    step.classList.add('completed');
+                } else if (manualCompleted > 0) {
+                    step.classList.add('active');
+                }
+                break;
+            case 1: // 产品描述
+                if (descriptionCompleted >= 1) {
+                    step.classList.add('completed');
+                } else if (manualCompleted >= totalManualFields * 0.6) {
+                    step.classList.add('active');
+                }
+                break;
+            case 2: // SEO优化
+                if (seoCompleted >= 1) {
+                    step.classList.add('completed');
+                } else if (descriptionCompleted >= 1) {
+                    step.classList.add('active');
+                }
+                break;
+            case 3: // 完成
+                if (manualCompleted >= totalManualFields * 0.8 && descriptionCompleted >= 1) {
+                    step.classList.add('completed');
+                } else if (seoCompleted >= 1) {
+                    step.classList.add('active');
+                }
+                break;
+        }
+    });
+}
+
+// 更新实时预览
+function updatePreview() {
+    const previewContent = document.getElementById('product-preview-content');
+    if (!previewContent) return;
+
+    const name = document.getElementById('product-name')?.value || '';
+    const model = document.getElementById('product-model')?.value || '';
+    const category = document.getElementById('product-category')?.value || '';
+    const brand = document.getElementById('product-brand')?.value || '';
+    const price = document.getElementById('product-price')?.value || '';
+    const warranty = document.getElementById('product-warranty')?.value || '';
+
+    if (!name && !model) {
+        previewContent.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-image fs-1 mb-3"></i>
+                <p>填写产品信息后将显示预览</p>
+            </div>
+        `;
+        return;
+    }
+
+    const categoryNames = {
+        'turbocharger': 'Turbocharger',
+        'actuator': 'Actuator',
+        'injector': 'Common Rail Injector',
+        'turbo-parts': 'Turbo Parts',
+        'others': 'Others'
+    };
+
+    previewContent.innerHTML = `
+        <div class="preview-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                     style="width: 50px; height: 50px;">
+                    <i class="bi bi-gear-fill"></i>
+                </div>
+                <div>
+                    <h6 class="mb-1">${name || '产品名称'}</h6>
+                    <small class="text-muted">${model || '产品型号'}</small>
+                </div>
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <small class="text-muted">分类</small>
+                    <div class="fw-bold">${categoryNames[category] || category}</div>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted">品牌</small>
+                    <div class="fw-bold">${brand}</div>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted">价格</small>
+                    <div class="fw-bold text-success">$${price}</div>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted">保修</small>
+                    <div class="fw-bold">${warranty} Months</div>
+                </div>
+            </div>
+            <div class="text-center">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    实时预览，继续填写更多信息
+                </small>
+            </div>
+        </div>
+    `;
+}
+
+// 显示智能建议
+function showSmartSuggestions() {
+    const name = document.getElementById('product-name')?.value || '';
+    const category = document.getElementById('product-category')?.value || '';
+    const suggestionsDiv = document.getElementById('basic-info-suggestions');
+    const suggestionContent = document.getElementById('suggestion-content');
+
+    if (!name || !suggestionsDiv || !suggestionContent) return;
+
+    let suggestions = [];
+
+    // 根据产品名称和分类生成建议
+    if (category === 'turbocharger' && name.toLowerCase().includes('turbo')) {
+        suggestions.push('建议添加涡轮增压器相关的OEM号码');
+        suggestions.push('推荐选择"高性能"和"精准控制"特性');
+    }
+
+    if (category === 'injector' && name.toLowerCase().includes('injector')) {
+        suggestions.push('建议添加喷油器的适配车型信息');
+        suggestions.push('推荐选择"精密喷射"和"高精度"特性');
+    }
+
+    if (suggestions.length > 0) {
+        suggestionContent.innerHTML = suggestions.map(s =>
+            `<div class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>${s}</div>`
+        ).join('');
+        suggestionsDiv.style.display = 'block';
+    }
+}
+
+// 隐藏智能建议
+function hideSmartSuggestions() {
+    const suggestionsDiv = document.getElementById('basic-info-suggestions');
+    if (suggestionsDiv) {
+        suggestionsDiv.style.display = 'none';
+    }
+}
+
+// 显示分类建议
+function showCategorySuggestions(category) {
+    const suggestions = {
+        'turbocharger': ['建议重点填写涡轮参数', '推荐上传涡轮本体图片'],
+        'actuator': ['建议详细描述执行器功能', '推荐添加安装说明'],
+        'injector': ['建议添加喷射压力参数', '推荐说明燃油兼容性'],
+        'turbo-parts': ['建议说明配件用途', '推荐添加安装位置图']
+    };
+
+    if (suggestions[category]) {
+        showSmartSuggestions();
+    }
+}
+
+// 刷新预览
+function refreshPreview() {
+    updatePreview();
+    showToast('预览已刷新', 'success');
+}
+
+// 价格建议
+function suggestPrice() {
+    const category = document.getElementById('product-category')?.value || '';
+    const priceInput = document.getElementById('product-price');
+
+    const suggestedPrices = {
+        'turbocharger': 150,
+        'actuator': 80,
+        'injector': 120,
+        'turbo-parts': 50,
+        'others': 99
+    };
+
+    if (priceInput && suggestedPrices[category]) {
+        priceInput.value = suggestedPrices[category];
+        updatePreview();
+        showToast(`建议价格：$${suggestedPrices[category]}`, 'info');
+    }
+}
+
+// 清空所有图片
+function clearAllImages() {
+    if (confirm('确定要清空所有图片吗？')) {
+        // 清空图片容器
+        const imageContainer = document.getElementById('addImageContainer');
+        if (imageContainer) {
+            imageContainer.innerHTML = '';
+        }
+
+        // 隐藏预览区域
+        const previewArea = document.getElementById('addImagePreviews');
+        if (previewArea) {
+            previewArea.style.display = 'none';
+        }
+
+        // 显示上传区域
+        const uploadArea = document.getElementById('addUploadArea');
+        if (uploadArea) {
+            uploadArea.style.display = 'block';
+        }
+
+        // 清空文件输入
+        const fileInput = document.getElementById('addProductImages');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+
+        // 清除全局变量
+        selectedFiles = [];
+        selectedImages = [];
+
+        // 更新进度
+        updateFormProgress();
+
+        showToast('已清空所有图片', 'success');
     }
 }
 
@@ -1659,7 +2095,7 @@ async function submitAddProductForm(event) {
         
         console.log('正在提交产品数据...');
         
-        const response = await fetch('/api/products', {
+        const response = await fetch('/api/admin-db/products', {
             method: 'POST',
             body: formData
         });
@@ -1675,8 +2111,7 @@ async function submitAddProductForm(event) {
         const result = await response.json();
         console.log('产品创建成功:', result);
         
-        // 添加操作日志
-        await addLog('create', 'product', `创建新产品: ${formData.get('name')}`);
+
         
         // 显示成功消息
         showToast('产品添加成功！', 'success');
@@ -1710,7 +2145,7 @@ async function saveEditProduct() {
         // 显示加载状态
         showLoadingState();
         
-        const response = await fetch(`/api/products/${productId}`, {
+        const response = await fetch(`/api/admin-db/products/${productId}`, {
             method: 'PUT',
             body: formData
         });
@@ -1721,8 +2156,7 @@ async function saveEditProduct() {
         
         const result = await response.json();
         
-        // 添加操作日志
-        await addLog('update', 'product', `更新产品: ${formData.get('name')}`);
+
         
         // 显示成功消息
         showToast('产品更新成功！', 'success');
@@ -1841,7 +2275,10 @@ function updateEditFeaturesValue() {
 
 // 编辑产品
 function editProduct(productId) {
-    fetch(`/api/products/${productId}`)
+    // 确保编辑表单的分类选择器已填充
+    populateEditCategorySelector();
+
+    fetch(`/api/admin-db/products/${productId}`)
         .then(response => response.json())
         .then(product => {
             // 填充基本信息
@@ -1941,6 +2378,12 @@ function editProduct(productId) {
 
             // 设置编辑模式下的分类变化监听器
             setupProductCategoryListeners();
+
+            // 设置字符计数事件监听器
+            setupEditCharCountListeners();
+
+            // 初始更新字符计数
+            updateEditCharCount();
 
             document.getElementById('productFormTitle').textContent = '编辑产品';
 
@@ -2146,9 +2589,7 @@ function batchDeleteProducts() {
         }
         
         clearAllSelections();
-        productIds.forEach(id => {
-            addLog('delete', '产品', `批量删除产品ID: ${id}`);
-        });
+
     })
     .catch(error => {
         console.error('批量删除失败:', error);
@@ -2254,7 +2695,7 @@ function executeBatchEdit() {
             loadProductsWithPagination(currentPageNum); // 保持当前页面
             clearAllSelections();
             bootstrap.Modal.getInstance(document.getElementById('batchEditModal')).hide();
-            addLog('update', '产品', `批量编辑 ${productIds.length} 个产品`);
+
         })
         .catch(error => {
             console.error('批量编辑失败:', error);
@@ -2265,68 +2706,11 @@ function executeBatchEdit() {
 // 产品筛选
 // 注意：filterProducts 函数已移动到文件末尾的分页功能区域，现在支持分页筛选
 
-// 操作记录筛选
-function filterLogs() {
-    renderLogs();
-}
 
-// 按类型筛选日志
-function filterLogsByType() {
-    const filterValue = document.getElementById('log-filter')?.value;
-    if (!filterValue) return logs;
-    
-    return logs.filter(log => log.action === filterValue);
-}
 
-// 添加操作记录
-async function addLog(action, target, description) {
-    const logEntry = {
-        action: action,
-        target: target,
-        description: description,
-        details: description // 保持与服务器端兼容
-    };
-    
-    try {
-        const response = await fetch('/api/logs', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(logEntry)
-        });
-        
-        if (response.ok) {
-            loadLogs(); // 重新加载日志
-        }
-    } catch (error) {
-        console.error('添加操作记录失败:', error);
-    }
-}
 
-// 清空操作记录
-async function clearLogs() {
-    if (!confirm('确定要清空所有操作记录吗？此操作无法撤销。')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch('/api/logs', {
-            method: 'DELETE'
-        });
-        
-        if (response.ok) {
-            showToast('操作记录已清空', 'success');
-            loadLogs();
-        } else {
-            const error = await response.json();
-            showToast(error.error || '清空记录失败', 'error');
-        }
-    } catch (error) {
-        console.error('清空记录失败:', error);
-        showToast('清空失败，请重试', 'error');
-    }
-}
+
+
 
 // 显示提示消息
 function showToast(message, type = 'info') {
@@ -3079,53 +3463,53 @@ function generateProductFeatures() {
     let candidateFeatures = [];
     let weightedFeatures = [];
     
-    // 根据分类筛选合适的特性
+    // 根据分类筛选合适的特性 - 使用英文特性名称
     switch(category) {
         case 'turbocharger':
             // 涡轮增压器专用特性
-            candidateFeatures = allAvailableFeatures.filter(f => 
-                f !== '精密喷射' && f !== '配件齐全' && f !== '专业工具' && f !== '原厂正品'
+            candidateFeatures = allAvailableFeatures.filter(f =>
+                f !== 'Injection' && f !== 'Complete Kit' && f !== 'Pro Tools' && f !== 'Original'
             );
-            weightedFeatures = ['原厂品质', '高性能', '精准控制', '长寿命', '高精度'].filter(f => candidateFeatures.includes(f));
+            weightedFeatures = ['OEM Quality', 'High Power', 'Precise', 'Durable', 'High Precision'].filter(f => candidateFeatures.includes(f));
             break;
         case 'actuator':
             // 执行器专用特性
-            candidateFeatures = allAvailableFeatures.filter(f => 
-                f !== '精密喷射' && f !== '配件齐全' && f !== '专业工具' && f !== '原厂正品'
+            candidateFeatures = allAvailableFeatures.filter(f =>
+                f !== 'Injection' && f !== 'Complete Kit' && f !== 'Pro Tools' && f !== 'Original'
             );
-            weightedFeatures = ['原厂品质', '精准控制', '高精度', '长寿命'].filter(f => candidateFeatures.includes(f));
+            weightedFeatures = ['OEM Quality', 'Precise', 'High Precision', 'Durable'].filter(f => candidateFeatures.includes(f));
             break;
         case 'injector':
             // 喷油器专用特性（可以包含精密喷射）
-            candidateFeatures = allAvailableFeatures.filter(f => 
-                f !== '配件齐全' && f !== '专业工具' && f !== '原厂正品'
+            candidateFeatures = allAvailableFeatures.filter(f =>
+                f !== 'Complete Kit' && f !== 'Pro Tools' && f !== 'Original'
             );
-            weightedFeatures = ['原厂品质', '精密喷射', '高精度', '长寿命'].filter(f => candidateFeatures.includes(f));
+            weightedFeatures = ['OEM Quality', 'Injection', 'High Precision', 'Durable'].filter(f => candidateFeatures.includes(f));
             break;
         case 'turbo-parts':
             // 配件专用特性
-            candidateFeatures = allAvailableFeatures.filter(f => 
-                f !== '精密喷射' && f !== '原厂正品'
+            candidateFeatures = allAvailableFeatures.filter(f =>
+                f !== 'Injection' && f !== 'Original'
             );
-            weightedFeatures = ['配件齐全', '专业工具', '现货充足', '原厂品质'].filter(f => candidateFeatures.includes(f));
+            weightedFeatures = ['Complete Kit', 'Pro Tools', 'In Stock', 'OEM Quality'].filter(f => candidateFeatures.includes(f));
             break;
         default:
             // 其他分类，排除特定特性
-            candidateFeatures = allAvailableFeatures.filter(f => 
-                f !== '精密喷射' && f !== '配件齐全' && f !== '专业工具' && f !== '原厂正品'
+            candidateFeatures = allAvailableFeatures.filter(f =>
+                f !== 'Injection' && f !== 'Complete Kit' && f !== 'Pro Tools' && f !== 'Original'
             );
-            weightedFeatures = ['原厂品质', '高性能', '长寿命'].filter(f => candidateFeatures.includes(f));
+            weightedFeatures = ['OEM Quality', 'High Power', 'Durable'].filter(f => candidateFeatures.includes(f));
             break;
     }
     
-    // 如果是Diamond-Auto品牌，增加钻石品质的权重
-    if (brand === 'Diamond-Auto' && candidateFeatures.includes('钻石品质')) {
-        weightedFeatures.unshift('钻石品质');
+    // 如果是Diamond-Auto品牌，增加钻石品质的权重 - 使用精简英文特性名称
+    if (brand === 'Diamond-Auto' && candidateFeatures.includes('Diamond Grade')) {
+        weightedFeatures.unshift('Diamond Grade');
     }
-    
-    // 如果是高价格产品，增加高端产品的权重
-    if (price && parseFloat(price) > 200 && candidateFeatures.includes('高端产品')) {
-        weightedFeatures.push('高端产品');
+
+    // 如果是高价格产品，增加高端产品的权重 - 使用精简英文特性名称
+    if (price && parseFloat(price) > 200 && candidateFeatures.includes('Premium')) {
+        weightedFeatures.push('Premium');
     }
     
     // 构建最终的候选池：优先特性 + 其他特性
@@ -3198,20 +3582,20 @@ function generateSEODescription() {
     if (features) {
         const featureArray = features.split(',').slice(0, 3); // 最多取3个特性
         if (featureArray.length > 0) {
-            // 中文特性到英文的映射
+            // 中文特性到精简英文的映射
             const featureTranslationMap = {
                 '原厂品质': 'OEM Quality',
-                '钻石品质': 'Diamond Quality',
-                '高性能': 'High Performance',
-                '精准控制': 'Precise Control',
-                '精密喷射': 'Precision Injection',
-                '配件齐全': 'Complete Parts',
-                '专业工具': 'Professional Tools',
-                '高端产品': 'Premium Product',
+                '钻石品质': 'Diamond Grade',
+                '高性能': 'High Power',
+                '精准控制': 'Precise',
+                '精密喷射': 'Injection',
+                '配件齐全': 'Complete Kit',
+                '专业工具': 'Pro Tools',
+                '高端产品': 'Premium',
                 '现货充足': 'In Stock',
-                '原厂正品': 'Original Genuine',
+                '原厂正品': 'Original',
                 '高精度': 'High Precision',
-                '长寿命': 'Long Life'
+                '长寿命': 'Durable'
             };
 
             // 翻译特性标签
@@ -3273,20 +3657,20 @@ function generateSEOKeywords() {
 
     // 添加特性 - 翻译为英文
     if (features) {
-        // 中文特性到英文的映射
+        // 中文特性到精简英文的映射
         const featureTranslationMap = {
             '原厂品质': 'OEM Quality',
-            '钻石品质': 'Diamond Quality',
-            '高性能': 'High Performance',
-            '精准控制': 'Precise Control',
-            '精密喷射': 'Precision Injection',
-            '配件齐全': 'Complete Parts',
-            '专业工具': 'Professional Tools',
-            '高端产品': 'Premium Product',
+            '钻石品质': 'Diamond Grade',
+            '高性能': 'High Power',
+            '精准控制': 'Precise',
+            '精密喷射': 'Injection',
+            '配件齐全': 'Complete Kit',
+            '专业工具': 'Pro Tools',
+            '高端产品': 'Premium',
             '现货充足': 'In Stock',
-            '原厂正品': 'Original Genuine',
+            '原厂正品': 'Original',
             '高精度': 'High Precision',
-            '长寿命': 'Long Life'
+            '长寿命': 'Durable'
         };
 
         // 翻译特性标签
@@ -3456,27 +3840,27 @@ function generateEditProductFeatures() {
         tag.classList.add('btn-outline-primary');
     });
     
-    // 根据分类设置特性选择范围
+    // 根据分类设置特性选择范围 - 使用英文特性名称
     let excludedFeatures = [];
-    
+
     switch(category) {
         case 'turbocharger':
-            excludedFeatures = ['精密喷射', '配件齐全', '专业工具', '原厂正品'];
+            excludedFeatures = ['Injection', 'Complete Kit', 'Pro Tools', 'Original'];
             break;
         case 'actuator':
-            excludedFeatures = ['精密喷射', '配件齐全', '专业工具', '原厂正品'];
+            excludedFeatures = ['Injection', 'Complete Kit', 'Pro Tools', 'Original'];
             break;
         case 'injector':
-            excludedFeatures = ['配件齐全', '专业工具', '原厂正品'];
+            excludedFeatures = ['Complete Kit', 'Pro Tools', 'Original'];
             break;
         case 'turbo-parts':
-            excludedFeatures = ['精密喷射', '原厂正品'];
+            excludedFeatures = ['Injection', 'Original'];
             break;
         case 'others':
-            excludedFeatures = ['精密喷射', '配件齐全', '专业工具', '原厂正品'];
+            excludedFeatures = ['Injection', 'Complete Kit', 'Pro Tools', 'Original'];
             break;
         default:
-            excludedFeatures = ['精密喷射', '原厂正品'];
+            excludedFeatures = ['Injection', 'Original'];
     }
     
     // 获取可用特性
@@ -3641,20 +4025,20 @@ function generateEditSEODescription() {
         keywords.push(...compatibilityList);
     }
     if (features) {
-        // 中文特性到英文的映射
+        // 中文特性到精简英文的映射
         const featureTranslationMap = {
             '原厂品质': 'OEM Quality',
-            '钻石品质': 'Diamond Quality',
-            '高性能': 'High Performance',
-            '精准控制': 'Precise Control',
-            '精密喷射': 'Precision Injection',
-            '配件齐全': 'Complete Parts',
-            '专业工具': 'Professional Tools',
-            '高端产品': 'Premium Product',
+            '钻石品质': 'Diamond Grade',
+            '高性能': 'High Power',
+            '精准控制': 'Precise',
+            '精密喷射': 'Injection',
+            '配件齐全': 'Complete Kit',
+            '专业工具': 'Pro Tools',
+            '高端产品': 'Premium',
             '现货充足': 'In Stock',
-            '原厂正品': 'Original Genuine',
+            '原厂正品': 'Original',
             '高精度': 'High Precision',
-            '长寿命': 'Long Life'
+            '长寿命': 'Durable'
         };
 
         // 翻译特性标签
@@ -3780,17 +4164,287 @@ function generateDefaultKeywords(product) {
     return keywords.join(', ');
 }
 
-// 生成默认特性（批量更新专用，不包含原厂正品）
+// 生成默认特性（批量更新专用，使用精简英文特性名称）
 function generateDefaultFeatures(category) {
     const defaultFeatures = {
-        'turbocharger': ['原厂品质', '高性能', '长寿命'],
-        'actuator': ['原厂品质', '精准控制', '高精度'],
-        'injector': ['原厂品质', '精密喷射', '高精度'],
-        'turbo-parts': ['原厂品质', '配件齐全', '现货充足'],
-        'others': ['原厂品质', '高性能', '长寿命']
+        'turbocharger': ['OEM Quality', 'High Power', 'Durable'],
+        'actuator': ['OEM Quality', 'Precise', 'High Precision'],
+        'injector': ['OEM Quality', 'Injection', 'High Precision'],
+        'turbo-parts': ['OEM Quality', 'Complete Kit', 'In Stock'],
+        'others': ['OEM Quality', 'High Power', 'Durable']
     };
-    
+
     return (defaultFeatures[category] || defaultFeatures['others']).join(',');
+}
+
+// ===== 编辑产品页面辅助函数 =====
+
+/**
+ * 清空编辑模式下的基本信息
+ */
+function clearEditBasicInfo() {
+    document.getElementById('editProductName').value = '';
+    document.getElementById('editProductModel').value = '';
+    document.getElementById('editProductCategory').value = 'turbocharger';
+    document.getElementById('editProductBrand').value = 'Diamond-Auto';
+    document.getElementById('editProductPrice').value = '';
+    document.getElementById('editProductWarranty').value = '12';
+    updateEditCharCount();
+}
+
+/**
+ * 智能填充编辑模式下的基本信息
+ */
+function generateEditBasicInfo() {
+    const name = document.getElementById('editProductName').value;
+    const category = document.getElementById('editProductCategory').value;
+
+    if (!name) {
+        showToast('请先输入产品名称', 'warning');
+        return;
+    }
+
+    // 根据产品名称和分类智能填充其他信息
+    if (name.toLowerCase().includes('turbo') && !document.getElementById('editProductModel').value) {
+        document.getElementById('editProductModel').value = 'GT' + Math.floor(Math.random() * 9000 + 1000) + 'V';
+    }
+
+    if (!document.getElementById('editProductPrice').value) {
+        const suggestedPrice = category === 'turbocharger' ? 299 : category === 'injector' ? 199 : 99;
+        document.getElementById('editProductPrice').value = suggestedPrice;
+    }
+}
+
+/**
+ * 清空编辑模式下的详细信息
+ */
+function clearEditDetailInfo() {
+    document.getElementById('editProductOe').value = '';
+    document.getElementById('editProductCompatibility').value = '';
+}
+
+/**
+ * 智能填充编辑模式下的详细信息
+ */
+function generateEditDetailInfo() {
+    const model = document.getElementById('editProductModel').value;
+    const category = document.getElementById('editProductCategory').value;
+
+    if (model && !document.getElementById('editProductOe').value) {
+        // 生成示例OEM号
+        const oemNumbers = [
+            model.replace(/[^A-Z0-9]/g, ''),
+            '0' + Math.floor(Math.random() * 900000 + 100000),
+            'A' + Math.floor(Math.random() * 90000 + 10000) + 'B'
+        ];
+        document.getElementById('editProductOe').value = oemNumbers.join('\n');
+    }
+
+    if (category && !document.getElementById('editProductCompatibility').value) {
+        const compatibilityExamples = {
+            'turbocharger': 'Audi A4, VW Passat, Skoda Superb\nEngine: 1.9 TDI, 2.0 TDI',
+            'actuator': 'BMW 320d, Mercedes C220 CDI\nEngine: M47D20, OM646',
+            'injector': 'Ford Focus, Peugeot 307\nEngine: DV6TED4, DW10BTED4',
+            'turbo-parts': 'Universal Turbocharger Parts\nCompatible with GT series',
+            'others': 'Various Applications\nPlease contact for compatibility'
+        };
+        document.getElementById('editProductCompatibility').value = compatibilityExamples[category] || compatibilityExamples['others'];
+    }
+}
+
+/**
+ * 清空编辑模式下的描述信息
+ */
+function clearEditDescriptionInfo() {
+    document.getElementById('editProductDescription').value = '';
+    clearEditFeatures();
+}
+
+/**
+ * 智能生成编辑模式下的描述信息
+ */
+function generateEditDescriptionInfo() {
+    generateEditProductDescription();
+    generateEditProductFeatures();
+}
+
+/**
+ * 清空编辑模式下的描述
+ */
+function clearEditDescription() {
+    document.getElementById('editProductDescription').value = '';
+}
+
+/**
+ * 清空编辑模式下的特性
+ */
+function clearEditFeatures() {
+    const featureTags = document.querySelectorAll('#editFeatureTags .feature-tag');
+    featureTags.forEach(tag => {
+        tag.classList.remove('btn-primary');
+        tag.classList.add('btn-outline-primary');
+    });
+    document.getElementById('editProductFeatures').value = '';
+}
+
+/**
+ * 清空编辑模式下的SEO信息
+ */
+function clearEditSeoInfo() {
+    document.getElementById('editProductMetaDescription').value = '';
+    document.getElementById('editProductMetaKeywords').value = '';
+    document.getElementById('editProductNotes').value = '';
+}
+
+/**
+ * 智能生成编辑模式下的SEO信息
+ */
+function generateEditSeoInfo() {
+    generateEditSeoContent();
+}
+
+/**
+ * 清空编辑模式下的高级设置
+ */
+function clearEditAdvancedInfo() {
+    document.getElementById('editProductStock').value = '0';
+    document.getElementById('editProductStatus').value = 'active';
+    document.getElementById('editIsNew').checked = false;
+    document.getElementById('editIsHot').checked = false;
+    document.getElementById('editIsRecommend').checked = false;
+}
+
+/**
+ * 设置编辑模式下的默认高级设置
+ */
+function setEditDefaultAdvanced() {
+    document.getElementById('editProductStock').value = '10';
+    document.getElementById('editProductStatus').value = 'active';
+    document.getElementById('editIsNew').checked = true;
+    document.getElementById('editIsHot').checked = false;
+    document.getElementById('editIsRecommend').checked = true;
+}
+
+/**
+ * 清空编辑模式下的图片
+ */
+function clearEditImages() {
+    document.getElementById('editProductImages').value = '';
+    const currentContainer = document.getElementById('currentImageContainer');
+    if (currentContainer) {
+        currentContainer.innerHTML = '';
+    }
+    const previewContainer = document.getElementById('editImageContainer');
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+    }
+    const previewDiv = document.getElementById('editImagePreviews');
+    if (previewDiv) {
+        previewDiv.style.display = 'none';
+    }
+}
+
+/**
+ * 优化编辑模式下的图片
+ */
+function optimizeEditImages() {
+    showToast('图片优化功能开发中...', 'info');
+}
+
+/**
+ * 更新编辑模式下的字符计数
+ */
+function updateEditCharCount() {
+    const nameInput = document.getElementById('editProductName');
+    const charCountElement = document.getElementById('edit-name-char-count');
+
+    if (nameInput && charCountElement) {
+        const currentLength = nameInput.value.length;
+        const maxLength = nameInput.getAttribute('maxlength') || 120;
+        charCountElement.textContent = `${currentLength}/${maxLength}`;
+
+        // 更新样式
+        if (currentLength > maxLength * 0.9) {
+            charCountElement.classList.add('text-danger');
+            charCountElement.classList.remove('text-warning', 'text-muted');
+        } else if (currentLength > maxLength * 0.7) {
+            charCountElement.classList.add('text-warning');
+            charCountElement.classList.remove('text-danger', 'text-muted');
+        } else {
+            charCountElement.classList.add('text-muted');
+            charCountElement.classList.remove('text-danger', 'text-warning');
+        }
+    }
+}
+
+/**
+ * 价格建议功能（编辑模式）
+ */
+function suggestEditPrice() {
+    const category = document.getElementById('editProductCategory').value;
+    const brand = document.getElementById('editProductBrand').value;
+
+    let suggestedPrice = 99; // 默认价格
+
+    // 根据分类调整价格
+    switch(category) {
+        case 'turbocharger':
+            suggestedPrice = 299;
+            break;
+        case 'injector':
+            suggestedPrice = 199;
+            break;
+        case 'actuator':
+            suggestedPrice = 149;
+            break;
+        case 'turbo-parts':
+            suggestedPrice = 79;
+            break;
+    }
+
+    // 根据品牌调整价格
+    if (brand === 'Diamond-Auto') {
+        suggestedPrice *= 0.8; // Diamond-Auto品牌优惠20%
+    }
+
+    document.getElementById('editProductPrice').value = suggestedPrice.toFixed(2);
+    showToast(`建议价格：$${suggestedPrice.toFixed(2)}`, 'success');
+}
+
+/**
+ * 设置编辑模式下的字符计数事件监听器
+ */
+function setupEditCharCountListeners() {
+    const nameInput = document.getElementById('editProductName');
+    if (nameInput) {
+        // 移除之前的事件监听器（如果有）
+        nameInput.removeEventListener('input', updateEditCharCount);
+        nameInput.removeEventListener('keyup', updateEditCharCount);
+
+        // 添加新的事件监听器
+        nameInput.addEventListener('input', updateEditCharCount);
+        nameInput.addEventListener('keyup', updateEditCharCount);
+    }
+}
+
+// ===== 产品标签管理函数 =====
+
+/**
+ * 清空添加产品页面的所有标签
+ */
+function clearProductTags() {
+    document.getElementById('addIsNew').checked = false;
+    document.getElementById('addIsHot').checked = false;
+    document.getElementById('addIsRecommend').checked = false;
+}
+
+/**
+ * 设置添加产品页面的默认标签
+ */
+function setDefaultProductTags() {
+    document.getElementById('addIsNew').checked = true;
+    document.getElementById('addIsHot').checked = false;
+    document.getElementById('addIsRecommend').checked = false;
 }
 
 // 生成默认OEM号
@@ -4306,8 +4960,7 @@ async function updateStats() {
     // 使用分页数据或全局计数
     const totalProductsCount = totalProducts || products.length;
     const activeProducts = products.filter(p => p.status === 'active').length;
-    const totalCategoriesCount = categories.length;
-    
+
     // 修复图片计数：正确处理新旧数据格式
     let totalImages = 0;
     products.forEach(p => {
@@ -4319,12 +4972,11 @@ async function updateStats() {
             totalImages += 1;
         }
     });
-    
+
     document.getElementById('total-products').textContent = totalProductsCount;
     document.getElementById('active-products').textContent = activeProducts;
-    document.getElementById('total-categories').textContent = totalCategoriesCount;
     document.getElementById('total-images').textContent = totalImages;
-    
+
     // 更新分析数据统计
     await updateAnalyticsStats();
 }
@@ -4372,9 +5024,45 @@ let inquiryPageSize = 20;
 let totalInquiries = 0;
 let filteredInquiries = [];
 
-// 加载询价列表
+// 批量操作相关变量
+let selectedInquiryIds = new Set();
+let isSelectingAll = false;
+
+// 🔄 加载询价列表 - 优化版本，支持缓存和防重复加载
+let inquiriesDataCache = null;
+let inquiriesDataCacheTime = 0;
+let isLoadingInquiries = false;
+const INQUIRIES_DATA_CACHE_TTL = 30000; // 30秒缓存
+
 async function loadInquiries() {
+    // 防止重复加载
+    if (isLoadingInquiries) {
+        console.log('🔄 询价数据正在加载中，跳过重复请求');
+        return;
+    }
+
     try {
+        // 检查缓存
+        const now = Date.now();
+        if (inquiriesDataCache && (now - inquiriesDataCacheTime) < INQUIRIES_DATA_CACHE_TTL) {
+            console.log('🎯 使用询价数据缓存');
+            processInquiriesData(inquiriesDataCache);
+            return;
+        }
+
+        isLoadingInquiries = true;
+        console.log('📊 加载询价数据...');
+
+        // 清除之前的选择状态
+        selectedInquiryIds.clear();
+        isSelectingAll = false;
+
+        // 隐藏批量操作面板
+        const batchPanel = document.getElementById('inquiry-batch-panel');
+        if (batchPanel) {
+            batchPanel.style.display = 'none';
+        }
+
         // 隐藏加载行
         const loadingRow = document.getElementById('inquiry-loading-row');
         if (loadingRow) {
@@ -4387,9 +5075,42 @@ async function loadInquiries() {
         }
         const inquiries = await response.json();
 
+        // 缓存数据
+        inquiriesDataCache = inquiries;
+        inquiriesDataCacheTime = now;
+
+        // 处理数据
+        processInquiriesData(inquiries);
+
+    } catch (error) {
+        console.error('加载询价列表失败:', error);
+        showToast('加载询价列表失败，请刷新页面重试', 'danger');
+
+        // 显示错误状态
+        const tbody = document.getElementById('inquiry-list');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center py-5">
+                        <div class="text-danger">
+                            <i class="bi bi-exclamation-triangle fs-1"></i>
+                            <div class="mt-2">加载失败，请刷新页面重试</div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+    } finally {
+        isLoadingInquiries = false;
+    }
+}
+
+// 🔄 处理询价数据 - 提取的公共函数
+function processInquiriesData(inquiries) {
+    try {
         // 获取筛选条件
-        const statusFilter = document.getElementById('inquiry-status-filter').value;
-        const searchFilter = document.getElementById('inquiry-search-filter').value.toLowerCase();
+        const statusFilter = document.getElementById('inquiry-status-filter')?.value || '';
+        const searchFilter = document.getElementById('inquiry-search-filter')?.value.toLowerCase() || '';
 
         // 过滤询价记录
         filteredInquiries = inquiries.filter(inquiry => {
@@ -4440,22 +5161,16 @@ async function loadInquiries() {
         updateInquiryPagination();
 
     } catch (error) {
-        console.error('加载询价列表失败:', error);
-        showToast('加载询价列表失败，请刷新页面重试', 'danger');
-
-        // 显示错误状态
-        const tbody = document.getElementById('inquiry-list');
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="7" class="text-center py-5">
-                    <div class="text-danger">
-                        <i class="bi bi-exclamation-triangle fs-1"></i>
-                        <div class="mt-2">加载失败，请刷新页面重试</div>
-                    </div>
-                </td>
-            </tr>
-        `;
+        console.error('处理询价数据失败:', error);
+        showToast('数据处理失败', 'error');
     }
+}
+
+// 清除询价数据缓存
+function clearInquiriesDataCache() {
+    inquiriesDataCache = null;
+    inquiriesDataCacheTime = 0;
+    console.log('🗑️ 询价数据缓存已清除');
 }
 
 // 渲染询价列表
@@ -4465,7 +5180,7 @@ function renderInquiryList(inquiries) {
     if (inquiries.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="text-center py-5">
+                <td colspan="8" class="text-center py-5">
                     <div class="text-muted">
                         <i class="bi bi-inbox fs-1"></i>
                         <div class="mt-2">暂无询价记录</div>
@@ -4481,6 +5196,12 @@ function renderInquiryList(inquiries) {
     inquiries.forEach(inquiry => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input inquiry-checkbox" type="checkbox" value="${inquiry.id}" id="inquiry-${inquiry.id}">
+                    <label class="form-check-label" for="inquiry-${inquiry.id}"></label>
+                </div>
+            </td>
             <td>
                 <span class="badge bg-light text-dark">#${inquiry.id.slice(-6)}</span>
             </td>
@@ -4531,6 +5252,9 @@ function renderInquiryList(inquiries) {
         `;
         tbody.appendChild(tr);
     });
+
+    // 设置批量操作事件监听器
+    setupInquiryBatchOperations();
 }
 
 // 更新询价统计信息
@@ -4854,27 +5578,51 @@ function formatDateTime(dateString) {
     }
 }
 
-// 初始化询价管理
+// 🔧 初始化询价管理 - 防重复初始化版本
+let inquiryManagementInitialized = false;
+
 function initInquiryManagement() {
+    // 防止重复初始化
+    if (inquiryManagementInitialized) {
+        console.log('🔄 询价管理已初始化，跳过重复初始化');
+        // 只刷新数据，不重新绑定事件
+        if (!loadingStates.inquiries) {
+            loadInquiries();
+        }
+        return;
+    }
+
+    console.log('🔧 初始化询价管理...');
+    inquiryManagementInitialized = true;
+
     // 绑定筛选器变化事件
-    document.getElementById('inquiry-status-filter').addEventListener('change', () => {
-        currentInquiryPage = 1;
-        loadInquiries();
-    });
+    const statusFilter = document.getElementById('inquiry-status-filter');
+    if (statusFilter) {
+        statusFilter.addEventListener('change', () => {
+            currentInquiryPage = 1;
+            loadInquiries();
+        });
+    }
 
     // 时间筛选现在通过时间筛选组件处理，不需要单独的日期筛选监听器
 
-    document.getElementById('inquiry-search-filter').addEventListener('input', debounce(() => {
-        currentInquiryPage = 1;
-        loadInquiries();
-    }, 500));
+    const searchFilter = document.getElementById('inquiry-search-filter');
+    if (searchFilter) {
+        searchFilter.addEventListener('input', debounce(() => {
+            currentInquiryPage = 1;
+            loadInquiries();
+        }, 500));
+    }
 
     // 绑定页面大小变化事件
-    document.getElementById('inquiry-page-size').addEventListener('change', (e) => {
-        inquiryPageSize = parseInt(e.target.value);
-        currentInquiryPage = 1;
-        loadInquiries();
-    });
+    const pageSizeSelect = document.getElementById('inquiry-page-size');
+    if (pageSizeSelect) {
+        pageSizeSelect.addEventListener('change', (e) => {
+            inquiryPageSize = parseInt(e.target.value);
+            currentInquiryPage = 1;
+            loadInquiries();
+        });
+    }
 
     // 绑定更新状态按钮事件
     const updateStatusBtn = document.getElementById('update-inquiry-status');
@@ -4884,6 +5632,9 @@ function initInquiryManagement() {
 
     // 初始化清空数据功能
     initClearInquiriesModal();
+
+    // 初始化批量操作功能
+    initInquiryBatchOperations();
 
     // 初始加载询价列表
     loadInquiries();
@@ -4948,9 +5699,7 @@ function initClearInquiriesModal() {
         try {
             const response = await fetch('/api/inquiries/clear-all', {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                credentials: 'include'
             });
 
             if (!response.ok) {
@@ -4973,97 +5722,9 @@ function initClearInquiriesModal() {
     });
 }
 
-// 加载公司信息
-async function loadCompanyInfo() {
-    try {
-        const response = await fetch('../data/company.json');
-        const data = await response.json();
-        
-        // 填充表单数据
-        document.getElementById('companyName').value = data.name || '';
-        document.getElementById('companyShortName').value = data.shortName || '';
-        document.getElementById('companyDescription').value = data.description || '';
-        document.getElementById('companyEstablished').value = data.established || '';
-        document.getElementById('companyExperience').value = data.experience || '';
-        
-        // 联系方式
-        document.getElementById('companyPhone').value = data.contact?.phone || '';
-        document.getElementById('companyEmail').value = data.contact?.email || '';
-        document.getElementById('companyWhatsapp').value = data.contact?.whatsapp || '';
-        document.getElementById('companyAddress').value = data.contact?.address || '';
-        
-        // 社交媒体
-        document.getElementById('companyFacebook').value = data.social?.facebook || '';
-        document.getElementById('companyInstagram').value = data.social?.instagram || '';
-        document.getElementById('companySocialWhatsapp').value = data.social?.whatsapp || '';
-        document.getElementById('companySocialEmail').value = data.social?.email || '';
-        
-        // 营业时间
-        document.getElementById('companyWeekdays').value = data.businessHours?.weekdays || '';
-        document.getElementById('companyWeekend').value = data.businessHours?.weekend || '';
-        
-        showToast('公司信息加载成功！', 'success');
-    } catch (error) {
-        console.error('加载公司信息失败:', error);
-        showToast('加载公司信息失败，请刷新页面重试', 'error');
-    }
-}
 
-// 保存公司信息
-async function saveCompanyInfo() {
-    try {
-        // 收集表单数据
-        const formData = {
-            name: document.getElementById('companyName').value,
-            shortName: document.getElementById('companyShortName').value,
-            description: document.getElementById('companyDescription').value,
-            established: document.getElementById('companyEstablished').value,
-            experience: document.getElementById('companyExperience').value,
-            logo: "assets/images/logo/diamond-logo.png",
-            contact: {
-                phone: document.getElementById('companyPhone').value,
-                email: document.getElementById('companyEmail').value,
-                whatsapp: document.getElementById('companyWhatsapp').value,
-                address: document.getElementById('companyAddress').value,
-                website: "https://www.diamond-auto.com"
-            },
-            social: {
-                facebook: document.getElementById('companyFacebook').value,
-                instagram: document.getElementById('companyInstagram').value,
-                whatsapp: document.getElementById('companySocialWhatsapp').value,
-                email: document.getElementById('companySocialEmail').value
-            },
-            businessHours: {
-                weekdays: document.getElementById('companyWeekdays').value,
-                weekend: document.getElementById('companyWeekend').value
-            }
-        };
 
-        // 发送到服务器
-        const response = await fetch('/api/update-company', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
 
-        if (!response.ok) {
-            throw new Error('保存失败');
-        }
-
-        showToast('公司信息保存成功！', 'success');
-        
-        // 刷新页面上的公司信息显示
-        document.querySelectorAll('.company-name').forEach(el => {
-            el.textContent = formData.name;
-        });
-        
-    } catch (error) {
-        console.error('保存公司信息失败:', error);
-        showToast('保存失败，请稍后重试', 'error');
-    }
-}
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
@@ -5089,10 +5750,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById(`${page}-page`).classList.add('active');
             this.classList.add('active');
             
-            // 如果是公司信息页面，加载公司信息
-            if (page === 'company') {
-                loadCompanyInfo();
-            }
+
         });
     });
 });
@@ -8164,3 +8822,264 @@ document.addEventListener('DOMContentLoaded', function() {
     // 延迟初始化时间筛选功能，确保其他组件已加载
     setTimeout(initializeTimeFilter, 1000);
 });
+
+// ===== 询价批量操作功能 =====
+
+/**
+ * 初始化询价批量操作功能
+ */
+function initInquiryBatchOperations() {
+    // 全选/取消全选
+    const selectAllCheckbox = document.getElementById('inquiry-select-all');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', handleSelectAll);
+    }
+
+    // 清除选择按钮
+    const clearSelectionBtn = document.getElementById('inquiry-clear-selection');
+    if (clearSelectionBtn) {
+        clearSelectionBtn.addEventListener('click', clearInquirySelection);
+    }
+
+    // 批量状态更新
+    const statusDropdownItems = document.querySelectorAll('#inquiry-batch-status-dropdown + .dropdown-menu .dropdown-item');
+    statusDropdownItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const status = e.currentTarget.getAttribute('data-status');
+            if (status) {
+                handleBatchStatusUpdate(status);
+            }
+        });
+    });
+
+    // 批量删除按钮
+    const batchDeleteBtn = document.getElementById('inquiry-batch-delete');
+    if (batchDeleteBtn) {
+        batchDeleteBtn.addEventListener('click', handleBatchDelete);
+    }
+}
+
+/**
+ * 设置询价批量操作事件监听器（在每次渲染后调用）
+ */
+function setupInquiryBatchOperations() {
+    // 为每个复选框添加事件监听器
+    const checkboxes = document.querySelectorAll('.inquiry-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', handleInquiryCheckboxChange);
+    });
+
+    // 更新批量操作面板状态
+    updateBatchOperationPanel();
+}
+
+/**
+ * 处理全选/取消全选
+ */
+function handleSelectAll() {
+    const selectAllCheckbox = document.getElementById('inquiry-select-all');
+    const checkboxes = document.querySelectorAll('.inquiry-checkbox');
+
+    isSelectingAll = selectAllCheckbox.checked;
+
+    checkboxes.forEach(checkbox => {
+        const row = checkbox.closest('tr');
+        checkbox.checked = isSelectingAll;
+        if (isSelectingAll) {
+            selectedInquiryIds.add(checkbox.value);
+            row.classList.add('selected');
+        } else {
+            selectedInquiryIds.delete(checkbox.value);
+            row.classList.remove('selected');
+        }
+    });
+
+    updateBatchOperationPanel();
+}
+
+/**
+ * 处理单个询价复选框变化
+ */
+function handleInquiryCheckboxChange(event) {
+    const checkbox = event.target;
+    const inquiryId = checkbox.value;
+    const row = checkbox.closest('tr');
+
+    if (checkbox.checked) {
+        selectedInquiryIds.add(inquiryId);
+        row.classList.add('selected');
+    } else {
+        selectedInquiryIds.delete(inquiryId);
+        row.classList.remove('selected');
+        // 如果取消选择，同时取消全选状态
+        const selectAllCheckbox = document.getElementById('inquiry-select-all');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = false;
+        }
+        isSelectingAll = false;
+    }
+
+    // 检查是否所有可见的复选框都被选中
+    const allCheckboxes = document.querySelectorAll('.inquiry-checkbox');
+    const checkedCheckboxes = document.querySelectorAll('.inquiry-checkbox:checked');
+    const selectAllCheckbox = document.getElementById('inquiry-select-all');
+
+    if (selectAllCheckbox && allCheckboxes.length > 0) {
+        selectAllCheckbox.checked = allCheckboxes.length === checkedCheckboxes.length;
+        selectAllCheckbox.indeterminate = checkedCheckboxes.length > 0 && checkedCheckboxes.length < allCheckboxes.length;
+    }
+
+    updateBatchOperationPanel();
+}
+
+/**
+ * 清除所有选择
+ */
+function clearInquirySelection() {
+    selectedInquiryIds.clear();
+    isSelectingAll = false;
+
+    // 取消所有复选框的选中状态和行高亮
+    const checkboxes = document.querySelectorAll('.inquiry-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        const row = checkbox.closest('tr');
+        row.classList.remove('selected');
+    });
+
+    // 取消全选复选框的状态
+    const selectAllCheckbox = document.getElementById('inquiry-select-all');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+    }
+
+    updateBatchOperationPanel();
+}
+
+/**
+ * 更新批量操作面板状态
+ */
+function updateBatchOperationPanel() {
+    const panel = document.getElementById('inquiry-batch-panel');
+    const countElement = document.getElementById('inquiry-selected-count');
+
+    if (!panel || !countElement) return;
+
+    const selectedCount = selectedInquiryIds.size;
+
+    if (selectedCount > 0) {
+        panel.style.display = 'block';
+        countElement.textContent = selectedCount;
+    } else {
+        panel.style.display = 'none';
+    }
+}
+
+/**
+ * 处理批量状态更新
+ */
+async function handleBatchStatusUpdate(status) {
+    if (selectedInquiryIds.size === 0) {
+        showToast('请先选择要更新的询价记录', 'warning');
+        return;
+    }
+
+    const statusText = getStatusText(status);
+    const confirmMessage = `确定要将选中的 ${selectedInquiryIds.size} 条询价记录的状态更新为"${statusText}"吗？`;
+
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+
+    try {
+        showToast('正在批量更新状态...', 'info');
+
+        const response = await fetch('/api/inquiries/batch', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                action: 'updateStatus',
+                inquiryIds: Array.from(selectedInquiryIds),
+                data: {
+                    status: status,
+                    notes: `批量更新状态为${statusText}`
+                }
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            showToast(`成功更新 ${result.data.successCount} 条记录的状态`, 'success');
+
+            // 清除选择并重新加载列表
+            clearInquirySelection();
+            loadInquiries();
+        } else {
+            throw new Error(result.message || '批量更新失败');
+        }
+    } catch (error) {
+        console.error('批量更新状态失败:', error);
+        showToast('批量更新状态失败：' + error.message, 'danger');
+    }
+}
+
+/**
+ * 处理批量删除
+ */
+async function handleBatchDelete() {
+    if (selectedInquiryIds.size === 0) {
+        showToast('请先选择要删除的询价记录', 'warning');
+        return;
+    }
+
+    const confirmMessage = `⚠️ 危险操作警告！\n\n确定要删除选中的 ${selectedInquiryIds.size} 条询价记录吗？\n\n此操作不可撤销，请谨慎操作！`;
+
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+
+    // 二次确认
+    const secondConfirm = prompt(`请输入 "DELETE" 来确认删除操作：`);
+    if (secondConfirm !== 'DELETE') {
+        showToast('删除操作已取消', 'info');
+        return;
+    }
+
+    try {
+        showToast('正在批量删除询价记录...', 'info');
+
+        const response = await fetch('/api/inquiries/batch', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                action: 'delete',
+                inquiryIds: Array.from(selectedInquiryIds),
+                data: {}
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            showToast(`成功删除 ${result.data.successCount} 条询价记录`, 'success');
+
+            // 清除选择并重新加载列表
+            clearInquirySelection();
+            loadInquiries();
+        } else {
+            throw new Error(result.message || '批量删除失败');
+        }
+    } catch (error) {
+        console.error('批量删除失败:', error);
+        showToast('批量删除失败：' + error.message, 'danger');
+    }
+}

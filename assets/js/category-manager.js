@@ -16,9 +16,8 @@ class CategoryManager {
      */
     async loadCategories() {
         try {
-            // 开发阶段：从JSON文件加载
-            // 生产阶段：从API接口加载
-            const response = await fetch('data/categories.json');
+            // 🗄️ 使用数据库API加载分类数据
+            const response = await fetch('/api/db/categories');
             if (!response.ok) {
                 throw new Error('Failed to load categories');
             }
@@ -54,7 +53,11 @@ class CategoryManager {
                     'turbo-parts': '涡轮配件',
                     'others': '其他'
                 };
-                return fallbackMap[categoryId] || categoryId;
+                const fallbackName = fallbackMap[categoryId] || categoryId;
+                if (fallbackName === categoryId) {
+                    console.log(`⚠️ 分类翻译失败，使用原ID: ${categoryId}`);
+                }
+                return fallbackName;
             };
 
             this.categories = [

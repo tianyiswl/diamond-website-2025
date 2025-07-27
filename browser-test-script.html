@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond Website 浏览器功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .pass { background-color: #d4edda; color: #155724; }
+        .fail { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        #results {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Diamond Website 浏览器功能测试</h1>
+    
+    <div class="test-container">
+        <h2>📋 测试控制面板</h2>
+        <button class="test-button" onclick="testPageLoading()">测试页面加载</button>
+        <button class="test-button" onclick="testNavigation()">测试页面导航</button>
+        <button class="test-button" onclick="testSearchFunction()">测试搜索功能</button>
+        <button class="test-button" onclick="testInquiryForm()">测试询价表单</button>
+        <button class="test-button" onclick="testResponsiveDesign()">测试响应式设计</button>
+        <button class="test-button" onclick="runAllTests()">运行所有测试</button>
+        <button class="test-button" onclick="clearResults()">清空结果</button>
+    </div>
+
+    <div class="test-container">
+        <h2>📊 测试结果</h2>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const results = document.getElementById('results');
+        let testCount = 0;
+        let passCount = 0;
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+            
+            if (type === 'pass') passCount++;
+            testCount++;
+        }
+
+        function clearResults() {
+            results.innerHTML = '';
+            testCount = 0;
+            passCount = 0;
+        }
+
+        // 测试页面加载
+        async function testPageLoading() {
+            log('🔄 开始页面加载测试...', 'info');
+            
+            const pages = [
+                { name: '首页', url: 'http://localhost:3001/' },
+                { name: '产品页面', url: 'http://localhost:3001/pages/products.html' },
+                { name: '产品详情', url: 'http://localhost:3001/pages/product-detail.html' },
+                { name: '隐私政策', url: 'http://localhost:3001/pages/privacy.html' },
+                { name: '服务条款', url: 'http://localhost:3001/pages/terms.html' }
+            ];
+
+            for (const page of pages) {
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(page.url);
+                    const loadTime = Date.now() - startTime;
+                    
+                    if (response.ok) {
+                        log(`✅ ${page.name} 加载成功 (${loadTime}ms)`, 'pass');
+                    } else {
+                        log(`❌ ${page.name} 加载失败: HTTP ${response.status}`, 'fail');
+                    }
+                } catch (error) {
+                    log(`❌ ${page.name} 请求失败: ${error.message}`, 'fail');
+                }
+            }
+        }
+
+        // 测试页面导航
+        function testNavigation() {
+            log('🔄 开始页面导航测试...', 'info');
+            
+            // 测试导航链接
+            const navLinks = document.querySelectorAll('nav a, .nav-link');
+            if (navLinks.length > 0) {
+                log(`✅ 找到 ${navLinks.length} 个导航链接`, 'pass');
+                
+                navLinks.forEach((link, index) => {
+                    if (link.href && link.href !== '#') {
+                        log(`📎 导航链接 ${index + 1}: ${link.textContent.trim()} -> ${link.href}`, 'info');
+                    }
+                });
+            } else {
+                log('❌ 未找到导航链接', 'fail');
+            }
+        }
+
+        // 测试搜索功能
+        function testSearchFunction() {
+            log('🔄 开始搜索功能测试...', 'info');
+            
+            const searchInput = document.getElementById('searchInput') || document.querySelector('input[type="search"]');
+            if (searchInput) {
+                log('✅ 找到搜索输入框', 'pass');
+                
+                // 模拟搜索输入
+                searchInput.value = '钻石工具';
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                // 模拟回车键
+                const enterEvent = new KeyboardEvent('keypress', {
+                    key: 'Enter',
+                    code: 'Enter',
+                    keyCode: 13,
+                    bubbles: true
+                });
+                searchInput.dispatchEvent(enterEvent);
+                
+                log('✅ 搜索功能触发成功', 'pass');
+            } else {
+                log('❌ 未找到搜索输入框', 'fail');
+            }
+        }
+
+        // 测试询价表单
+        function testInquiryForm() {
+            log('🔄 开始询价表单测试...', 'info');
+            
+            // 查找询价表单
+            const inquiryForm = document.querySelector('form[action*="inquiry"]') || 
+                               document.querySelector('#inquiryForm') ||
+                               document.querySelector('.inquiry-form');
+            
+            if (inquiryForm) {
+                log('✅ 找到询价表单', 'pass');
+                
+                // 检查表单字段
+                const nameField = inquiryForm.querySelector('input[name="name"]');
+                const emailField = inquiryForm.querySelector('input[name="email"]');
+                const messageField = inquiryForm.querySelector('textarea[name="message"]');
+                
+                if (nameField && emailField && messageField) {
+                    log('✅ 询价表单字段完整', 'pass');
+                    
+                    // 填写测试数据
+                    nameField.value = '测试用户';
+                    emailField.value = 'test@example.com';
+                    messageField.value = '这是一个功能测试询价';
+                    
+                    log('✅ 表单数据填写完成', 'pass');
+                } else {
+                    log('❌ 询价表单字段不完整', 'fail');
+                }
+            } else {
+                log('⚠️ 当前页面未找到询价表单', 'warning');
+            }
+        }
+
+        // 测试响应式设计
+        function testResponsiveDesign() {
+            log('🔄 开始响应式设计测试...', 'info');
+            
+            const originalWidth = window.innerWidth;
+            
+            // 测试移动端视口
+            if (window.innerWidth <= 768) {
+                log('📱 当前为移动端视口', 'info');
+            } else {
+                log('💻 当前为桌面端视口', 'info');
+            }
+            
+            // 检查响应式元素
+            const responsiveElements = document.querySelectorAll('.container, .row, .col, [class*="col-"]');
+            if (responsiveElements.length > 0) {
+                log(`✅ 找到 ${responsiveElements.length} 个响应式元素`, 'pass');
+            } else {
+                log('⚠️ 未找到明显的响应式布局元素', 'warning');
+            }
+            
+            // 检查媒体查询
+            const stylesheets = document.querySelectorAll('link[rel="stylesheet"]');
+            log(`📄 找到 ${stylesheets.length} 个样式表`, 'info');
+        }
+
+        // 运行所有测试
+        async function runAllTests() {
+            clearResults();
+            log('🚀 开始运行所有测试...', 'info');
+            
+            await testPageLoading();
+            testNavigation();
+            testSearchFunction();
+            testInquiryForm();
+            testResponsiveDesign();
+            
+            // 生成测试报告
+            setTimeout(() => {
+                const successRate = ((passCount / testCount) * 100).toFixed(2);
+                log(`📊 测试完成: ${passCount}/${testCount} 通过 (${successRate}%)`, 
+                    successRate >= 80 ? 'pass' : successRate >= 60 ? 'warning' : 'fail');
+            }, 1000);
+        }
+
+        // 页面加载完成后自动运行基础测试
+        window.addEventListener('load', () => {
+            log('🎯 Diamond Website 浏览器测试工具已加载', 'info');
+            log('💡 点击上方按钮开始测试各项功能', 'info');
+        });
+    </script>
+</body>
+</html>

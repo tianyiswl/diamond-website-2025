@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚨 紧急诊断 - Diamond Website</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .status-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .status-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        .status-ok { color: #4CAF50; }
+        .status-error { color: #f44336; }
+        .status-warning { color: #ff9800; }
+        .button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .button.secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+        .button.danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+        .logs {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .log-success { background: rgba(76, 175, 80, 0.2); }
+        .log-error { background: rgba(244, 67, 54, 0.2); }
+        .log-warning { background: rgba(255, 152, 0, 0.2); }
+        .log-info { background: rgba(33, 150, 243, 0.2); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 紧急诊断工具</h1>
+        
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="status-title">🌐 服务器状态</div>
+                <div class="status-item">
+                    <span>服务器连接</span>
+                    <span id="server-status">检查中...</span>
+                </div>
+                <div class="status-item">
+                    <span>API端点</span>
+                    <span id="api-status">检查中...</span>
+                </div>
+                <div class="status-item">
+                    <span>产品数据</span>
+                    <span id="products-status">检查中...</span>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-title">📜 脚本状态</div>
+                <div class="status-item">
+                    <span>双重刷新修复</span>
+                    <span id="double-refresh-status">检查中...</span>
+                </div>
+                <div class="status-item">
+                    <span>页面跳转修复</span>
+                    <span id="page-transition-status">检查中...</span>
+                </div>
+                <div class="status-item">
+                    <span>组件管理器</span>
+                    <span id="component-manager-status">检查中...</span>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-title">🔧 功能状态</div>
+                <div class="status-item">
+                    <span>轮播图</span>
+                    <span id="carousel-status">检查中...</span>
+                </div>
+                <div class="status-item">
+                    <span>产品展示</span>
+                    <span id="product-display-status">检查中...</span>
+                </div>
+                <div class="status-item">
+                    <span>页面导航</span>
+                    <span id="navigation-status">检查中...</span>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-title">⚡ 性能状态</div>
+                <div class="status-item">
+                    <span>页面加载时间</span>
+                    <span id="load-time">计算中...</span>
+                </div>
+                <div class="status-item">
+                    <span>JavaScript错误</span>
+                    <span id="js-errors">0</span>
+                </div>
+                <div class="status-item">
+                    <span>网络请求</span>
+                    <span id="network-requests">监控中...</span>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <button class="button" onclick="runFullDiagnosis()">🔍 完整诊断</button>
+            <button class="button secondary" onclick="testMainPage()">🏠 测试主页</button>
+            <button class="button secondary" onclick="testProductsPage()">📦 测试产品页</button>
+            <button class="button danger" onclick="clearLogs()">🗑️ 清除日志</button>
+        </div>
+        
+        <div class="logs" id="logs">
+            <div class="log-entry log-info">🚀 紧急诊断工具已启动...</div>
+        </div>
+    </div>
+
+    <script>
+        let jsErrorCount = 0;
+        let networkRequests = 0;
+        const startTime = performance.now();
+        
+        // 捕获JavaScript错误
+        window.addEventListener('error', function(e) {
+            jsErrorCount++;
+            document.getElementById('js-errors').textContent = jsErrorCount;
+            log(`❌ JavaScript错误: ${e.message} (${e.filename}:${e.lineno})`, 'error');
+        });
+        
+        // 监控网络请求
+        const originalFetch = window.fetch;
+        window.fetch = function(...args) {
+            networkRequests++;
+            document.getElementById('network-requests').textContent = networkRequests;
+            log(`🌐 网络请求: ${args[0]}`, 'info');
+            return originalFetch.apply(this, args);
+        };
+        
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(entry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function updateStatus(elementId, status, type = 'ok') {
+            const element = document.getElementById(elementId);
+            element.textContent = status;
+            element.className = `status-${type}`;
+        }
+        
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    updateStatus('server-status', '✅ 正常', 'ok');
+                    log('✅ 服务器连接正常', 'success');
+                } else {
+                    updateStatus('server-status', '❌ 异常', 'error');
+                    log('❌ 服务器响应异常', 'error');
+                }
+            } catch (error) {
+                updateStatus('server-status', '❌ 离线', 'error');
+                log(`❌ 服务器连接失败: ${error.message}`, 'error');
+            }
+        }
+        
+        async function checkApiStatus() {
+            try {
+                const response = await fetch('/api/public/categories');
+                if (response.ok) {
+                    updateStatus('api-status', '✅ 正常', 'ok');
+                    log('✅ API端点正常', 'success');
+                } else {
+                    updateStatus('api-status', '❌ 异常', 'error');
+                    log('❌ API端点异常', 'error');
+                }
+            } catch (error) {
+                updateStatus('api-status', '❌ 失败', 'error');
+                log(`❌ API调用失败: ${error.message}`, 'error');
+            }
+        }
+        
+        async function checkProductsData() {
+            try {
+                const response = await fetch('/api/public/products');
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStatus('products-status', `✅ ${data.products?.length || 0}个产品`, 'ok');
+                    log(`✅ 产品数据正常: ${data.products?.length || 0}个产品`, 'success');
+                } else {
+                    updateStatus('products-status', '❌ 异常', 'error');
+                    log('❌ 产品数据异常', 'error');
+                }
+            } catch (error) {
+                updateStatus('products-status', '❌ 失败', 'error');
+                log(`❌ 产品数据获取失败: ${error.message}`, 'error');
+            }
+        }
+        
+        function checkScriptStatus() {
+            // 检查双重刷新修复脚本
+            if (window.PageExecutionState) {
+                updateStatus('double-refresh-status', '✅ 已加载', 'ok');
+                log('✅ 双重刷新修复脚本已加载', 'success');
+            } else {
+                updateStatus('double-refresh-status', '❌ 未加载', 'error');
+                log('❌ 双重刷新修复脚本未加载', 'error');
+            }
+            
+            // 检查页面跳转修复脚本
+            if (window.forceRemoveLoadingScreens) {
+                updateStatus('page-transition-status', '✅ 已加载', 'ok');
+                log('✅ 页面跳转修复脚本已加载', 'success');
+            } else {
+                updateStatus('page-transition-status', '❌ 未加载', 'error');
+                log('❌ 页面跳转修复脚本未加载', 'error');
+            }
+            
+            // 检查组件管理器
+            if (window.componentManager) {
+                updateStatus('component-manager-status', '✅ 已加载', 'ok');
+                log('✅ 组件管理器已加载', 'success');
+            } else {
+                updateStatus('component-manager-status', '❌ 未加载', 'error');
+                log('❌ 组件管理器未加载', 'error');
+            }
+        }
+        
+        function checkFunctionality() {
+            // 检查轮播图
+            const carousel = document.querySelector('.carousel');
+            if (carousel) {
+                updateStatus('carousel-status', '✅ 存在', 'ok');
+                log('✅ 轮播图元素存在', 'success');
+            } else {
+                updateStatus('carousel-status', '❌ 缺失', 'error');
+                log('❌ 轮播图元素缺失', 'error');
+            }
+            
+            // 检查产品展示
+            const productCards = document.querySelectorAll('.product-card');
+            if (productCards.length > 0) {
+                updateStatus('product-display-status', `✅ ${productCards.length}个产品`, 'ok');
+                log(`✅ 产品展示正常: ${productCards.length}个产品卡片`, 'success');
+            } else {
+                updateStatus('product-display-status', '❌ 无产品', 'error');
+                log('❌ 产品展示异常: 无产品卡片', 'error');
+            }
+            
+            // 检查页面导航
+            const navLinks = document.querySelectorAll('nav a');
+            if (navLinks.length > 0) {
+                updateStatus('navigation-status', '✅ 正常', 'ok');
+                log(`✅ 页面导航正常: ${navLinks.length}个链接`, 'success');
+            } else {
+                updateStatus('navigation-status', '❌ 异常', 'error');
+                log('❌ 页面导航异常: 无导航链接', 'error');
+            }
+        }
+        
+        function updatePerformanceStats() {
+            const loadTime = (performance.now() - startTime).toFixed(2);
+            document.getElementById('load-time').textContent = `${loadTime}ms`;
+        }
+        
+        async function runFullDiagnosis() {
+            log('🔍 开始完整诊断...', 'info');
+            
+            await checkServerStatus();
+            await checkApiStatus();
+            await checkProductsData();
+            checkScriptStatus();
+            checkFunctionality();
+            updatePerformanceStats();
+            
+            log('✅ 完整诊断完成', 'success');
+        }
+        
+        function testMainPage() {
+            log('🏠 测试主页...', 'info');
+            window.open('/', '_blank');
+        }
+        
+        function testProductsPage() {
+            log('📦 测试产品页...', 'info');
+            window.open('/pages/products.html', '_blank');
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '<div class="log-entry log-info">🗑️ 日志已清除</div>';
+        }
+        
+        // 页面加载完成后自动运行诊断
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 紧急诊断工具已启动', 'success');
+            setTimeout(runFullDiagnosis, 1000);
+        });
+    </script>
+</body>
+</html>

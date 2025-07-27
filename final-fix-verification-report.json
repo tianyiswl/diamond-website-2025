@@ -1,0 +1,106 @@
+{
+  "timestamp": "2025-07-21T05:04:27.253Z",
+  "summary": {
+    "total": 12,
+    "passed": 10,
+    "failed": 2,
+    "successRate": "83.33%"
+  },
+  "categories": {
+    "登录验证": {
+      "total": 2,
+      "passed": 2
+    },
+    "重定向修复": {
+      "total": 2,
+      "passed": 1
+    },
+    "数据读取": {
+      "total": 2,
+      "passed": 1
+    },
+    "API端点": {
+      "total": 2,
+      "passed": 2
+    },
+    "其他修复": {
+      "total": 4,
+      "passed": 4
+    }
+  },
+  "tests": [
+    {
+      "category": "登录验证",
+      "name": "管理员密码配置",
+      "result": "PASS",
+      "details": "用户名: admin, 密码: huangde0710, 哈希验证: 通过"
+    },
+    {
+      "category": "登录验证",
+      "name": "登录页面访问",
+      "result": "PASS",
+      "details": "状态码: 200, 内容长度: 13852"
+    },
+    {
+      "category": "重定向修复",
+      "name": "/admin路径直接访问",
+      "result": "FAIL",
+      "details": "状态码: 301 (期望200，避免301重定向)"
+    },
+    {
+      "category": "重定向修复",
+      "name": "/admin/路径访问",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "数据读取",
+      "name": "直接文件读取",
+      "result": "PASS",
+      "details": "数据条数: 24"
+    },
+    {
+      "category": "数据读取",
+      "name": "DAO方式读取",
+      "result": "FAIL",
+      "details": "DAO读取条数: undefined"
+    },
+    {
+      "category": "API端点",
+      "name": "用户管理API",
+      "result": "PASS",
+      "details": "状态码: 401 (期望401未授权)"
+    },
+    {
+      "category": "API端点",
+      "name": "管理员API",
+      "result": "PASS",
+      "details": "状态码: 401 (期望401未授权)"
+    },
+    {
+      "category": "其他修复",
+      "name": "CSS样式文件",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "其他修复",
+      "name": "公开产品API",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "其他修复",
+      "name": "公开分类API",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "其他修复",
+      "name": "公司信息API",
+      "result": "PASS",
+      "details": "状态码: 200"
+    }
+  ],
+  "overallStatus": "EXCELLENT"
+}

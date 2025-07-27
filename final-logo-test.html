@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 LOGO白色框最终修复验证</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section h3 {
+            color: #dc3545;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status.critical { background: #dc3545; }
+        .status.warning { background: #ffc107; }
+        .status.success { background: #28a745; }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .test-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .test-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .test-link {
+            display: block;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .test-link:hover {
+            background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+            transform: translateY(-2px);
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .alert.critical {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+
+        .checklist {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .checklist li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .check-icon {
+            color: #28a745;
+            font-size: 16px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .btn.danger {
+            background: #dc3545;
+        }
+
+        .btn.danger:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 LOGO白色框最终修复验证</h1>
+            <p>多重策略彻底解决主页加载动画LOGO白色框问题</p>
+        </div>
+
+        <div class="section">
+            <h3><span class="status critical"></span>问题严重性确认</h3>
+            <div class="alert critical">
+                <strong>⚠️ 问题确认：</strong> LOGO白色框问题确实比预期更顽固，需要采用多重修复策略。
+                这个问题的技术复杂度较高，因为涉及CSS优先级、加载顺序、浏览器缓存等多个因素。
+            </div>
+            
+            <h4>🔍 问题难度分析：</h4>
+            <ul class="checklist">
+                <li><i class="fas fa-exclamation-triangle check-icon" style="color: #dc3545;"></i>CSS优先级冲突：main.css的样式覆盖了修复样式</li>
+                <li><i class="fas fa-exclamation-triangle check-icon" style="color: #dc3545;"></i>浏览器缓存：可能缓存了旧的CSS文件</li>
+                <li><i class="fas fa-exclamation-triangle check-icon" style="color: #dc3545;"></i>动态加载：JavaScript动态创建的元素可能不受CSS影响</li>
+                <li><i class="fas fa-exclamation-triangle check-icon" style="color: #dc3545;"></i>样式继承：可能存在未知的样式继承链</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3><span class="status success"></span>多重修复策略</h3>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <h4>🎯 策略1：直接修改源文件</h4>
+                    <p>直接修改 main.css 中的 .loading-logo-img 样式，移除 border-radius 和 box-shadow</p>
+                    <div class="code-block">
+.loading-logo-img {
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  border: none;
+}
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <h4>🚀 策略2：JavaScript强制修复</h4>
+                    <p>使用JavaScript在运行时强制移除导致白色框的样式属性</p>
+                    <div class="code-block">
+element.style.setProperty(
+  'border-radius', '0', 'important'
+);
+element.style.setProperty(
+  'box-shadow', 'none', 'important'
+);
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <h4>🔧 策略3：样式覆盖增强</h4>
+                    <p>在loading-screen-fix.css中使用更强的选择器和!important声明</p>
+                    <div class="code-block">
+.loading-logo-img,
+img.loading-logo-img {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <h4>👁️ 策略4：DOM监听</h4>
+                    <p>使用MutationObserver监听DOM变化，自动修复新添加的元素</p>
+                    <div class="code-block">
+const observer = new MutationObserver(
+  mutations => {
+    // 自动修复新元素
+  }
+);
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3><span class="status warning"></span>立即测试验证</h3>
+            
+            <div class="alert critical">
+                <strong>🚨 重要：</strong> 请按以下顺序进行测试，确保修复效果：
+            </div>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <h4>1. 清除浏览器缓存</h4>
+                    <p>按 Ctrl+Shift+R 强制刷新，或清除浏览器缓存</p>
+                    <button class="btn" onclick="location.reload(true)">强制刷新页面</button>
+                </div>
+
+                <div class="test-card">
+                    <h4>2. 测试主页效果</h4>
+                    <p>访问主页，仔细观察加载动画LOGO</p>
+                    <a href="http://localhost:8000/" class="test-link" target="_blank">
+                        <i class="fas fa-home"></i> 测试主页
+                    </a>
+                </div>
+
+                <div class="test-card">
+                    <h4>3. 开发者工具检查</h4>
+                    <p>按F12打开开发者工具，检查LOGO元素的计算样式</p>
+                    <button class="btn" onclick="openDevTools()">检查样式指南</button>
+                </div>
+
+                <div class="test-card">
+                    <h4>4. 手动强制修复</h4>
+                    <p>如果问题仍存在，使用JavaScript强制修复</p>
+                    <button class="btn danger" onclick="forceFixLogo()">强制修复LOGO</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3><span class="status success"></span>验证清单</h3>
+            <ul class="checklist">
+                <li><i class="fas fa-square-check check-icon"></i>主页LOGO无白色/灰色背景框</li>
+                <li><i class="fas fa-square-check check-icon"></i>LOGO边缘清晰，无圆角效果</li>
+                <li><i class="fas fa-square-check check-icon"></i>LOGO无阴影效果</li>
+                <li><i class="fas fa-square-check check-icon"></i>LOGO背景完全透明</li>
+                <li><i class="fas fa-square-check check-icon"></i>所有页面LOGO显示一致</li>
+                <li><i class="fas fa-square-check check-icon"></i>移动端显示正常</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3><span class="status warning"></span>如果问题仍然存在</h3>
+            <div class="alert critical">
+                <strong>备选方案：</strong>
+                <ol>
+                    <li>检查是否有其他CSS框架（如Bootstrap）影响样式</li>
+                    <li>使用浏览器无痕模式测试，排除扩展程序影响</li>
+                    <li>检查LOGO图片本身是否有白色背景</li>
+                    <li>考虑更换LOGO图片为PNG透明背景版本</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🔧 LOGO白色框最终修复验证页面已加载');
+        
+        function openDevTools() {
+            alert('请按F12打开开发者工具，然后：\n1. 点击Elements标签\n2. 找到.loading-logo-img元素\n3. 查看Computed样式\n4. 确认border-radius为0，box-shadow为none');
+        }
+        
+        function forceFixLogo() {
+            if (typeof window.forceFixLogo === 'function') {
+                window.forceFixLogo();
+                alert('✅ 已触发强制修复！请检查主页效果。');
+            } else {
+                alert('⚠️ 强制修复脚本未加载，请先访问主页。');
+            }
+        }
+        
+        // 检测修复脚本是否可用
+        setTimeout(() => {
+            const hasForceScript = typeof window.forceFixLogo === 'function';
+            console.log('🔍 强制修复脚本可用:', hasForceScript);
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -318,13 +318,13 @@ class ProductCardManager {
      */
     getBadgeText(badge) {
         const badgeTexts = {
-            'new': '新品',
-            'hot': '热门',
-            'recommend': '推荐',
-            'sale': '促销',
-            'limited': '限量'
+            'new': 'New',
+            'hot': 'Hot',
+            'recommend': 'Recommend',
+            'sale': 'Sale',
+            'limited': 'Limited'
         };
-        
+
         return badgeTexts[badge] || badge;
     }
 
@@ -335,17 +335,21 @@ class ProductCardManager {
      * @returns {string} 图片URL
      */
     getProductImageUrl(product, imagePath = '') {
-        // 如果有多张图片，使用第一张
+        // 如果有多张图片，使用第一张（数据库格式：对象数组）
         if (product.images && Array.isArray(product.images) && product.images.length > 0) {
-            const imageUrl = product.images[0];
-            return imageUrl.startsWith('http') ? imageUrl : `${imagePath}${imageUrl}`;
+            const firstImage = product.images[0];
+            // 检查是否为数据库格式（对象）还是旧格式（字符串）
+            const imageUrl = typeof firstImage === 'object' && firstImage.url ? firstImage.url : firstImage;
+            if (typeof imageUrl === 'string') {
+                return imageUrl.startsWith('http') ? imageUrl : `${imagePath}${imageUrl}`;
+            }
         }
-        
-        // 如果有单张图片
-        if (product.image) {
+
+        // 如果有单张图片（旧格式兼容）
+        if (product.image && typeof product.image === 'string') {
             return product.image.startsWith('http') ? product.image : `${imagePath}${product.image}`;
         }
-        
+
         // 默认图片
         return `${imagePath}assets/images/logo/diamond-logo.png`;
     }
@@ -478,18 +482,65 @@ class ProductCardManager {
         } = options;
 
         const imageUrl = this.getProductImageUrl(product, imagePath);
-        const category = categories.find(cat => cat.id === product.category);
+
+        // 🔍 智能分类查找 - 支持多种字段格式
+        let category = null;
+
+        // 优先使用 categoryId 字段（数据库格式）
+        if (product.categoryId) {
+            category = categories.find(cat => cat.id === product.categoryId);
+        }
+
+        // 兼容 category 字段（旧格式）
+        if (!category && product.category) {
+            // 如果是对象格式（包含关联的分类信息）
+            if (typeof product.category === 'object' && product.category.name) {
+                category = categories.find(cat =>
+                    cat.name === product.category.name ||
+                    cat.englishName === product.category.name ||
+                    cat.id === product.category.id
+                );
+            }
+
+            // 如果是字符串格式
+            if (typeof product.category === 'string') {
+                category = categories.find(cat =>
+                    cat.id === product.category ||
+                    cat.name === product.category ||
+                    cat.englishName === product.category
+                );
+            }
+        }
+
+        // 兼容 categoryName 字段（API返回格式）
+        if (!category && product.categoryName) {
+            category = categories.find(cat =>
+                cat.name === product.categoryName ||
+                cat.englishName === product.categoryName
+            );
+        }
+
+        // 🐛 调试信息
+        if (!category) {
+            console.log('🔍 ProductCardManager 分类查找调试:', {
+                productName: product.name,
+                categoryId: product.categoryId,
+                category: product.category,
+                categoryName: product.categoryName,
+                availableCategories: categories.map(c => ({ id: c.id, name: c.name }))
+            });
+        }
         
         // 生成标签徽章
         let tagBadges = '';
         if (product.isNew === 'true' || product.isNew === true) {
-            tagBadges += '<span class="badge bg-success me-1">新品</span>';
+            tagBadges += '<span class="badge bg-success me-1">New</span>';
         }
         if (product.isHot === 'true' || product.isHot === true) {
-            tagBadges += '<span class="badge bg-danger me-1">热门</span>';
+            tagBadges += '<span class="badge bg-danger me-1">Hot</span>';
         }
         if (product.isRecommend === 'true' || product.isRecommend === true) {
-            tagBadges += '<span class="badge bg-warning me-1">推荐</span>';
+            tagBadges += '<span class="badge bg-warning me-1">Recommend</span>';
         }
 
         return `

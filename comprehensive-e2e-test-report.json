@@ -1,0 +1,219 @@
+{
+  "timestamp": "2025-07-21T05:59:34.963Z",
+  "summary": {
+    "total": 30,
+    "passed": 30,
+    "failed": 0,
+    "successRate": "100.00%"
+  },
+  "categories": {
+    "前端": {
+      "total": 8,
+      "passed": 8
+    },
+    "后台": {
+      "total": 3,
+      "passed": 3
+    },
+    "API": {
+      "total": 6,
+      "passed": 6
+    },
+    "业务": {
+      "total": 5,
+      "passed": 5
+    },
+    "稳定性": {
+      "total": 8,
+      "passed": 8
+    }
+  },
+  "tests": [
+    {
+      "category": "前端",
+      "name": "网站首页",
+      "result": "PASS",
+      "details": "状态码: 200, 内容长度: 30288"
+    },
+    {
+      "category": "前端",
+      "name": "产品页面",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "前端",
+      "name": "关于我们页面",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "前端",
+      "name": "联系我们页面",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "前端",
+      "name": "隐私政策页面",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "前端",
+      "name": "服务条款页面",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "前端",
+      "name": "CSS样式文件",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "前端",
+      "name": "JavaScript文件",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "后台",
+      "name": "管理后台访问",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "后台",
+      "name": "登录页面",
+      "result": "PASS",
+      "details": "状态码: 200, 包含登录表单: true"
+    },
+    {
+      "category": "后台",
+      "name": "监控页面",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "API",
+      "name": "公开产品API",
+      "result": "PASS",
+      "details": "状态码: 200, 内容类型: application/json; charset=utf-8"
+    },
+    {
+      "category": "API",
+      "name": "公开分类API",
+      "result": "PASS",
+      "details": "状态码: 200, 内容类型: application/json; charset=utf-8"
+    },
+    {
+      "category": "API",
+      "name": "公司信息API",
+      "result": "PASS",
+      "details": "状态码: 200, 内容类型: application/json; charset=utf-8"
+    },
+    {
+      "category": "API",
+      "name": "产品管理API认证",
+      "result": "PASS",
+      "details": "状态码: 401 (期望401未授权)"
+    },
+    {
+      "category": "API",
+      "name": "询价管理API认证",
+      "result": "PASS",
+      "details": "状态码: 401 (期望401未授权)"
+    },
+    {
+      "category": "API",
+      "name": "用户管理API认证",
+      "result": "PASS",
+      "details": "状态码: 401 (期望401未授权)"
+    },
+    {
+      "category": "业务",
+      "name": "Utils模块加载",
+      "result": "PASS",
+      "details": "模块加载成功"
+    },
+    {
+      "category": "业务",
+      "name": "UUID生成功能",
+      "result": "PASS",
+      "details": "生成的UUID: 73bab35e-5daa-4dfe-a431-cda1adc4dd2b"
+    },
+    {
+      "category": "业务",
+      "name": "Config模块加载",
+      "result": "PASS",
+      "details": "配置模块加载成功"
+    },
+    {
+      "category": "业务",
+      "name": "询价数据读取",
+      "result": "PASS",
+      "details": "DAO读取: 24, 直接读取: 24, 一致性: true"
+    },
+    {
+      "category": "业务",
+      "name": "询价服务实例化",
+      "result": "PASS",
+      "details": "服务实例化成功"
+    },
+    {
+      "category": "稳定性",
+      "name": "Analytics数据文件",
+      "result": "PASS",
+      "details": "文件读取和解析成功"
+    },
+    {
+      "category": "稳定性",
+      "name": "询价数据文件",
+      "result": "PASS",
+      "details": "文件读取和解析成功"
+    },
+    {
+      "category": "稳定性",
+      "name": "产品数据文件",
+      "result": "PASS",
+      "details": "文件读取和解析成功"
+    },
+    {
+      "category": "稳定性",
+      "name": "分类数据文件",
+      "result": "PASS",
+      "details": "文件读取和解析成功"
+    },
+    {
+      "category": "稳定性",
+      "name": "公司信息文件",
+      "result": "PASS",
+      "details": "文件读取和解析成功"
+    },
+    {
+      "category": "稳定性",
+      "name": "备份目录存在",
+      "result": "PASS",
+      "details": "备份目录检查"
+    },
+    {
+      "category": "稳定性",
+      "name": "静态资源目录",
+      "result": "PASS",
+      "details": "静态资源目录检查"
+    },
+    {
+      "category": "稳定性",
+      "name": "上传目录",
+      "result": "PASS",
+      "details": "上传目录检查（可选）"
+    }
+  ],
+  "systemStatus": "EXCELLENT",
+  "recommendations": [
+    "🎉 系统运行完美，所有功能正常",
+    "🚀 可以立即投入生产使用",
+    "📊 建议定期进行功能测试以确保系统稳定性"
+  ]
+}

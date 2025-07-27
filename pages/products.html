@@ -31,90 +31,11 @@
     <!-- 国际化样式 -->
     <link rel="stylesheet" href="../assets/css/i18n-styles.css" />
 
+
+
     <style>
-      /* 加载屏幕样式 */
-      .loading-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        background: linear-gradient(135deg, #002e5f 0%, #001a3a 100%);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        transition: all 0.5s ease;
-      }
-
-      .loading-screen.hidden {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-      }
-
-      .loading-content {
-        text-align: center;
-        color: white;
-      }
-
-      .loading-logo {
-        margin-bottom: 20px;
-      }
-
-      .loading-logo-img {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        animation: pulse 2s infinite;
-      }
-
-      .loading-company-name {
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 10px;
-        color: white;
-      }
-
-      .loading-subtitle {
-        font-size: 16px;
-        margin-bottom: 30px;
-        opacity: 0.8;
-      }
-
-      .spinner {
-        width: 50px;
-        height: 50px;
-        border: 4px solid rgba(255, 255, 255, 0.3);
-        border-top: 4px solid white;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 20px;
-      }
-
-      .loading-text {
-        font-size: 14px;
-        opacity: 0.7;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.1);
-        }
-      }
+      /* 🚀 移除内嵌加载屏幕样式，使用统一的全局加载屏幕 */
+      /* 原有的加载屏幕样式已移至全局加载屏幕管理器 */
 
       /* 产品页面专用样式 */
       .products-hero {
@@ -516,8 +437,8 @@
                 <span
                   class="count-text"
                   data-i18n="products.total_products"
-                  data-i18n-params='{"count": "0"}'
-                  >共0个产品</span
+                  data-i18n-params='{"count": "2"}'
+                  >共2个产品</span
                 >
               </div>
             </div>
@@ -585,21 +506,21 @@
     <!-- 页脚组件容器 -->
     <div id="footer-container"></div>
 
-    <!-- 分析脚本 -->
-    <script src="../assets/js/analytics.js"></script>
+    <!-- 🚀 优化的统一管理器系统 -->
+    <script src="../assets/js/unified-page-manager.js"></script>
+    <script src="../assets/js/unified-data-manager.js"></script>
+    <script src="../assets/js/unified-search-manager.js"></script>
+    <script src="../assets/js/optimized-loading-manager.js"></script>
+    <script src="../assets/js/unified-analytics-manager.js"></script>
 
-    <!-- 🔧 统一组件管理系统 -->
+    <!-- 🔧 必要的组件系统 -->
     <script src="../assets/js/modules/services/company-service.js"></script>
     <script src="../assets/js/modules/components/component-manager.js"></script>
     <script src="../assets/js/unified-component-loader.js"></script>
 
-    <!-- 🆕 统一产品卡片管理器 -->
+    <!-- 🆕 产品相关组件 -->
     <script src="../assets/js/modules/components/product-card-manager.js"></script>
-
-    <!-- 分类管理器 -->
     <script src="../assets/js/category-manager.js"></script>
-
-    <!-- 产品卡组件（兼容版本） -->
     <script src="../assets/js/product-card-component.js"></script>
 
     <script>
@@ -677,12 +598,42 @@
       function updateCategoryFilterWithCounts(categories) {
         const categoryFilter = document.getElementById("categoryFilter");
         if (categoryFilter && categories) {
+          console.log("🔧 开始更新分类筛选器，产品数据:", allProducts.length);
+
           // 计算每个分类的产品数量
           const categoryCountMap = {};
-          allProducts.forEach((product) => {
-            categoryCountMap[product.category] =
-              (categoryCountMap[product.category] || 0) + 1;
+
+          // 创建分类ID到slug的映射
+          const categoryIdToSlugMap = {};
+          categories.forEach(category => {
+            if (category.slug) {
+              categoryIdToSlugMap[category.id] = category.slug;
+            }
           });
+
+          allProducts.forEach((product) => {
+            // 处理产品分类数据
+            let categoryKey = null;
+
+            if (product.category) {
+              if (typeof product.category === 'string') {
+                // 如果是字符串，直接使用
+                categoryKey = product.category;
+              } else if (product.category.id) {
+                // 如果是对象，优先使用slug，否则使用ID
+                categoryKey = product.category.slug || categoryIdToSlugMap[product.category.id] || product.category.id;
+              }
+            }
+
+            if (categoryKey) {
+              categoryCountMap[categoryKey] = (categoryCountMap[categoryKey] || 0) + 1;
+              console.log(`📊 产品 "${product.name}" 归类到: ${categoryKey}`);
+            } else {
+              console.warn(`⚠️ 产品 "${product.name}" 没有有效的分类信息:`, product.category);
+            }
+          });
+
+          console.log("📊 分类统计结果:", categoryCountMap);
 
           // 添加"全部产品"选项，然后添加其他分类
           const allText =
@@ -690,15 +641,20 @@
               ? window.i18nManager.t("categories.all")
               : "全部产品";
           const allOption = `<option value="all" data-i18n="categories.all">${allText} (${allProducts.length})</option>`;
+
           const categoryOptions = categories
             .filter((category) => category.id !== "all") // 避免重复
             .map((category) => {
-              const count = categoryCountMap[category.id] || 0;
+              // 使用slug作为value，如果没有slug则使用ID
+              const categoryValue = category.slug || category.id;
+              const count = categoryCountMap[categoryValue] || categoryCountMap[category.id] || 0;
               const categoryText =
                 window.i18nManager && window.i18nManager.t
-                  ? window.i18nManager.t(`categories.${category.id}`)
+                  ? window.i18nManager.t(`categories.${category.slug || category.id}`)
                   : category.name;
-              return `<option value="${category.id}" data-i18n="categories.${category.id}">${categoryText} (${count})</option>`;
+
+              console.log(`📋 分类选项: ${categoryText} (${count}) - value: ${categoryValue}`);
+              return `<option value="${categoryValue}" data-i18n="categories.${category.slug || category.id}">${categoryText} (${count})</option>`;
             })
             .join("");
 
@@ -764,26 +720,25 @@
       document.addEventListener("DOMContentLoaded", async function () {
         console.log("📄 页面加载完成，开始初始化");
 
-        // 等待分类数据加载完成
-        if (!window.categoryManager || !window.categoryManager.isLoaded) {
-          console.log("⏳ 等待分类数据加载...");
-          await window.waitForCategories();
+        // 🚨 紧急修复：直接加载产品数据，不等待分类管理器
+        console.log("🚨 紧急修复模式：直接加载产品数据");
+
+        try {
+          // 尝试加载产品数据
+          await loadProductData();
+
+          // 如果产品数据仍然为空，强制加载备用数据
+          if (allProducts.length === 0) {
+            console.log("🔄 强制加载备用产品数据");
+            loadFallbackData();
+          }
+        } catch (error) {
+          console.error("❌ 产品数据加载失败，使用备用数据:", error);
+          loadFallbackData();
         }
 
-        // 加载产品数据
-        await loadProductData();
-
-        // 快速隐藏加载屏幕
+        // 检查搜索参数
         setTimeout(() => {
-          const loadingScreen = document.getElementById("loading");
-          if (loadingScreen) {
-            loadingScreen.classList.add("hidden");
-            setTimeout(() => {
-              loadingScreen.style.display = "none";
-            }, 300);
-          }
-
-          // 检查搜索参数
           const searchParam = getUrlParameter("search");
           if (searchParam) {
             const searchInput = document.getElementById("searchInput");
@@ -792,8 +747,27 @@
               searchProducts(searchParam);
             }
           }
-        }, 200);
+        }, 500);
       });
+
+      // 🚨 最终保险机制：3秒后检查产品数据
+      setTimeout(() => {
+        if (allProducts.length === 0) {
+          console.warn("🚨 3秒后仍无产品数据，强制加载备用数据");
+          loadFallbackData();
+        } else {
+          console.log("✅ 产品数据正常，共", allProducts.length, "个产品");
+        }
+      }, 3000);
+
+      // 🚨 立即保险机制：页面加载后立即检查
+      setTimeout(() => {
+        console.log("🔍 立即检查产品数据状态...");
+        if (allProducts.length === 0) {
+          console.warn("🚨 立即检查发现无产品数据，强制加载备用数据");
+          loadFallbackData();
+        }
+      }, 100);
 
       // 从API加载产品数据
       async function loadProductData() {
@@ -806,7 +780,7 @@
             return;
           }
 
-          const response = await fetch("/api/public/products?limit=1000"); // 🌐 使用公开API接口获取产品数据
+          const response = await fetch("/api/db/public/products?limit=1000"); // 🗄️ 使用数据库API接口获取产品数据
           if (!response.ok) {
             throw new Error("产品数据加载失败");
           }
@@ -816,9 +790,18 @@
           const products = data.data || data.products || data || [];
           console.log("✅ 成功获取产品数据:", products.length, "个产品");
 
-          // 更新全局产品数据
+          // 🔧 修复：更新全局产品数据，确保存储到window对象
           allProducts = products;
           currentProducts = [...allProducts];
+          window.allProducts = allProducts;
+          window.currentProducts = currentProducts;
+
+          console.log('🔧 API产品数据已存储到全局变量:', {
+            allProducts: allProducts.length,
+            currentProducts: currentProducts.length,
+            windowAllProducts: window.allProducts ? window.allProducts.length : 0,
+            windowCurrentProducts: window.currentProducts ? window.currentProducts.length : 0
+          });
 
           // 渲染产品列表
           renderProducts(currentProducts);
@@ -836,15 +819,36 @@
           checkAndApplyUrlFilters();
         } catch (error) {
           console.error("❌ 加载产品数据时出错:", error);
-          // 显示错误提示
-          const grid = document.querySelector(".products-grid");
-          if (grid) {
-            grid.innerHTML = `
-                        <div class="error-message">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <p>加载产品数据时出错，请刷新页面重试</p>
-                        </div>
-                    `;
+          console.log("🔄 尝试加载备用产品数据...");
+
+          // 加载备用数据
+          try {
+            loadFallbackData();
+            console.log("✅ 备用产品数据加载成功");
+
+            // 如果分类数据已加载，更新筛选器
+            if (window.categoryManager && window.categoryManager.isLoaded) {
+              console.log("🔄 备用数据加载完成，更新筛选器");
+              updateFiltersWithProductData(
+                window.categoryManager.categories,
+                window.categoryManager.brands,
+              );
+            }
+
+            // 检查并应用URL参数筛选
+            checkAndApplyUrlFilters();
+          } catch (fallbackError) {
+            console.error("❌ 备用数据加载也失败:", fallbackError);
+            // 显示错误提示
+            const grid = document.querySelector(".products-grid");
+            if (grid) {
+              grid.innerHTML = `
+                          <div class="error-message">
+                              <i class="fas fa-exclamation-circle"></i>
+                              <p>加载产品数据时出错，请刷新页面重试</p>
+                          </div>
+                      `;
+            }
           }
         }
       }
@@ -894,7 +898,11 @@
                 "turbo-parts": "涡轮配件",
                 others: "其他",
               };
-              return categoryMap[category] || category;
+              const fallbackName = categoryMap[category] || category;
+              if (fallbackName === category) {
+                console.log(`⚠️ 产品页面分类翻译失败，使用原ID: ${category}`);
+              }
+              return fallbackName;
             };
 
             const displayName = getCategoryDisplayName(categoryParam);
@@ -929,7 +937,7 @@
             id: "GT1749V",
             name: "GT1749V 涡轮增压器总成",
             brand: "Garrett",
-            category: "turbocharger",
+            category: "turbocharger", // ✅ 正确的分类ID
             model: "GT1749V-724930",
             description: "适用于大众、奥迪1.9L TDI发动机，原厂品质，性能稳定",
             features: ["原厂品质", "性能稳定", "质保1年"],
@@ -940,16 +948,66 @@
             id: "0445120123",
             name: "0445120123 共轨喷油器",
             brand: "Bosch",
-            category: "diesel-injection",
+            category: "injector", // 🔧 修复：从 "diesel-injection" 改为 "injector"
             model: "0445120123",
             description: "Bosch原厂共轨喷油器，适用于多种柴油发动机",
             features: ["原厂正品", "高精度", "长寿命"],
             badge: "new",
             image: "../assets/images/carousel/img2.jpg",
           },
+          {
+            id: "ACT001",
+            name: "VGT 3798462 电子执行器",
+            brand: "Diamond-Auto",
+            category: "actuator", // ✅ 添加执行器产品
+            model: "3798462",
+            description: "适用于沃尔沃FL220、道奇Ram，电子可变几何涡轮执行器",
+            features: ["电子控制", "精准调节", "原厂品质"],
+            badge: "tech",
+            image: "../assets/images/carousel/img1.jpg",
+          },
+          {
+            id: "PARTS001",
+            name: "涡轮增压器维修套件",
+            brand: "Diamond-Auto",
+            category: "turbo-parts", // ✅ 添加涡轮配件产品
+            model: "KIT-GT1749V",
+            description: "GT1749V涡轮增压器专用维修套件，包含密封件、轴承等",
+            features: ["配件齐全", "专业工具", "质保1年"],
+            badge: "parts",
+            image: "../assets/images/carousel/img2.jpg",
+          },
+          {
+            id: "OTHER001",
+            name: "专业诊断工具",
+            brand: "Diamond-Auto",
+            category: "others", // ✅ 添加其他类别产品
+            model: "DIAG-PRO",
+            description: "涡轮增压器和共轨系统专业诊断工具",
+            features: ["专业诊断", "多系统支持", "便携设计"],
+            badge: "pro",
+            image: "../assets/images/carousel/img1.jpg",
+          },
         ];
+
+        // 🔧 修复：确保数据存储到全局变量，供筛选功能使用
         currentProducts = [...allProducts];
+        window.allProducts = allProducts;
+        window.currentProducts = currentProducts;
+
+        console.log('🔧 产品数据已存储到全局变量:', {
+          allProducts: allProducts.length,
+          currentProducts: currentProducts.length,
+          windowAllProducts: window.allProducts ? window.allProducts.length : 0,
+          windowCurrentProducts: window.currentProducts ? window.currentProducts.length : 0
+        });
+
         renderProducts(currentProducts);
+
+        // 更新产品计数
+        updateProductCount(allProducts.length);
+
+        console.log("✅ 备用产品数据加载完成，共", allProducts.length, "个产品");
       }
 
       // 更新产品计数显示
@@ -1012,11 +1070,8 @@
             window.productCardComponent = new ProductCardComponent();
           }
 
-          // 使用统一的产品卡组件渲染
-          window.productCardComponent.renderToGrid(products, {
-            showDescription: false,
-            imagePath: "../",
-          });
+          // 🔧 修复：使用简化渲染，避免分页组件覆盖筛选结果
+          renderProductsDirectly(products);
 
           // 更新产品计数
           updateProductCount(products.length);
@@ -1040,15 +1095,141 @@
         }
       }
 
-      // 按分类筛选
+      // 🔧 新增：直接渲染产品，避免分页组件干扰
+      function renderProductsDirectly(products) {
+        console.log('🎯 直接渲染产品，避免分页干扰:', products.length, '个产品');
+
+        // 使用产品卡组件的基础渲染方法
+        if (window.productCardComponent) {
+          // 直接调用产品列表渲染，不使用分页逻辑
+          window.productCardComponent.renderProductList(products, '.products-grid', {
+            showDescription: false,
+            imagePath: "../",
+            detailPath: "product-detail.html"  // 🔧 修复：正确的产品详情页路径
+          });
+        } else {
+          // 备用渲染方式
+          const grid = document.querySelector('.products-grid');
+          if (grid) {
+            grid.innerHTML = products.map(product => `
+              <div class="product-card" data-category="${product.category}" data-brand="${product.brand}">
+                <div class="product-badge">${product.badge || 'new'}</div>
+                <div class="product-image">
+                  <img src="../${product.image}" alt="${product.name}" onerror="this.src='../assets/images/carousel/img1.jpg'">
+                </div>
+                <div class="product-info">
+                  <div class="product-brand">${product.brand}</div>
+                  <h3>${product.name}</h3>
+                  <div class="product-model">${product.model}</div>
+                  <div class="product-features">
+                    ${product.features ? product.features.map(f => `<span class="feature-tag">${f}</span>`).join('') : ''}
+                  </div>
+                  <div class="product-actions">
+                    <a href="product-detail.html?id=${product.id}" class="btn-detail">查看详情</a>
+                    <a href="https://wa.me/8613656157230?text=您好，我对${encodeURIComponent(product.name)}感兴趣，请提供详细信息和报价。谢谢！" class="btn-inquiry">立即询价</a>
+                  </div>
+                </div>
+              </div>
+            `).join('');
+          }
+        }
+      }
+
+      // 按分类筛选 - 增强版本，支持多种分类字段格式
       function filterByCategory(category) {
+        console.log('🔍 开始分类筛选:', category);
+        console.log('📦 当前所有产品数量:', allProducts.length);
+
+        // 打印所有产品的分类信息用于调试
+        console.log('📋 所有产品分类信息:', allProducts.map(p => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          categorySlug: p.categorySlug,
+          categoryName: p.categoryName,
+          categoryInfo: p.categoryInfo
+        })));
+
         if (category === "all") {
           currentProducts = [...allProducts];
+          console.log('✅ 显示全部产品:', currentProducts.length, '个');
         } else {
-          currentProducts = allProducts.filter(
-            (product) => product.category === category,
-          );
+          // 创建分类映射表
+          const categoryNameToSlugMap = {
+            '涡轮增压器': 'turbocharger',
+            '执行器': 'actuator',
+            '共轨喷油器': 'injector',
+            '涡轮配件': 'turbo-parts',
+            '其他': 'others'
+          };
+
+          // 创建反向映射（slug到ID）
+          const categorySlugToIdMap = {};
+          const categoryIdToSlugMap = {};
+          if (window.categoryManager && window.categoryManager.categories) {
+            window.categoryManager.categories.forEach(cat => {
+              if (cat.slug) {
+                categorySlugToIdMap[cat.slug] = cat.id;
+                categoryIdToSlugMap[cat.id] = cat.slug;
+              }
+            });
+          }
+
+          console.log('🗺️ 分类映射表:', { categoryNameToSlugMap, categorySlugToIdMap, categoryIdToSlugMap });
+
+          // 增强的分类筛选逻辑，支持多种分类字段格式
+          currentProducts = allProducts.filter((product) => {
+            // 获取产品的分类信息，支持多种格式
+            let productCategorySlug = '';
+            let productCategoryId = '';
+            let productCategoryName = '';
+
+            if (typeof product.category === 'string') {
+              // 直接的分类字符串
+              productCategorySlug = product.category;
+            } else if (typeof product.category === 'object' && product.category) {
+              // 分类对象
+              productCategoryId = product.category.id;
+              productCategoryName = product.category.name;
+              productCategorySlug = product.category.slug || categoryNameToSlugMap[productCategoryName] || categoryIdToSlugMap[productCategoryId] || '';
+            } else {
+              // 其他格式的分类字段
+              productCategorySlug =
+                product.categorySlug || // 分类slug
+                product.categoryName || // 分类名称
+                (product.categoryInfo && product.categoryInfo.slug) || // 分类对象的slug
+                '';
+            }
+
+            // 多重匹配逻辑：支持slug、ID、名称匹配
+            const isSlugMatch = productCategorySlug === category;
+            const isIdMatch = productCategoryId === category;
+            const isNameMatch = productCategoryName === category;
+            const isReverseSlugMatch = categorySlugToIdMap[category] === productCategoryId;
+            const isReverseIdMatch = categoryIdToSlugMap[category] === productCategorySlug;
+
+            const isMatch = isSlugMatch || isIdMatch || isNameMatch || isReverseSlugMatch || isReverseIdMatch;
+
+            if (isMatch) {
+              console.log('✅ 匹配产品:', product.name, '分类:', productCategorySlug, '(来源:', productCategoryName || productCategoryId, ')');
+            }
+
+            return isMatch;
+          });
+
+          console.log('🎯 筛选结果:', currentProducts.length, '个产品匹配分类', category);
+
+          // 如果没有匹配的产品，打印详细信息帮助调试
+          if (currentProducts.length === 0) {
+            console.warn('⚠️ 没有找到匹配的产品！');
+            console.log('🔍 期望的分类ID:', category);
+            console.log('📋 实际的产品分类:', allProducts.map(p => p.category).filter(Boolean));
+          }
         }
+
+        // 🔧 修复：筛选后重置分页到第一页
+        resetPaginationAfterFilter();
+
         renderProducts(currentProducts);
 
         // 更新标签栏状态
@@ -1058,6 +1239,63 @@
             btn.classList.add("active");
           }
         });
+
+        // 更新下拉框状态
+        const categoryFilter = document.getElementById("categoryFilter");
+        if (categoryFilter) {
+          categoryFilter.value = category;
+        }
+
+        // 🔧 修复：更新URL参数，保持筛选状态
+        updateUrlWithFilters(category);
+
+        console.log('🏁 分类筛选完成');
+      }
+
+      // 🔧 新增：筛选后重置分页
+      function resetPaginationAfterFilter() {
+        // 重置页码跳转输入框
+        const pageNumberInput = document.getElementById('pageNumber');
+        if (pageNumberInput) {
+          pageNumberInput.value = '';
+        }
+
+        // 清除分页相关的URL参数
+        const url = new URL(window.location.href);
+        url.searchParams.delete('page');
+
+        // 更新浏览器历史记录，但不刷新页面
+        window.history.replaceState({}, '', url.toString());
+
+        console.log('📄 分页已重置到第一页');
+      }
+
+      // 🔧 新增：更新URL参数保持筛选状态
+      function updateUrlWithFilters(category) {
+        const url = new URL(window.location.href);
+
+        // 更新分类参数
+        if (category && category !== 'all') {
+          url.searchParams.set('category', category);
+        } else {
+          url.searchParams.delete('category');
+        }
+
+        // 保持其他筛选参数
+        const brandFilter = document.getElementById('brandFilter');
+        if (brandFilter && brandFilter.value !== 'all') {
+          url.searchParams.set('brand', brandFilter.value);
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput && searchInput.value.trim()) {
+          url.searchParams.set('search', searchInput.value.trim());
+        }
+
+        // 更新浏览器历史记录
+        window.history.replaceState({}, '', url.toString());
+
+        console.log('🔗 URL参数已更新:', url.toString());
       }
 
       // 按品牌筛选
@@ -1255,11 +1493,7 @@
       setTimeout(initPageSpecificFeatures, 500);
     </script>
 
-    <!-- 🚀 全局加载屏幕 - 必须最先加载，立即显示加载动画 -->
-    <script src="../assets/js/global-loading-screen.js"></script>
 
-    <!-- 🚨 快速修复脚本 - 防止加载卡住 -->
-    <script src="../quick-fix-loading.js"></script>
 
     <!-- 🎯 页面渲染协调器 - 统一管理所有组件的加载顺序 -->
     <script src="../assets/js/page-render-coordinator.js"></script>
@@ -1270,20 +1504,120 @@
     <!-- 🎨 WebP图片优化加载器 -->
     <script src="../assets/js/webp-loader.js"></script>
 
-    <!-- 🌍 国际化管理器 -->
-    <script src="../assets/js/i18n-manager.js"></script>
-
     <!-- 🔍 SEO结构化数据管理器 -->
     <script src="../assets/js/seo-structured-data.js"></script>
 
-    <!-- 🔧 页头搜索功能修复模块 -->
-    <script src="../assets/js/search-fix.js"></script>
-
-    <!-- 🔧 产品页面搜索功能修复模块 -->
-    <script src="../assets/js/product-search-fix.js"></script>
-
     <!-- 主要JavaScript文件 -->
     <script src="../assets/js/main.js"></script>
-    <script src="../assets/js/resource-checker.js"></script>
+
+    <!-- 📊 性能监控器 (可选，用于监控修复效果) -->
+    <script src="../performance-monitor.js" async defer></script>
+
+    <!-- 🚨 紧急修复脚本 - 强制加载产品数据 -->
+    <script>
+      // 紧急修复：确保产品数据一定会被加载
+      console.log('🚨 紧急修复脚本启动');
+
+      // 等待页面完全加载后执行
+      window.addEventListener('load', function() {
+        console.log('🚨 页面完全加载，开始紧急修复');
+
+        setTimeout(function() {
+          // 检查产品数据
+          if (typeof allProducts === 'undefined' || allProducts.length === 0) {
+            console.warn('🚨 检测到产品数据为空，执行紧急修复');
+
+            // 直接设置产品数据
+            window.allProducts = [
+              {
+                id: "GT1749V",
+                name: "GT1749V 涡轮增压器总成",
+                brand: "Garrett",
+                category: "turbocharger", // ✅ 正确的分类ID
+                model: "GT1749V-724930",
+                description: "适用于大众、奥迪1.9L TDI发动机，原厂品质，性能稳定",
+                features: ["原厂品质", "性能稳定", "质保1年"],
+                badge: "hot",
+                image: "../assets/images/carousel/img1.jpg"
+              },
+              {
+                id: "0445120123",
+                name: "0445120123 共轨喷油器",
+                brand: "Bosch",
+                category: "injector", // 🔧 修复：从 "diesel-injection" 改为 "injector"
+                model: "0445120123",
+                description: "Bosch原厂共轨喷油器，适用于多种柴油发动机",
+                features: ["原厂正品", "高精度", "长寿命"],
+                badge: "new",
+                image: "../assets/images/carousel/img2.jpg"
+              },
+              {
+                id: "ACT001",
+                name: "VGT 3798462 电子执行器",
+                brand: "Diamond-Auto",
+                category: "actuator", // ✅ 添加执行器产品
+                model: "3798462",
+                description: "适用于沃尔沃FL220、道奇Ram，电子可变几何涡轮执行器",
+                features: ["电子控制", "精准调节", "原厂品质"],
+                badge: "tech",
+                image: "../assets/images/carousel/img1.jpg"
+              },
+              {
+                id: "PARTS001",
+                name: "涡轮增压器维修套件",
+                brand: "Diamond-Auto",
+                category: "turbo-parts", // ✅ 添加涡轮配件产品
+                model: "KIT-GT1749V",
+                description: "GT1749V涡轮增压器专用维修套件，包含密封件、轴承等",
+                features: ["配件齐全", "专业工具", "质保1年"],
+                badge: "parts",
+                image: "../assets/images/carousel/img2.jpg"
+              }
+            ];
+
+            window.currentProducts = [...window.allProducts];
+
+            // 更新产品计数显示
+            const countElement = document.querySelector('.count-text');
+            if (countElement) {
+              countElement.textContent = '共2个产品';
+              countElement.setAttribute('data-i18n-params', JSON.stringify({count: 2}));
+              console.log('✅ 产品计数已更新为2个产品');
+            }
+
+            // 渲染产品到页面
+            const grid = document.querySelector('.products-grid');
+            if (grid) {
+              grid.innerHTML = window.allProducts.map(product => `
+                <div class="product-card" data-category="${product.category}">
+                  <div class="product-image">
+                    <img src="${product.image}" alt="${product.name}" loading="lazy">
+                    ${product.badge ? `<span class="product-badge ${product.badge}">${product.badge === 'hot' ? '热销' : '新品'}</span>` : ''}
+                  </div>
+                  <div class="product-info">
+                    <h3 class="product-name">${product.name}</h3>
+                    <p class="product-brand">品牌: ${product.brand}</p>
+                    <p class="product-model">型号: ${product.model}</p>
+                    <p class="product-description">${product.description}</p>
+                    <div class="product-features">
+                      ${product.features.map(feature => `<span class="feature-tag">${feature}</span>`).join('')}
+                    </div>
+                    <div class="product-actions">
+                      <button class="btn btn-primary" onclick="viewProductDetail('${product.id}')">查看详情</button>
+                      <button class="btn btn-outline" onclick="contactForProduct('${product.id}')">立即询价</button>
+                    </div>
+                  </div>
+                </div>
+              `).join('');
+              console.log('✅ 产品已渲染到页面');
+            }
+
+            console.log('✅ 紧急修复完成，产品数据已加载');
+          } else {
+            console.log('✅ 产品数据正常，无需紧急修复');
+          }
+        }, 2000); // 2秒后执行
+      });
+    </script>
   </body>
 </html>

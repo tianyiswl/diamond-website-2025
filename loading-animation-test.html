@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 加载动画LOGO白色框修复验证</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .test-header {
+            background: linear-gradient(135deg, #002e5f 0%, #001a3a 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .test-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .test-section {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .test-section:last-child {
+            border-bottom: none;
+        }
+
+        .test-section h3 {
+            color: #002e5f;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-fixed { background: #28a745; }
+        .status-warning { background: #ffc107; }
+        .status-error { background: #dc3545; }
+
+        .checklist {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .checklist li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .check-icon {
+            color: #28a745;
+            font-size: 16px;
+        }
+
+        .test-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .test-link {
+            display: block;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .test-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .test-link i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success-box {
+            background: #d4edda;
+            padding: 15px;
+            border-left: 4px solid #28a745;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .before { color: #dc3545; }
+        .after { color: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🔍 加载动画LOGO白色框修复验证</h1>
+            <p>彻底解决主页与其他页面加载动画LOGO白色框问题</p>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator status-fixed"></span>修复内容总结</h3>
+            <ul class="checklist">
+                <li><i class="fas fa-check check-icon"></i>识别CSS优先级冲突：main.css覆盖loading-screen-fix.css</li>
+                <li><i class="fas fa-check check-icon"></i>移除导致白色框的border-radius和box-shadow样式</li>
+                <li><i class="fas fa-check check-icon"></i>使用!important强制覆盖所有冲突样式</li>
+                <li><i class="fas fa-check check-icon"></i>调整CSS加载顺序，确保修复样式最后加载</li>
+                <li><i class="fas fa-check check-icon"></i>统一所有页面的LOGO显示样式</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator status-warning"></span>问题根源分析</h3>
+            <div class="highlight">
+                <strong>发现的问题：</strong><br>
+                1. main.css中的.loading-logo-img设置了border-radius: 20px和box-shadow<br>
+                2. CSS加载顺序导致main.css覆盖了loading-screen-fix.css<br>
+                3. 缺少!important声明，优先级不够高
+            </div>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>样式属性</th>
+                        <th class="before">修复前 (main.css)</th>
+                        <th class="after">修复后 (loading-screen-fix.css)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>border-radius</td>
+                        <td class="before">20px (导致白色框)</td>
+                        <td class="after">0 !important (移除圆角)</td>
+                    </tr>
+                    <tr>
+                        <td>box-shadow</td>
+                        <td class="before">0 10px 30px rgba(0, 123, 255, 0.2)</td>
+                        <td class="after">none !important (移除阴影)</td>
+                    </tr>
+                    <tr>
+                        <td>background</td>
+                        <td class="before">未设置 (可能显示白色)</td>
+                        <td class="after">transparent !important</td>
+                    </tr>
+                    <tr>
+                        <td>CSS优先级</td>
+                        <td class="before">普通选择器</td>
+                        <td class="after">!important + 多重选择器</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator status-fixed"></span>测试页面链接</h3>
+            <div class="test-links">
+                <a href="http://localhost:8000/" class="test-link" target="_blank">
+                    <i class="fas fa-home"></i>
+                    <strong>主页测试</strong><br>
+                    检查主页加载动画LOGO
+                </a>
+                <a href="http://localhost:8000/pages/products.html" class="test-link" target="_blank">
+                    <i class="fas fa-box"></i>
+                    <strong>产品页面</strong><br>
+                    对比产品页面加载动画
+                </a>
+                <a href="http://localhost:8000/pages/about.html" class="test-link" target="_blank">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>关于我们</strong><br>
+                    验证关于页面一致性
+                </a>
+                <a href="http://localhost:8000/pages/contact.html" class="test-link" target="_blank">
+                    <i class="fas fa-envelope"></i>
+                    <strong>联系我们</strong><br>
+                    检查联系页面效果
+                </a>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator status-fixed"></span>验证清单</h3>
+            <div class="success-box">
+                <strong>✅ 请按以下步骤验证修复效果：</strong>
+            </div>
+            <ul class="checklist">
+                <li><i class="fas fa-eye check-icon"></i>打开主页，观察加载动画中的LOGO是否还有白色/灰色背景框</li>
+                <li><i class="fas fa-sync check-icon"></i>多次刷新页面，确认LOGO显示一致，无闪烁</li>
+                <li><i class="fas fa-mobile-alt check-icon"></i>在移动设备上测试，确认响应式效果正常</li>
+                <li><i class="fas fa-compare check-icon"></i>对比所有页面的加载动画，确认视觉完全一致</li>
+                <li><i class="fas fa-stopwatch check-icon"></i>检查加载动画时长和过渡效果是否平滑</li>
+                <li><i class="fas fa-code check-icon"></i>使用浏览器开发者工具检查CSS样式是否正确应用</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator status-fixed"></span>技术实现细节</h3>
+            <div class="code-block">
+/* 🚀 彻底修复LOGO白色框问题 - 使用最高优先级覆盖 */
+.global-loading-screen .loading-logo-img,
+.loading-logo-img,
+img.loading-logo-img {
+    border-radius: 0 !important; /* 移除圆角，防止白色框 */
+    box-shadow: none !important; /* 移除阴影，防止白色框效果 */
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    outline: none !important;
+}
+            </div>
+            
+            <div class="highlight">
+                <strong>关键修复点：</strong><br>
+                • 使用多重选择器确保覆盖所有可能的LOGO元素<br>
+                • 添加!important确保最高优先级<br>
+                • 调整CSS文件加载顺序<br>
+                • 完全移除可能导致白色框的所有样式属性
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🔍 加载动画LOGO白色框修复验证页面已加载');
+        console.log('📋 验证要点：');
+        console.log('1. 检查主页LOGO是否还有白色框');
+        console.log('2. 对比所有页面加载动画一致性');
+        console.log('3. 验证移动端兼容性');
+        console.log('4. 确认CSS样式正确应用');
+        
+        // 检测当前修复状态
+        setTimeout(() => {
+            const loadingScreens = document.querySelectorAll('.loading-screen, #loading, #global-loading-screen');
+            console.log('🔍 检测到的加载屏幕元素:', loadingScreens.length);
+            
+            // 检查CSS文件是否正确加载
+            const stylesheets = Array.from(document.styleSheets);
+            const fixCssLoaded = stylesheets.some(sheet => 
+                sheet.href && sheet.href.includes('loading-screen-fix.css')
+            );
+            console.log('✅ 修复CSS文件已加载:', fixCssLoaded);
+        }, 1000);
+    </script>
+</body>
+</html>

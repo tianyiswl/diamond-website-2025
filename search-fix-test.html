@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索回车键修复测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .test-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-title {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-success { background: #28a745; }
+        .status-error { background: #dc3545; }
+        .status-warning { background: #ffc107; }
+        .status-pending { background: #6c757d; }
+        .test-step {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+        }
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .test-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .test-btn:hover {
+            background: #0056b3;
+        }
+        .test-btn.success {
+            background: #28a745;
+        }
+        .test-btn.error {
+            background: #dc3545;
+        }
+        .test-results {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+        }
+        .iframe-container {
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .iframe-header {
+            background: #e9ecef;
+            padding: 12px;
+            font-weight: bold;
+            color: #495057;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+        .test-keyword {
+            background: #e9ecef;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 3px;
+            display: inline-block;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .test-keyword:hover {
+            background: #007bff;
+            color: white;
+        }
+        .problem-description {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .solution-steps {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-panel">
+        <h1 class="test-title">🔍 搜索回车键修复测试</h1>
+        
+        <div class="problem-description">
+            <h3>🚨 问题描述</h3>
+            <p><strong>现象</strong>: 在主页搜索框中输入"3798462"并按回车键时，搜索功能无响应，但点击搜索按钮正常工作。</p>
+            <p><strong>原因</strong>: 存在多个搜索事件监听器冲突，导致回车键事件被阻止或覆盖。</p>
+        </div>
+
+        <div class="solution-steps">
+            <h3>🔧 修复方案</h3>
+            <ol>
+                <li>清理所有现有的搜索事件监听器</li>
+                <li>重新绑定统一的回车键和点击事件处理器</li>
+                <li>确保事件处理逻辑一致性</li>
+                <li>添加调试日志便于问题排查</li>
+            </ol>
+        </div>
+
+        <div class="test-controls">
+            <button class="test-btn" onclick="openMainPage()">🌐 打开主页</button>
+            <button class="test-btn" onclick="runDiagnosis()">🔍 运行诊断</button>
+            <button class="test-btn" onclick="applyFix()">🔧 应用修复</button>
+            <button class="test-btn" onclick="testProblemKeyword()">🧪 测试问题关键词</button>
+            <button class="test-btn" onclick="runFullTest()">🚀 完整测试</button>
+            <button class="test-btn" onclick="clearResults()">🧹 清空结果</button>
+        </div>
+
+        <div>
+            <h3>🎯 测试关键词 (点击快速测试):</h3>
+            <div id="test-keywords">
+                <span class="test-keyword" onclick="testKeyword('3798462')" title="问题关键词">3798462 ⚠️</span>
+                <span class="test-keyword" onclick="testKeyword('turbo')">turbo</span>
+                <span class="test-keyword" onclick="testKeyword('injector')">injector</span>
+                <span class="test-keyword" onclick="testKeyword('actuator')">actuator</span>
+                <span class="test-keyword" onclick="testKeyword('GT1749V')">GT1749V</span>
+                <span class="test-keyword" onclick="testKeyword('Bosch')">Bosch</span>
+                <span class="test-keyword" onclick="testKeyword('diesel')">diesel</span>
+                <span class="test-keyword" onclick="testKeyword('test123')">test123</span>
+            </div>
+        </div>
+
+        <div class="test-results" id="testResults">
+            <div style="color: #28a745;">✅ 搜索修复测试系统已就绪</div>
+            <div>📋 点击上方按钮开始测试，或点击关键词进行快速测试</div>
+            <div>🌐 主页地址: http://localhost:3001</div>
+            <div>🔧 修复脚本: search-enter-key-fix.js</div>
+        </div>
+    </div>
+
+    <div class="test-panel">
+        <h2 class="test-title">📊 实时测试状态</h2>
+        
+        <div class="test-step">
+            <h4><span class="status-indicator status-pending"></span>步骤1: 页面加载</h4>
+            <p id="step1-status">等待开始测试...</p>
+        </div>
+
+        <div class="test-step">
+            <h4><span class="status-indicator status-pending"></span>步骤2: 搜索框检测</h4>
+            <p id="step2-status">等待开始测试...</p>
+        </div>
+
+        <div class="test-step">
+            <h4><span class="status-indicator status-pending"></span>步骤3: 事件监听器诊断</h4>
+            <p id="step3-status">等待开始测试...</p>
+        </div>
+
+        <div class="test-step">
+            <h4><span class="status-indicator status-pending"></span>步骤4: 修复应用</h4>
+            <p id="step4-status">等待开始测试...</p>
+        </div>
+
+        <div class="test-step">
+            <h4><span class="status-indicator status-pending"></span>步骤5: 功能验证</h4>
+            <p id="step5-status">等待开始测试...</p>
+        </div>
+    </div>
+
+    <div class="test-panel">
+        <h2 class="test-title">🌐 主页测试环境</h2>
+        
+        <div class="iframe-container">
+            <div class="iframe-header">
+                <span>🌐 主页预览 - 在此页面中测试搜索功能</span>
+                <span id="iframe-status">未加载</span>
+            </div>
+            <iframe id="mainPageFrame" src="about:blank"></iframe>
+        </div>
+    </div>
+
+    <script>
+        let testResults = [];
+        let currentStep = 0;
+
+        // 日志函数
+        function log(message, type = 'info') {
+            const resultsDiv = document.getElementById('testResults');
+            const timestamp = new Date().toLocaleTimeString();
+            let icon = '📝';
+            let color = '#333';
+            
+            switch(type) {
+                case 'success':
+                    icon = '✅';
+                    color = '#28a745';
+                    break;
+                case 'error':
+                    icon = '❌';
+                    color = '#dc3545';
+                    break;
+                case 'warning':
+                    icon = '⚠️';
+                    color = '#ffc107';
+                    break;
+                case 'info':
+                    icon = '📝';
+                    color = '#007bff';
+                    break;
+            }
+            
+            const logEntry = document.createElement('div');
+            logEntry.style.color = color;
+            logEntry.innerHTML = `[${timestamp}] ${icon} ${message}`;
+            resultsDiv.appendChild(logEntry);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        // 更新步骤状态
+        function updateStepStatus(step, status, message) {
+            const stepElement = document.getElementById(`step${step}-status`);
+            const indicator = stepElement.parentElement.querySelector('.status-indicator');
+            
+            stepElement.textContent = message;
+            
+            indicator.className = 'status-indicator';
+            switch(status) {
+                case 'success':
+                    indicator.classList.add('status-success');
+                    break;
+                case 'error':
+                    indicator.classList.add('status-error');
+                    break;
+                case 'warning':
+                    indicator.classList.add('status-warning');
+                    break;
+                default:
+                    indicator.classList.add('status-pending');
+            }
+        }
+
+        // 打开主页
+        function openMainPage() {
+            log('正在加载主页...', 'info');
+            updateStepStatus(1, 'pending', '正在加载主页...');
+            
+            const iframe = document.getElementById('mainPageFrame');
+            const statusSpan = document.getElementById('iframe-status');
+            
+            iframe.src = 'http://localhost:3001';
+            statusSpan.textContent = '加载中...';
+            
+            iframe.onload = function() {
+                log('主页加载完成', 'success');
+                updateStepStatus(1, 'success', '主页加载完成');
+                statusSpan.textContent = '已加载';
+                
+                setTimeout(() => {
+                    checkSearchElements();
+                }, 2000);
+            };
+            
+            iframe.onerror = function() {
+                log('主页加载失败，请确认服务器运行在 http://localhost:3001', 'error');
+                updateStepStatus(1, 'error', '主页加载失败');
+                statusSpan.textContent = '加载失败';
+            };
+        }
+
+        // 检查搜索元素
+        function checkSearchElements() {
+            log('检查搜索框元素...', 'info');
+            updateStepStatus(2, 'pending', '检查搜索框元素...');
+            
+            try {
+                const iframe = document.getElementById('mainPageFrame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                const searchInput = iframeDoc.getElementById('searchInput');
+                const searchBtn = iframeDoc.querySelector('.search-btn');
+                const searchResults = iframeDoc.getElementById('searchResults');
+                
+                if (searchInput && searchBtn) {
+                    log('✅ 搜索元素检查通过', 'success');
+                    updateStepStatus(2, 'success', '搜索框和按钮已找到');
+                } else {
+                    log('❌ 搜索元素缺失', 'error');
+                    updateStepStatus(2, 'error', '搜索框或按钮未找到');
+                }
+                
+            } catch (error) {
+                log(`检查搜索元素时出错: ${error.message}`, 'error');
+                updateStepStatus(2, 'error', `检查失败: ${error.message}`);
+            }
+        }
+
+        // 运行诊断
+        function runDiagnosis() {
+            log('开始运行搜索功能诊断...', 'info');
+            updateStepStatus(3, 'pending', '运行事件监听器诊断...');
+            
+            try {
+                const iframe = document.getElementById('mainPageFrame');
+                const iframeWindow = iframe.contentWindow;
+                
+                // 检查修复脚本是否已加载
+                if (iframeWindow.searchEnterKeyFix) {
+                    log('✅ 修复脚本已加载', 'success');
+                    
+                    // 运行诊断
+                    if (iframeWindow.searchDiagnosis) {
+                        iframeWindow.searchDiagnosis.runFullDiagnosis();
+                        log('✅ 诊断脚本已执行', 'success');
+                        updateStepStatus(3, 'success', '诊断完成，请查看控制台');
+                    } else {
+                        log('⚠️ 诊断脚本未找到，但修复脚本已加载', 'warning');
+                        updateStepStatus(3, 'warning', '诊断脚本未找到');
+                    }
+                } else {
+                    log('❌ 修复脚本未加载', 'error');
+                    updateStepStatus(3, 'error', '修复脚本未加载');
+                }
+                
+            } catch (error) {
+                log(`诊断过程中出错: ${error.message}`, 'error');
+                updateStepStatus(3, 'error', `诊断失败: ${error.message}`);
+            }
+        }
+
+        // 应用修复
+        function applyFix() {
+            log('应用搜索回车键修复...', 'info');
+            updateStepStatus(4, 'pending', '应用修复...');
+            
+            try {
+                const iframe = document.getElementById('mainPageFrame');
+                const iframeWindow = iframe.contentWindow;
+                
+                if (iframeWindow.searchEnterKeyFix) {
+                    iframeWindow.searchEnterKeyFix.fix();
+                    log('✅ 修复已应用', 'success');
+                    updateStepStatus(4, 'success', '修复已应用');
+                    
+                    setTimeout(() => {
+                        testProblemKeyword();
+                    }, 1000);
+                } else {
+                    log('❌ 修复脚本不可用', 'error');
+                    updateStepStatus(4, 'error', '修复脚本不可用');
+                }
+                
+            } catch (error) {
+                log(`应用修复时出错: ${error.message}`, 'error');
+                updateStepStatus(4, 'error', `修复失败: ${error.message}`);
+            }
+        }
+
+        // 测试问题关键词
+        function testProblemKeyword() {
+            testKeyword('3798462', true);
+        }
+
+        // 测试特定关键词
+        function testKeyword(keyword, isProblemTest = false) {
+            const testType = isProblemTest ? '问题关键词测试' : '关键词测试';
+            log(`${testType}: "${keyword}"`, 'info');
+            
+            if (isProblemTest) {
+                updateStepStatus(5, 'pending', `测试问题关键词: ${keyword}`);
+            }
+            
+            try {
+                const iframe = document.getElementById('mainPageFrame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const iframeWindow = iframe.contentWindow;
+                
+                const searchInput = iframeDoc.getElementById('searchInput');
+                if (!searchInput) {
+                    log('❌ 搜索框不存在', 'error');
+                    if (isProblemTest) updateStepStatus(5, 'error', '搜索框不存在');
+                    return;
+                }
+                
+                // 清空并输入关键词
+                searchInput.value = '';
+                searchInput.value = keyword;
+                searchInput.focus();
+                
+                log(`已输入关键词: "${keyword}"`, 'info');
+                
+                // 测试回车键
+                const enterEvent = new KeyboardEvent('keypress', {
+                    key: 'Enter',
+                    code: 'Enter',
+                    keyCode: 13,
+                    which: 13,
+                    bubbles: true,
+                    cancelable: true
+                });
+                
+                const result = searchInput.dispatchEvent(enterEvent);
+                log(`回车键事件已发送，结果: ${result}`, result ? 'success' : 'warning');
+                
+                // 等待并检查结果
+                setTimeout(() => {
+                    checkSearchResults(keyword, isProblemTest);
+                }, 1500);
+                
+            } catch (error) {
+                log(`测试关键词"${keyword}"时出错: ${error.message}`, 'error');
+                if (isProblemTest) updateStepStatus(5, 'error', `测试失败: ${error.message}`);
+            }
+        }
+
+        // 检查搜索结果
+        function checkSearchResults(keyword, isProblemTest = false) {
+            try {
+                const iframe = document.getElementById('mainPageFrame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const searchResults = iframeDoc.getElementById('searchResults');
+                
+                if (!searchResults) {
+                    log('⚠️ 搜索结果容器不存在', 'warning');
+                    if (isProblemTest) updateStepStatus(5, 'warning', '搜索结果容器不存在');
+                    return;
+                }
+                
+                const isVisible = searchResults.style.display !== 'none' && 
+                                searchResults.offsetParent !== null;
+                const hasContent = searchResults.innerHTML.trim() !== '';
+                
+                if (isVisible && hasContent) {
+                    const resultItems = searchResults.querySelectorAll('.search-result-item');
+                    log(`✅ 搜索成功 - 关键词: "${keyword}", 结果数: ${resultItems.length}`, 'success');
+                    if (isProblemTest) updateStepStatus(5, 'success', `搜索成功，找到 ${resultItems.length} 个结果`);
+                } else {
+                    log(`❌ 搜索无结果 - 关键词: "${keyword}"`, 'error');
+                    if (isProblemTest) updateStepStatus(5, 'error', '搜索无结果或结果未显示');
+                }
+                
+            } catch (error) {
+                log(`检查搜索结果时出错: ${error.message}`, 'error');
+                if (isProblemTest) updateStepStatus(5, 'error', `检查结果失败: ${error.message}`);
+            }
+        }
+
+        // 运行完整测试
+        function runFullTest() {
+            log('开始运行完整测试序列...', 'info');
+            
+            const testSequence = [
+                () => openMainPage(),
+                () => setTimeout(runDiagnosis, 3000),
+                () => setTimeout(applyFix, 6000),
+                () => setTimeout(() => {
+                    log('开始测试多个关键词...', 'info');
+                    const keywords = ['3798462', 'turbo', 'injector', 'test123'];
+                    keywords.forEach((keyword, index) => {
+                        setTimeout(() => testKeyword(keyword), index * 2000);
+                    });
+                }, 9000)
+            ];
+            
+            testSequence[0]();
+        }
+
+        // 清空结果
+        function clearResults() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '<div style="color: #28a745;">✅ 结果已清空，可以开始新的测试</div>';
+            
+            // 重置步骤状态
+            for (let i = 1; i <= 5; i++) {
+                updateStepStatus(i, 'pending', '等待开始测试...');
+            }
+        }
+
+        // 页面加载完成后的初始化
+        window.addEventListener('load', function() {
+            log('🚀 搜索修复测试系统初始化完成', 'success');
+            log('💡 提示: 点击"打开主页"按钮开始测试', 'info');
+            log('🔧 修复脚本已集成到主页中，会自动执行', 'info');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,510 @@
+[
+  {
+    "id": "INQ1753070102944742",
+    "name": "测试客户",
+    "email": "test@example.com",
+    "phone": "13800138000",
+    "quantity": "",
+    "message": "这是一个功能测试询价，请忽略。",
+    "productInfo": null,
+    "source": "unknown",
+    "sourceDetails": null,
+    "status": "pending",
+    "createdAt": "2025-07-21T03:55:02.944Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交",
+        "timestamp": "2025-07-21T03:55:02.944Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1753070059251396",
+    "name": "测试客户",
+    "email": "test@example.com",
+    "phone": "13800138000",
+    "quantity": "",
+    "message": "这是一个功能测试询价，请忽略。",
+    "productInfo": null,
+    "source": "unknown",
+    "sourceDetails": null,
+    "status": "pending",
+    "createdAt": "2025-07-21T03:54:19.251Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交",
+        "timestamp": "2025-07-21T03:54:19.251Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1753069858102567",
+    "name": "测试客户",
+    "email": "test@example.com",
+    "phone": "13800138000",
+    "quantity": "",
+    "message": "这是一个功能测试询价，请忽略。",
+    "productInfo": null,
+    "source": "unknown",
+    "sourceDetails": null,
+    "status": "pending",
+    "createdAt": "2025-07-21T03:50:58.102Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交",
+        "timestamp": "2025-07-21T03:50:58.102Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1753069850586833",
+    "name": "测试客户",
+    "email": "test@example.com",
+    "phone": "13800138000",
+    "quantity": "",
+    "message": "这是一个功能测试询价，请忽略。",
+    "productInfo": null,
+    "source": "unknown",
+    "sourceDetails": null,
+    "status": "pending",
+    "createdAt": "2025-07-21T03:50:50.586Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交",
+        "timestamp": "2025-07-21T03:50:50.587Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1753069700008234",
+    "name": "测试客户",
+    "email": "test@example.com",
+    "phone": "13800138000",
+    "quantity": "",
+    "message": "这是一个功能测试询价，请忽略。",
+    "productInfo": null,
+    "source": "unknown",
+    "sourceDetails": null,
+    "status": "pending",
+    "createdAt": "2025-07-21T03:48:20.008Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交",
+        "timestamp": "2025-07-21T03:48:20.008Z"
+      }
+    ]
+  },
+  {
+    "id": "48f1ce5a-d0f6-4951-a279-a203c4698c92",
+    "name": "DAO测试客户",
+    "email": "dao-test@example.com",
+    "phone": "13800138001",
+    "company": "DAO测试公司",
+    "message": "这是一个DAO层测试询价，验证数据创建功能是否正常工作",
+    "productId": "",
+    "productName": "",
+    "source": "test",
+    "status": "processing",
+    "priority": "normal",
+    "tags": [],
+    "notes": "DAO层状态更新测试",
+    "createdAt": "2025-07-20T17:24:29.427Z",
+    "updatedAt": "2025-07-20T17:24:29.442Z",
+    "respondedAt": null,
+    "clientInfo": {
+      "userAgent": "",
+      "ip": "",
+      "referer": ""
+    }
+  },
+  {
+    "id": "c8b87cd8-9a15-4a66-907d-cbbce29bf5c3",
+    "name": "DAO测试客户",
+    "email": "dao-test@example.com",
+    "phone": "13800138001",
+    "company": "DAO测试公司",
+    "message": "这是一个DAO层测试询价，验证数据创建功能是否正常工作",
+    "productId": "",
+    "productName": "",
+    "source": "test",
+    "status": "processing",
+    "priority": "normal",
+    "tags": [],
+    "notes": "DAO层状态更新测试",
+    "createdAt": "2025-07-20T17:20:08.712Z",
+    "updatedAt": "2025-07-20T17:20:08.729Z",
+    "respondedAt": null,
+    "clientInfo": {
+      "userAgent": "",
+      "ip": "",
+      "referer": ""
+    }
+  },
+  {
+    "id": "a5d9c3a2-3f0e-4800-a44e-2bf2c718044a",
+    "name": "同步测试客户",
+    "email": "sync-test@example.com",
+    "phone": "",
+    "company": "",
+    "message": "这是一个同步测试消息。",
+    "productId": "",
+    "productName": "",
+    "source": "website",
+    "status": "pending",
+    "priority": "normal",
+    "tags": [],
+    "notes": "",
+    "createdAt": "2025-07-20T15:02:35.445Z",
+    "updatedAt": "2025-07-20T15:02:35.445Z",
+    "respondedAt": null,
+    "clientInfo": {
+      "userAgent": "",
+      "ip": "",
+      "referer": ""
+    }
+  },
+  {
+    "id": "ee55313c-e483-40a5-aec3-f5da0ae59f38",
+    "name": "基础测试客户",
+    "email": "basic-test@example.com",
+    "phone": "13800138000",
+    "company": "基础测试公司",
+    "message": "这是一个基础测试询价消息。",
+    "productId": "",
+    "productName": "",
+    "source": "website",
+    "status": "processing",
+    "priority": "normal",
+    "tags": [],
+    "notes": "基础测试状态更新",
+    "createdAt": "2025-07-20T15:01:45.701Z",
+    "updatedAt": "2025-07-20T15:01:45.716Z",
+    "respondedAt": null,
+    "clientInfo": {
+      "userAgent": "",
+      "ip": "",
+      "referer": ""
+    }
+  },
+  {
+    "id": "20fad24f-48da-4e17-b63c-e850971b43e5",
+    "name": "DAO测试客户",
+    "email": "dao-test@example.com",
+    "phone": "13800138001",
+    "company": "DAO测试公司",
+    "message": "这是一个DAO层测试询价，验证数据创建功能是否正常工作",
+    "productId": "",
+    "productName": "",
+    "source": "test",
+    "status": "processing",
+    "priority": "normal",
+    "tags": [],
+    "notes": "DAO层状态更新测试",
+    "createdAt": "2025-07-20T14:59:54.582Z",
+    "updatedAt": "2025-07-20T14:59:54.597Z",
+    "respondedAt": null,
+    "clientInfo": {
+      "userAgent": "",
+      "ip": "",
+      "referer": ""
+    }
+  },
+  {
+    "id": "63d0d430-35f9-4dd9-aab9-ea889decb842",
+    "name": "DAO测试客户",
+    "email": "dao-test@example.com",
+    "phone": "13800138001",
+    "company": "DAO测试公司",
+    "message": "这是一个DAO层测试询价，验证数据创建功能是否正常工作",
+    "productId": "",
+    "productName": "",
+    "source": "test",
+    "status": "processing",
+    "priority": "normal",
+    "tags": [],
+    "notes": "DAO层状态更新测试",
+    "createdAt": "2025-07-20T14:58:19.166Z",
+    "updatedAt": "2025-07-20T14:58:19.181Z",
+    "respondedAt": null,
+    "clientInfo": {
+      "userAgent": "",
+      "ip": "",
+      "referer": ""
+    }
+  },
+  {
+    "id": "a9fe9abc-21c9-4c18-b4c3-de06c9240f38",
+    "name": "DAO测试客户",
+    "email": "dao-test@example.com",
+    "phone": "13800138001",
+    "company": "DAO测试公司",
+    "message": "这是一个DAO层测试询价，验证数据创建功能是否正常工作",
+    "productId": "",
+    "productName": "",
+    "source": "test",
+    "status": "processing",
+    "priority": "normal",
+    "tags": [],
+    "notes": "DAO层状态更新测试",
+    "createdAt": "2025-07-20T14:18:56.388Z",
+    "updatedAt": "2025-07-20T14:18:56.417Z",
+    "respondedAt": null,
+    "clientInfo": {
+      "userAgent": "",
+      "ip": "",
+      "referer": ""
+    }
+  },
+  {
+    "id": "INQ1752934959302606",
+    "name": "andy",
+    "email": "tianyiswl006@gmail.com",
+    "phone": "13376223199",
+    "company": "gonsi",
+    "message": "123456789789",
+    "productInfo": null,
+    "source": "contact_form_html",
+    "sourceDetails": {
+      "page": "/",
+      "referrer": "http://localhost:3002/",
+      "timestamp": "2025-07-19T14:22:39.302Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    "status": "processing",
+    "createdAt": "2025-07-19T14:22:39.302Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交 (HTML表单)",
+        "timestamp": "2025-07-19T14:22:39.302Z"
+      }
+    ],
+    "notes": "功能验证测试",
+    "updatedAt": "2025-07-20T14:18:40.536Z"
+  },
+  {
+    "id": "INQ1752893411550144",
+    "name": "andy",
+    "email": "diamond.lixia@gmail.com",
+    "phone": "13376223199",
+    "company": "gonsi",
+    "message": "diamond.lixia@gmail.com",
+    "productInfo": null,
+    "source": "contact_form_html",
+    "sourceDetails": {
+      "page": "/",
+      "referrer": "http://localhost:3002/",
+      "timestamp": "2025-07-19T02:50:11.550Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    "status": "pending",
+    "createdAt": "2025-07-19T02:50:11.550Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交 (HTML表单)",
+        "timestamp": "2025-07-19T02:50:11.550Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1752893337294941",
+    "name": "andy",
+    "email": "tianyiswl006@gmail.com",
+    "phone": "13376223199",
+    "company": "gonsi",
+    "message": "tianyiswl006@gmail.com",
+    "productInfo": null,
+    "source": "contact_form_html",
+    "sourceDetails": {
+      "page": "/",
+      "referrer": "http://localhost:3002/",
+      "timestamp": "2025-07-19T02:48:57.294Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    "status": "pending",
+    "createdAt": "2025-07-19T02:48:57.294Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交 (HTML表单)",
+        "timestamp": "2025-07-19T02:48:57.295Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1752892675099773",
+    "name": "andy",
+    "email": "tianyiswl006@gmail.com",
+    "phone": "13376223199",
+    "company": "gonsi",
+    "message": "http://localhost:3002",
+    "productInfo": null,
+    "source": "contact_form_html",
+    "sourceDetails": {
+      "page": "/",
+      "referrer": "http://localhost:3002/",
+      "timestamp": "2025-07-19T02:37:55.099Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    "status": "pending",
+    "createdAt": "2025-07-19T02:37:55.099Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交 (HTML表单)",
+        "timestamp": "2025-07-19T02:37:55.099Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1752892624875802",
+    "name": "andy",
+    "email": "tianyiswl006@gmail.com",
+    "phone": "13376223199",
+    "company": "gonsi",
+    "message": "tianyiswl006@gmail.com",
+    "productInfo": null,
+    "source": "contact_form_html",
+    "sourceDetails": {
+      "page": "/",
+      "referrer": "http://localhost:3002/",
+      "timestamp": "2025-07-19T02:37:04.875Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    "status": "pending",
+    "createdAt": "2025-07-19T02:37:04.875Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交 (HTML表单)",
+        "timestamp": "2025-07-19T02:37:04.875Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1752891736014807",
+    "name": "andy",
+    "email": "tianyiswl006@gmail.com",
+    "phone": "13376223199",
+    "company": "gonsi",
+    "message": "huangde1234578",
+    "productInfo": null,
+    "source": "contact_form_html",
+    "sourceDetails": {
+      "page": "/",
+      "referrer": "http://localhost:3002/",
+      "timestamp": "2025-07-19T02:22:16.014Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    "status": "pending",
+    "createdAt": "2025-07-19T02:22:16.014Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交 (HTML表单)",
+        "timestamp": "2025-07-19T02:22:16.014Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1752891203700606",
+    "name": "adas d",
+    "email": "tianyiswl@163.com",
+    "phone": "18217576072",
+    "quantity": "",
+    "message": "页尾快速询价 - 姓名：adas d ，电话：18217576072",
+    "productInfo": null,
+    "source": "footer_form",
+    "sourceDetails": null,
+    "status": "pending",
+    "createdAt": "2025-07-19T02:13:23.700Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交",
+        "timestamp": "2025-07-19T02:13:23.700Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1752891133245179",
+    "name": "表单测试用户",
+    "email": "formtest@example.com",
+    "phone": "13900139000",
+    "company": "表单测试公司",
+    "message": "formtest@example.com",
+    "productInfo": null,
+    "source": "contact_form_html",
+    "sourceDetails": {
+      "page": "/",
+      "referrer": "http://localhost:3002/",
+      "timestamp": "2025-07-19T02:12:13.245Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0"
+    },
+    "status": "pending",
+    "createdAt": "2025-07-19T02:12:13.245Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交 (HTML表单)",
+        "timestamp": "2025-07-19T02:12:13.245Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1752889360500490",
+    "name": "表单测试用户",
+    "email": "formtest@example.com",
+    "phone": "13900139000",
+    "company": "表单测试公司",
+    "message": "表单测试公司傲霜到啊",
+    "productInfo": null,
+    "source": "contact_form_html",
+    "sourceDetails": {
+      "page": "/",
+      "referrer": "http://localhost:3002/",
+      "timestamp": "2025-07-19T01:42:40.500Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0"
+    },
+    "status": "pending",
+    "createdAt": "2025-07-19T01:42:40.500Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交 (HTML表单)",
+        "timestamp": "2025-07-19T01:42:40.500Z"
+      }
+    ]
+  },
+  {
+    "id": "INQ1752889343510296",
+    "name": "表单测试用户",
+    "email": "formtest@example.com",
+    "phone": "13900139000",
+    "company": "表单测试公司",
+    "message": "13900139000",
+    "productInfo": null,
+    "source": "contact_form_html",
+    "sourceDetails": {
+      "page": "/",
+      "referrer": "http://localhost:3002/",
+      "timestamp": "2025-07-19T01:42:23.510Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0"
+    },
+    "status": "pending",
+    "createdAt": "2025-07-19T01:42:23.510Z",
+    "ip": "::1",
+    "logs": [
+      {
+        "action": "新询价提交 (HTML表单)",
+        "timestamp": "2025-07-19T01:42:23.510Z"
+      }
+    ]
+  }
+]

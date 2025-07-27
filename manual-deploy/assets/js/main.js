@@ -499,8 +499,8 @@ let productsData = null;
 // 加载产品数据
 async function loadProductsData() {
   try {
-    // 🌐 使用公开API接口获取所有产品数据（不分页）
-    const response = await fetch("/api/public/products?limit=1000"); // 使用公开接口
+    // 🗄️ 使用数据库API接口获取所有产品数据（不分页）
+    const response = await fetch("/api/db/public/products?limit=1000"); // 使用数据库接口
     if (!response.ok) {
       throw new Error("加载产品数据失败");
     }
@@ -919,8 +919,8 @@ async function loadProductShowcase() {
   console.log("🚀 开始从API加载主页产品展示数据...");
 
   try {
-    // 🌐 使用公开API接口获取产品数据
-    const response = await fetch("/api/public/products?limit=1000");
+    // 🗄️ 使用数据库API接口获取产品数据
+    const response = await fetch("/api/db/public/products?limit=1000");
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
@@ -1326,13 +1326,20 @@ function handleFormSubmit(event) {
 
   // 验证表单
   if (!validateForm(form)) {
-    showNotification("请填写所有必填字段！", "error");
+    showContactFormMessage("请填写所有必填字段！", "error");
     return;
   }
 
   // 显示提交状态
   submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
   submitBtn.disabled = true;
+
+  // 禁用表单所有输入字段，防止用户在提交过程中修改
+  const formInputs = form.querySelectorAll('input, textarea, select');
+  formInputs.forEach(input => {
+    input.disabled = true;
+    input.style.opacity = '0.6';
+  });
 
   // 获取表单数据
   const formData = {
@@ -1367,7 +1374,7 @@ function handleFormSubmit(event) {
       console.log("📨 服务器响应数据:", data);
 
       if (data.success) {
-        showNotification(
+        showContactFormMessage(
           "📧 询价信息发送成功！我们将在24小时内回复您。",
           "success",
         );
@@ -1378,7 +1385,7 @@ function handleFormSubmit(event) {
     })
     .catch((error) => {
       console.error("❌ 表单提交错误:", error);
-      showNotification("❌ 发送失败，请稍后重试或直接联系我们。", "error");
+      showContactFormMessage("❌ 发送失败，请稍后重试或直接联系我们。", "error");
       // 提供备用联系方式
       setTimeout(() => {
         showAlternativeContact();
@@ -1388,7 +1395,15 @@ function handleFormSubmit(event) {
       // 恢复按钮状态
       submitBtn.innerHTML = originalText;
       submitBtn.disabled = false;
-      console.log("🔄 表单按钮状态已恢复");
+
+      // 恢复表单输入字段状态
+      const formInputs = form.querySelectorAll('input, textarea, select');
+      formInputs.forEach(input => {
+        input.disabled = false;
+        input.style.opacity = '1';
+      });
+
+      console.log("🔄 表单状态已完全恢复");
     });
 }
 
@@ -1519,6 +1534,73 @@ function sendWhatsAppInquiry(formData) {
       window.open(whatsappUrl, "_blank");
     }
   }, 1500);
+}
+
+// 显示联系表单消息
+function showContactFormMessage(message, type = "info") {
+  const feedbackDiv = document.getElementById("contactFormFeedback");
+  if (feedbackDiv) {
+    // 根据类型设置样式
+    let alertClass = "alert-info";
+    let iconClass = "fas fa-info-circle";
+
+    if (type === "success") {
+      alertClass = "alert-success";
+      iconClass = "fas fa-check-circle";
+    } else if (type === "error") {
+      alertClass = "alert-danger";
+      iconClass = "fas fa-exclamation-circle";
+    }
+
+    feedbackDiv.innerHTML = `
+      <div class="alert ${alertClass}" style="
+        padding: 15px;
+        border-radius: 8px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        font-size: 14px;
+        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      ">
+        <i class="${iconClass}" style="font-size: 18px; flex-shrink: 0;"></i>
+        <span>${message}</span>
+      </div>
+    `;
+
+    feedbackDiv.style.display = "block";
+
+    // 添加动画效果
+    feedbackDiv.style.opacity = "0";
+    feedbackDiv.style.transform = "translateY(-10px)";
+    feedbackDiv.style.transition = "all 0.3s ease";
+
+    // 显示动画
+    setTimeout(() => {
+      feedbackDiv.style.opacity = "1";
+      feedbackDiv.style.transform = "translateY(0)";
+    }, 50);
+
+    // 成功消息显示更长时间，错误消息显示较短时间
+    const displayTime = type === "success" ? 8000 : 5000;
+
+    setTimeout(() => {
+      feedbackDiv.style.opacity = "0";
+      feedbackDiv.style.transform = "translateY(-10px)";
+
+      // 完全隐藏
+      setTimeout(() => {
+        feedbackDiv.style.display = "none";
+      }, 300);
+    }, displayTime);
+
+    console.log("✅ 联系表单消息显示成功:", message);
+  } else {
+    // 如果找不到专用反馈区域，回退到全局通知
+    console.warn("⚠️ 未找到联系表单反馈区域，使用全局通知");
+    showNotification(message, type);
+  }
 }
 
 // 显示通知消息

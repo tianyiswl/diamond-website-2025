@@ -1,0 +1,277 @@
+// 🚀 无锡皇德国际贸易有限公司 - Diamond Website 数据库模型
+// 专为涡轮增压器和共轨喷油器配件业务设计的Prisma数据模型
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 📂 产品分类表
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique // 分类名称（如：涡轮增压器、执行器等）
+  description String?  // 分类描述
+  icon        String?  // 分类图标
+  color       String?  // 分类颜色
+  order       Int      @default(0) // 显示顺序
+  status      String   @default("active") // 状态：active/inactive
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联关系
+  products Product[] // 一个分类可以有多个产品
+
+  @@map("categories")
+  @@index([status])
+  @@index([order])
+}
+
+// 📦 产品表 - 核心业务数据
+model Product {
+  id              String   @id @default(cuid())
+  sku             String   @unique // 产品SKU编号
+  name            String   // 产品名称
+  model           String   // 产品型号
+  brand           String   @default("Diamond-Auto") // 品牌
+  description     String?  @db.Text // 产品详细描述
+  price           Decimal  @default(0) @db.Decimal(10, 2) // 价格
+  stock           Int      @default(0) // 库存数量
+  status          String   @default("active") // 状态：active/inactive/draft
+  
+  // 产品规格信息
+  oeNumber        String?  // OE号码
+  compatibility   String?  // 兼容性信息
+  warranty        Int      @default(12) // 保修期（月）
+  notes           String?  @db.Text // 备注信息
+  
+  // SEO和营销信息
+  metaDescription String?  @db.Text // SEO描述
+  metaKeywords    String?  @db.Text // SEO关键词
+  features        String?  // 产品特性（逗号分隔）
+  badges          String?  // 产品标签
+  
+  // 产品标记
+  isNew           Boolean  @default(false) // 是否新品
+  isHot           Boolean  @default(false) // 是否热销
+  isRecommend     Boolean  @default(false) // 是否推荐
+  
+  // 时间戳
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // 外键关系
+  categoryId      String
+  category        Category @relation(fields: [categoryId], references: [id])
+  
+  // 关联关系
+  images          ProductImage[] // 产品图片
+  inquiries       Inquiry[] // 产品询价记录
+  analytics       ProductAnalytics[] // 产品分析数据
+
+  @@map("products")
+  @@index([categoryId])
+  @@index([status])
+  @@index([isNew])
+  @@index([isHot])
+  @@index([isRecommend])
+  @@index([createdAt])
+  @@index([name])
+  @@index([oeNumber])
+  @@index([compatibility])
+}
+
+// 🖼️ 产品图片表
+model ProductImage {
+  id        String   @id @default(cuid())
+  url       String   // 图片URL路径
+  alt       String?  // 图片alt文本
+  order     Int      @default(0) // 显示顺序
+  isPrimary Boolean  @default(false) // 是否主图
+  size      Int?     // 文件大小（字节）
+  width     Int?     // 图片宽度
+  height    Int?     // 图片高度
+  createdAt DateTime @default(now())
+  
+  // 外键关系
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_images")
+  @@index([productId])
+  @@index([isPrimary])
+  @@index([order])
+}
+
+// 🏢 公司信息表
+model Company {
+  id            String   @id @default(cuid())
+  name          String   // 公司全称
+  shortName     String?  // 公司简称
+  description   String?  // 公司描述
+  established   String?  // 成立年份
+  experience    String?  // 经验年数
+  logo          String?  // 公司Logo路径
+  
+  // 联系信息
+  phone         String?  // 电话
+  email         String?  // 邮箱
+  whatsapp      String?  // WhatsApp
+  address       String?  // 地址
+  website       String?  // 网站
+  
+  // 社交媒体
+  facebook      String?  // Facebook链接
+  instagram     String?  // Instagram链接
+  
+  // 营业时间
+  weekdaysHours String?  // 工作日营业时间
+  weekendHours  String?  // 周末营业时间
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("company")
+}
+
+// 🎠 轮播图表
+model CarouselSlide {
+  id          String   @id @default(cuid())
+  title       String   // 标题
+  description String?  // 描述
+  image       String   // 图片路径
+  buttonText  String?  // 按钮文字
+  buttonLink  String?  // 按钮链接
+  alt         String?  // 图片alt文本
+  order       Int      @default(0) // 显示顺序
+  status      String   @default("active") // 状态
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("carousel_slides")
+  @@index([status])
+  @@index([order])
+}
+
+// 📞 客户询价表
+model Inquiry {
+  id          String   @id @default(cuid())
+  customerName String  // 客户姓名
+  email       String   // 客户邮箱
+  phone       String?  // 客户电话
+  company     String?  // 客户公司
+  country     String?  // 客户国家
+  message     String   @db.Text // 询价内容
+  quantity    Int?     // 询价数量
+  
+  // 询价状态
+  status      String   @default("pending") // pending/replied/closed
+  priority    String   @default("normal") // low/normal/high/urgent
+  source      String   @default("website") // 询价来源
+  
+  // 处理信息
+  assignedTo  String?  // 分配给谁处理
+  reply       String?  @db.Text // 回复内容
+  repliedAt   DateTime? // 回复时间
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // 外键关系（可选）
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id])
+
+  @@map("inquiries")
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+  @@index([productId])
+}
+
+// 📊 产品分析数据表
+model ProductAnalytics {
+  id        String   @id @default(cuid())
+  date      DateTime @default(now()) @db.Date // 统计日期
+  views     Int      @default(0) // 浏览次数
+  inquiries Int      @default(0) // 询价次数
+  searches  Int      @default(0) // 搜索次数
+  
+  // 外键关系
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_analytics")
+  @@unique([productId, date]) // 每个产品每天只有一条记录
+  @@index([date])
+  @@index([productId])
+}
+
+// 👤 管理员表
+model Admin {
+  id          String   @id @default(cuid())
+  username    String   @unique // 用户名
+  email       String?  @unique // 邮箱
+  password    String   // 加密后的密码
+  name        String?  // 真实姓名
+  role        String   @default("admin") // 角色：admin/super_admin
+  permissions String[] // 权限列表
+  
+  // 登录信息
+  lastLoginAt DateTime? // 最后登录时间
+  loginCount  Int       @default(0) // 登录次数
+  isActive    Boolean   @default(true) // 是否激活
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("admins")
+  @@index([username])
+  @@index([isActive])
+}
+
+// 📝 操作日志表
+model OperationLog {
+  id          String   @id @default(cuid())
+  action      String   // 操作类型
+  description String   // 操作描述
+  tableName   String?  // 操作的表名
+  recordId    String?  // 操作的记录ID
+  oldData     Json?    // 操作前数据
+  newData     Json?    // 操作后数据
+  ipAddress   String?  // IP地址
+  userAgent   String?  // 用户代理
+  
+  // 操作者信息
+  adminId     String?  // 管理员ID
+  adminName   String?  // 管理员名称
+  
+  createdAt   DateTime @default(now())
+
+  @@map("operation_logs")
+  @@index([action])
+  @@index([tableName])
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+// 🔧 系统配置表
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique // 配置键
+  value     String   // 配置值
+  type      String   @default("string") // 值类型：string/number/boolean/json
+  category  String   @default("general") // 配置分类
+  description String? // 配置描述
+  isPublic  Boolean  @default(false) // 是否公开（前端可访问）
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_config")
+  @@index([category])
+  @@index([isPublic])
+}

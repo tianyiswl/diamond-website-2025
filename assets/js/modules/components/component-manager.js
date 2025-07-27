@@ -9,18 +9,36 @@ class ComponentManager {
     this.companyInfo = null;
     this.isLoaded = false;
     this.cache = new Map(); // 缓存机制
+    this.initialized = false; // 防重复初始化标记
+    this.componentsRendered = false; // 防重复渲染标记
 
     // 初始化时自动加载数据
     this.init();
   }
 
   /**
-   * 初始化组件管理器
+   * 初始化组件管理器（防重复版本）
    * @param {boolean} isHomePage - 是否为首页
    */
   async init(isHomePage = false) {
+    // 防止重复初始化
+    if (this.initialized) {
+      console.log("⚠️ 组件管理器已初始化，跳过重复初始化");
+      return true;
+    }
+
     try {
-      console.log("🔄 正在初始化组件管理器...");
+      // 🔍 智能检测页面类型（确保准确性）
+      if (!isHomePage) {
+        const path = window.location.pathname;
+        isHomePage = path === "/" ||
+                    path.endsWith("index.html") ||
+                    path === "/diamond-website-new/" ||
+                    path === "/diamond-website-new/index.html";
+      }
+
+      console.log(`🔄 正在初始化组件管理器... (isHomePage: ${isHomePage})`);
+      this.initialized = true; // 立即标记为已初始化
 
       // 并行加载数据以提升性能
       const [categoriesLoaded, companyLoaded] = await Promise.all([
@@ -34,14 +52,14 @@ class ComponentManager {
         console.warn("⚠️ 部分数据加载失败，使用默认配置");
       }
 
-      // 🔧 自动渲染页头和页尾组件
-      await this.autoRenderComponents(isHomePage);
+      // 🔧 自动渲染页头和页尾组件（防重复）
+      if (!this.componentsRendered) {
+        await this.autoRenderComponents(isHomePage);
+        this.componentsRendered = true;
+      }
 
       // 初始化页面特定功能
       this.initPageSpecificFeatures();
-
-      // 🌍 监听语言切换事件，更新动态内容
-      this.bindLanguageChangeListener();
 
       // 🔧 通知全局加载屏幕组件已就绪
       if (window.GlobalLoadingScreen) {
@@ -51,6 +69,7 @@ class ComponentManager {
       return true;
     } catch (error) {
       console.error("❌ 组件管理器初始化失败:", error);
+      this.initialized = false; // 重置标记，允许重试
       this.useDefaultData();
       return false;
     }
@@ -62,6 +81,21 @@ class ComponentManager {
    */
   async autoRenderComponents(isHomePage = false) {
     try {
+      // 🔍 智能检测页面类型（如果参数未正确传递）
+      if (!isHomePage) {
+        const path = window.location.pathname;
+        isHomePage = path === "/" ||
+                    path.endsWith("index.html") ||
+                    path === "/diamond-website-new/" ||
+                    path === "/diamond-website-new/index.html";
+
+        if (isHomePage) {
+          console.log("🏠 智能检测到主页，修正isHomePage参数");
+        }
+      }
+
+      console.log(`🔧 渲染页头页尾组件 (isHomePage: ${isHomePage})`);
+
       // 渲染页头
       const headerContainer = document.getElementById("header-container");
       if (headerContainer) {
@@ -81,9 +115,9 @@ class ComponentManager {
   }
 
   /**
-   * 从后台API加载分类数据
+   * 使用静态分类数据
    */
-  async loadCategories() {
+  loadCategories() {
     try {
       // 检查缓存
       if (this.cache.has("categories")) {
@@ -93,31 +127,19 @@ class ComponentManager {
         return true;
       }
 
-      const response = await fetch("/api/public/categories");
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const categories = await response.json();
-
-      // 确保数据格式正确
-      if (Array.isArray(categories)) {
-        // 添加"全部产品"选项
-        this.categories = [
-          { id: "all", name: "全部产品", count: 0 },
-          ...categories,
-        ];
-
+      // 使用静态配置中的分类数据
+      this.categories = window.CATEGORIES_CONFIG || [];
+      if (this.categories.length === 0) {
+        this.useDefaultCategories();
+      } else {
         // 缓存数据
         this.cache.set("categories", this.categories);
         this.isLoaded = true;
-        console.log("✅ 分类数据加载成功:", this.categories.length, "个分类");
-        return true;
-      } else {
-        throw new Error("分类数据格式错误");
+        console.log("✅ 静态分类数据加载成功:", this.categories.length, "个分类");
       }
+      return true;
     } catch (error) {
-      console.error("❌ 加载分类数据失败:", error);
+      console.error("❌ 加载静态分类数据失败:", error);
       this.useDefaultCategories();
       return false;
     }
@@ -232,9 +254,20 @@ class ComponentManager {
           category.id === "all"
             ? `${baseUrl}products.html`
             : `${baseUrl}products.html?category=${category.id}`;
+
         // 🌍 添加多语种支持
         const i18nKey = `categories.${category.id}`;
-        return `<a href="${href}" class="dropdown-item" data-category="${category.id}" data-i18n="${i18nKey}">${category.name}</a>`;
+
+        // 使用翻译系统获取分类名称，如果失败则使用原始名称
+        let displayName = category.name;
+        if (window.i18nManager && window.i18nManager.initialized) {
+          const translated = window.i18nManager.t(i18nKey);
+          if (translated && translated !== i18nKey) {
+            displayName = translated;
+          }
+        }
+
+        return `<a href="${href}" class="dropdown-item" data-category="${category.id}" data-i18n="${i18nKey}">${displayName}</a>`;
       })
       .join("");
   }
@@ -292,20 +325,31 @@ class ComponentManager {
   generateProductTags(isHomePage = true) {
     const baseUrl = isHomePage ? "pages/" : "";
 
+    // 获取当前URL的分类参数
+    const getCurrentCategory = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('category') || 'all';
+    };
+
+    const currentCategory = getCurrentCategory();
+
     if (!this.isLoaded || this.categories.length === 0) {
-      return this.getDefaultProductTags(baseUrl);
+      return this.getDefaultProductTags(baseUrl, currentCategory);
     }
 
     return this.categories
-      .map((category, index) => {
-        const activeClass = index === 0 ? "active" : "";
+      .map((category) => {
+        // 根据当前URL参数决定是否高亮
+        const activeClass = category.id === currentCategory ? "active" : "";
         const href =
           category.id === "all"
             ? `${baseUrl}products.html`
             : `${baseUrl}products.html?category=${category.id}`;
-        // 🌍 添加多语种支持
-        const i18nKey = `categories.${category.id}`;
-        return `<a href="${href}" class="tag-btn ${activeClass}" data-category="${category.id}" data-i18n="${i18nKey}">${category.name}</a>`;
+
+        // 使用固定中文名称（已移除多语言支持）
+        const displayName = category.name;
+
+        return `<a href="${href}" class="tag-btn ${activeClass}" data-category="${category.id}">${displayName}</a>`;
       })
       .join("");
   }
@@ -313,39 +357,34 @@ class ComponentManager {
   /**
    * 获取默认产品标签
    */
-  getDefaultProductTags(baseUrl) {
-    // 🌍 使用国际化系统获取标签名称
-    const getTagName = (key) => {
-      if (window.i18n && window.i18n.initialized) {
-        return window.i18n.t(`categories.${key}`) || key;
-      }
-      // 回退到默认中文
-      const fallback = {
-        all: "全部产品",
-        turbocharger: "涡轮增压器",
-        actuator: "执行器",
-        injector: "共轨喷油器",
-        "turbo-parts": "涡轮配件",
-      };
-      return fallback[key] || key;
+  getDefaultProductTags(baseUrl, currentCategory = 'all') {
+    // 使用固定中文名称
+    const fallback = {
+      all: "全部产品",
+      turbocharger: "涡轮增压器",
+      actuator: "执行器",
+      injector: "共轨喷油器",
+      "turbo-parts": "涡轮配件",
     };
 
     const defaultCategories = [
-      { id: "all", name: getTagName("all") },
-      { id: "turbocharger", name: getTagName("turbocharger") },
-      { id: "actuator", name: getTagName("actuator") },
-      { id: "injector", name: getTagName("injector") },
-      { id: "turbo-parts", name: getTagName("turbo-parts") },
+      { id: "all", name: fallback.all },
+      { id: "turbocharger", name: fallback.turbocharger },
+      { id: "actuator", name: fallback.actuator },
+      { id: "injector", name: fallback.injector },
+      { id: "turbo-parts", name: fallback["turbo-parts"] },
     ];
 
     return defaultCategories
-      .map((category, index) => {
-        const activeClass = index === 0 ? "active" : "";
+      .map((category) => {
+        // 根据当前URL参数决定是否高亮
+        const activeClass = category.id === currentCategory ? "active" : "";
         const href =
           category.id === "all"
             ? `${baseUrl}products.html`
             : `${baseUrl}products.html?category=${category.id}`;
-        return `<a href="${href}" class="tag-btn ${activeClass}" data-category="${category.id}" data-i18n="categories.${category.id}">${category.name}</a>`;
+
+        return `<a href="${href}" class="tag-btn ${activeClass}" data-category="${category.id}">${category.name}</a>`;
       })
       .join("");
   }
@@ -455,24 +494,18 @@ class ComponentManager {
 
                     <nav class="nav-menu">
                         <ul>
-                            <li><a href="${homeHref}" class="${homeClass}" data-i18n="nav.home">首页</a></li>
+                            <li><a href="${homeHref}" class="${homeClass}">首页</a></li>
                             <li class="nav-dropdown">
-                                <a href="${productsHref}" class="nav-link" data-i18n="nav.products">产品展示 <i class="fas fa-chevron-down"></i></a>
+                                <a href="${productsHref}" class="nav-link">产品展示 <i class="fas fa-chevron-down"></i></a>
                                 <div class="dropdown-menu">
                                     ${categoryDropdown}
                                 </div>
                             </li>
-                            <li><a href="${contactHref}" class="nav-link" data-i18n="nav.contact">联系我们</a></li>
+                            <li><a href="${contactHref}" class="nav-link">联系我们</a></li>
                         </ul>
                     </nav>
 
-                    <!-- 🌍 语言切换器 -->
-                    <div class="language-switcher">
-                        <select class="language-select" id="headerLanguageSelect">
-                            <option value="zh-CN">中文</option>
-                            <option value="en-US">English</option>
-                        </select>
-                    </div>
+
 
                     <!-- 移动端菜单按钮 -->
                     <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
@@ -710,8 +743,7 @@ class ComponentManager {
     // 初始化页脚表单
     this.initFooterInquiryForm();
 
-    // 🌍 初始化语言选择器
-    this.initLanguageSwitcher();
+
 
     // 🔝 初始化返回顶部按钮
     this.initBackToTopButton();
@@ -1084,8 +1116,45 @@ class ComponentManager {
    */
   initHomePageFeatures() {
     console.log("🏠 初始化首页特定功能");
-    // 这里可以添加首页特有的功能初始化
-    // 例如：轮播图、产品过滤等
+
+    // 🎠 初始化轮播图（延迟执行，确保DOM完全渲染）
+    setTimeout(() => {
+      const carouselContainer = document.querySelector('.carousel-container');
+      const carouselIndicators = document.querySelector('.carousel-indicators');
+
+      if (carouselContainer && carouselIndicators) {
+        console.log('✅ 找到轮播图容器，开始初始化...');
+        if (typeof CarouselManager !== 'undefined' && typeof carouselConfig !== 'undefined') {
+          try {
+            console.log("🎠 开始初始化轮播图...");
+            const carousel = new CarouselManager(carouselConfig);
+            console.log("✅ 轮播图管理器创建成功");
+          } catch (error) {
+            console.error("❌ 轮播图初始化失败:", error);
+          }
+        } else {
+          console.warn("⚠️ CarouselManager或carouselConfig未找到");
+        }
+      } else {
+        console.warn("⚠️ 轮播图容器未找到:", {
+          container: !!carouselContainer,
+          indicators: !!carouselIndicators
+        });
+      }
+    }, 800); // 延迟800ms确保DOM完全渲染
+
+    // 🏠 初始化主页产品展示
+    if (typeof window.loadHomepageProducts === 'function') {
+      try {
+        console.log("📦 开始加载主页产品...");
+        window.loadHomepageProducts();
+        console.log("✅ 主页产品加载完成");
+      } catch (error) {
+        console.error("❌ 主页产品加载失败:", error);
+      }
+    } else {
+      console.warn("⚠️ 主页产品加载函数未找到");
+    }
   }
 
   /**
@@ -1106,113 +1175,9 @@ class ComponentManager {
     };
   }
 
-  /**
-   * 🌍 初始化语言选择器
-   */
-  initLanguageSwitcher() {
-    // 等待DOM更新后再绑定事件
-    setTimeout(() => {
-      const languageSelect = document.getElementById("headerLanguageSelect");
-      if (languageSelect) {
-        // 检查是否已经绑定过事件，防止重复绑定
-        if (!languageSelect.hasAttribute("data-event-bound")) {
-          // 设置当前语言
-          if (window.i18n && window.i18n.currentLanguage) {
-            languageSelect.value = window.i18n.currentLanguage;
-          }
 
-          // 绑定语言切换事件
-          languageSelect.addEventListener("change", (e) => {
-            const selectedLang = e.target.value;
-            console.log(`🌍 用户选择语言: ${selectedLang}`);
 
-            if (
-              window.i18n &&
-              typeof window.i18n.switchLanguage === "function"
-            ) {
-              window.i18n.switchLanguage(selectedLang);
-            } else {
-              console.warn("⚠️  i18n管理器未找到，尝试页面跳转");
-              // 备用方案：通过URL参数切换语言
-              const url = new URL(window.location);
-              url.searchParams.set("lang", selectedLang);
-              window.location.href = url.toString();
-            }
-          });
 
-          languageSelect.setAttribute("data-event-bound", "true");
-          console.log("✅ 语言选择器事件绑定成功");
-        } else {
-          console.log("⚠️  语言选择器事件已经绑定过，跳过重复绑定");
-        }
-      } else {
-        console.warn("⚠️  未找到语言选择器元素");
-      }
-    }, 100);
-  }
-
-  /**
-   * 🌍 绑定语言切换监听器
-   */
-  bindLanguageChangeListener() {
-    document.addEventListener("i18n:changed", (event) => {
-      console.log("🌍 检测到语言切换，更新动态内容...");
-      this.updateDynamicI18nContent();
-    });
-  }
-
-  /**
-   * 🌍 更新动态生成的多语言内容
-   */
-  updateDynamicI18nContent() {
-    try {
-      // 检测当前页面类型
-      const isHomePage =
-        window.location.pathname === "/" ||
-        window.location.pathname.endsWith("index.html") ||
-        window.location.pathname === "/diamond-website-new/" ||
-        window.location.pathname === "/diamond-website-new/index.html";
-
-      // 更新页头下拉菜单
-      const dropdownMenu = document.querySelector(".dropdown-menu");
-      if (dropdownMenu) {
-        dropdownMenu.innerHTML = this.generateCategoryDropdown(isHomePage);
-        // 重新处理新生成内容的多语言
-        if (window.i18n && window.i18n.processElements) {
-          window.i18n.processElements(dropdownMenu);
-        }
-      }
-
-      // 更新产品标签
-      const productTagsContainer = document.getElementById(
-        "productTagsContainer",
-      );
-      if (productTagsContainer) {
-        productTagsContainer.innerHTML = this.generateProductTags(isHomePage);
-        // 重新处理新生成内容的多语言
-        if (window.i18n && window.i18n.processElements) {
-          window.i18n.processElements(productTagsContainer);
-        }
-      }
-
-      // 更新页脚分类链接
-      const footerCategoryLinks = document.getElementById(
-        "footerCategoryLinks",
-      );
-      if (footerCategoryLinks) {
-        footerCategoryLinks.innerHTML =
-          this.generateFooterCategoryLinks(isHomePage);
-        // 重新处理新生成内容的多语言
-        if (window.i18n && window.i18n.processElements) {
-          window.i18n.processElements(footerCategoryLinks);
-        }
-      }
-
-      console.log("✅ 动态内容多语言更新完成");
-    } catch (error) {
-      console.error("❌ 更新动态多语言内容失败:", error);
-    }
-  }
 }
 
 // 导出组件管理器类

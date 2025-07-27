@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 加载动画修复测试页面</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .test-header h1 {
+            color: #002e5f;
+            margin-bottom: 10px;
+        }
+        
+        .test-header p {
+            color: #6c757d;
+            font-size: 16px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        
+        .test-section h3 {
+            color: #002e5f;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .test-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .test-link {
+            display: block;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .test-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-fixed {
+            background: #28a745;
+        }
+        
+        .status-testing {
+            background: #ffc107;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+        
+        .check-icon {
+            color: #28a745;
+            margin-right: 10px;
+        }
+        
+        .instructions {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .instructions h4 {
+            color: #0056b3;
+            margin-top: 0;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🚀 加载动画修复测试页面</h1>
+            <p>测试主页与其他页面动画加载一致性和LOGO闪烁修复效果</p>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator status-fixed"></span>修复内容总结</h3>
+            <ul class="checklist">
+                <li><i class="fas fa-check check-icon"></i>统一所有页面使用全局加载屏幕管理器</li>
+                <li><i class="fas fa-check check-icon"></i>移除重复的组件加载屏幕，防止LOGO闪烁</li>
+                <li><i class="fas fa-check check-icon"></i>智能路径检测，自动适配主页和子页面</li>
+                <li><i class="fas fa-check check-icon"></i>优化加载屏幕样式，确保视觉一致性</li>
+                <li><i class="fas fa-check check-icon"></i>增强页面渲染协调器，防止内容闪现</li>
+                <li><i class="fas fa-check check-icon"></i>添加body loading类，控制内容显示时机</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator status-testing"></span>测试页面链接</h3>
+            <p>点击以下链接测试各页面的加载动画效果，观察是否存在LOGO闪烁或动画不一致问题：</p>
+            
+            <div class="test-links">
+                <a href="index.html" class="test-link">🏠 主页测试</a>
+                <a href="pages/products.html" class="test-link">📦 产品页面测试</a>
+                <a href="pages/about.html" class="test-link">ℹ️ 关于我们测试</a>
+                <a href="pages/contact.html" class="test-link">📞 联系我们测试</a>
+                <a href="pages/product-detail.html" class="test-link">📄 产品详情测试</a>
+                <a href="pages/privacy.html" class="test-link">🔒 隐私政策测试</a>
+                <a href="pages/terms.html" class="test-link">📋 服务条款测试</a>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 测试检查要点</h3>
+            <div class="instructions">
+                <h4>请在测试时注意以下几点：</h4>
+                <ol>
+                    <li><strong>加载屏幕一致性</strong>：所有页面应显示相同的加载屏幕样式</li>
+                    <li><strong>LOGO无闪烁</strong>：公司LOGO应平滑显示，无重复出现或闪烁</li>
+                    <li><strong>动画流畅性</strong>：加载动画应流畅，进度条正常工作</li>
+                    <li><strong>内容无闪现</strong>：页面内容应在加载完成后才显示，无提前闪现</li>
+                    <li><strong>语言切换</strong>：切换语言时加载屏幕内容应相应更新</li>
+                    <li><strong>移动端兼容</strong>：在移动设备上测试加载效果</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🛠️ 技术实现细节</h3>
+            <p><strong>主要修复文件：</strong></p>
+            <div class="code-block">
+assets/css/loading-screen-fix.css - 统一加载屏幕样式
+assets/js/global-loading-screen.js - 全局加载屏幕管理器
+assets/js/page-render-coordinator.js - 页面渲染协调器
+assets/js/header-footer-components.js - 移除重复加载屏幕
+            </div>
+            
+            <p><strong>关键改进：</strong></p>
+            <ul>
+                <li>使用单一全局加载屏幕，避免多重加载屏幕冲突</li>
+                <li>智能路径检测，自动调整资源路径</li>
+                <li>body loading类控制，防止内容提前显示</li>
+                <li>统一的z-index层级管理</li>
+                <li>优化的动画时序和过渡效果</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 性能监控</h3>
+            <p>打开浏览器开发者工具的控制台，可以看到详细的加载状态日志：</p>
+            <div class="code-block">
+🚀 全局加载屏幕已创建并显示
+📊 加载状态更新: domReady = true
+📊 加载状态更新: i18nReady = true
+📊 加载状态更新: componentsReady = true
+📊 加载状态更新: contentReady = true
+🎉 所有加载状态完成，准备隐藏加载屏幕
+✅ 加载屏幕已完全移除
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 简单的测试统计
+        console.log('🧪 加载动画修复测试页面已加载');
+        console.log('📋 测试要点：');
+        console.log('1. 检查所有页面加载动画一致性');
+        console.log('2. 确认LOGO无闪烁现象');
+        console.log('3. 验证页面内容无提前闪现');
+        console.log('4. 测试移动端兼容性');
+        
+        // 检测当前页面是否有加载屏幕残留
+        setTimeout(() => {
+            const loadingScreens = document.querySelectorAll('.loading-screen, #loading, #global-loading-screen');
+            if (loadingScreens.length > 0) {
+                console.warn('⚠️ 检测到加载屏幕残留:', loadingScreens);
+            } else {
+                console.log('✅ 当前页面无加载屏幕残留');
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

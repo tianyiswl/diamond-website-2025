@@ -24,12 +24,20 @@ class WebPImageLoader {
 
     // 获取WebP版本的图片路径
     getWebPPath(originalPath) {
-        // 如果是原始路径，转换为WebP路径
+        // 处理产品图片路径 /uploads/products/ -> /assets/images-webp/products/
+        if (originalPath.includes('/uploads/products/')) {
+            return originalPath
+                .replace('/uploads/products/', '/assets/images-webp/products/')
+                .replace(/\.(jpg|jpeg|png|gif)$/i, '.webp');
+        }
+
+        // 处理通用assets图片路径
         if (originalPath.includes('/assets/images/') && !originalPath.includes('/assets/images-webp/')) {
             return originalPath
                 .replace('/assets/images/', '/assets/images-webp/')
-                .replace(/\.(jpg|jpeg|png)$/i, '.webp');
+                .replace(/\.(jpg|jpeg|png|gif)$/i, '.webp');
         }
+
         return originalPath;
     }
 

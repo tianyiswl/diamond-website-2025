@@ -11,6 +11,25 @@ const net = require("net");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+// 🚀 缓存系统模块引用
+const { ProductCacheManager } = require('./cache-optimization-implementation.js');
+const { SmartCacheManager } = require('./performance-optimization.js');
+
+// 初始化缓存管理器
+const productCacheManager = new ProductCacheManager({
+  timeout: 5 * 60 * 1000, // 5分钟缓存
+  maxSize: 100
+});
+
+const smartCacheManager = new SmartCacheManager({
+  ttl: 5 * 60 * 1000, // 5分钟TTL
+  maxSize: 100
+});
+
+console.log('🚀 缓存系统已初始化');
+console.log('   - ProductCacheManager: 产品数据缓存');
+console.log('   - SmartCacheManager: 智能文件缓存');
+
 
 const app = express();
 let PORT = process.env.PORT || 3001;
@@ -76,6 +95,44 @@ const validateAndFixAnalyticsData = () => {
 
     const analytics = readJsonFile("./data/analytics.json");
     const inquiries = readJsonFile("./data/inquiries.json");
+
+    // 确保analytics数据结构正确
+    if (!analytics || typeof analytics !== 'object' || Array.isArray(analytics)) {
+      console.log("⚠️  Analytics数据结构异常，正在修复...");
+      const fixedAnalytics = {
+        daily_stats: {},
+        product_analytics: {},
+        user_analytics: {},
+        total_stats: {
+          total_page_views: 0,
+          total_unique_visitors: 0,
+          total_inquiries: 0,
+          total_product_clicks: 0
+        }
+      };
+      writeJsonFile("./data/analytics.json", fixedAnalytics);
+      console.log("✅ Analytics数据结构已修复");
+      return;
+    }
+
+    // 确保必要的属性存在
+    if (!analytics.daily_stats) {
+      analytics.daily_stats = {};
+    }
+    if (!analytics.product_analytics) {
+      analytics.product_analytics = {};
+    }
+    if (!analytics.user_analytics) {
+      analytics.user_analytics = {};
+    }
+    if (!analytics.total_stats) {
+      analytics.total_stats = {
+        total_page_views: 0,
+        total_unique_visitors: 0,
+        total_inquiries: 0,
+        total_product_clicks: 0
+      };
+    }
 
     let hasChanges = false;
 
@@ -269,6 +326,88 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// 🔧 管理后台路由必须在静态文件服务之前定义，避免目录重定向
+// 管理后台路由处理 - 🚀 优化版本，避免301重定向
+app.get("/admin", (req, res) => {
+  // 检查是否有认证令牌
+  const token = req.cookies.auth_token;
+
+  // 🔧 添加调试日志
+  console.log("🏠 访问管理后台:", {
+    hasCookie: !!token,
+    userAgent: req.headers["user-agent"],
+    referer: req.headers.referer,
+    ip: req.ip || req.connection.remoteAddress,
+  });
+
+  if (!token) {
+    console.log("❌ 未找到认证令牌，直接返回登录页面");
+    // 未登录，直接返回登录页面内容，避免重定向
+    const loginPath = path.join(__dirname, "admin", "login.html");
+    if (fs.existsSync(loginPath)) {
+      return res.sendFile(loginPath);
+    } else {
+      return res.status(404).send("登录页面不存在");
+    }
+  }
+
+  // 验证令牌
+  const config = loadAdminConfig();
+  if (!config) {
+    console.log("❌ 配置加载失败，直接返回登录页");
+    const loginPath = path.join(__dirname, "admin", "login.html");
+    if (fs.existsSync(loginPath)) {
+      return res.sendFile(loginPath);
+    } else {
+      return res.status(404).send("登录页面不存在");
+    }
+  }
+
+  try {
+    const decoded = jwt.verify(token, config.security.jwt_secret);
+    const now = Math.floor(Date.now() / 1000);
+    const TIME_TOLERANCE = 1800; // 30分钟容差
+
+    if (decoded.exp && decoded.exp + TIME_TOLERANCE < now) {
+      console.log("⚠️  令牌真正过期，直接返回登录页");
+      res.clearCookie("auth_token");
+      const loginPath = path.join(__dirname, "admin", "login.html");
+      if (fs.existsSync(loginPath)) {
+        return res.sendFile(loginPath);
+      } else {
+        return res.status(404).send("登录页面不存在");
+      }
+    }
+
+    console.log("✅ 令牌验证成功，返回管理后台:", decoded.username);
+
+    // 直接返回HTML内容
+    const indexPath = path.join(__dirname, "admin", "index.html");
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      console.log("❌ 管理后台文件不存在");
+      res.status(404).send("管理后台文件不存在");
+    }
+  } catch (error) {
+    console.log("❌ 令牌验证失败，直接返回登录页:", error.message);
+    // 令牌无效，清除cookie并直接返回登录页面
+    res.clearCookie("auth_token");
+    const loginPath = path.join(__dirname, "admin", "login.html");
+    if (fs.existsSync(loginPath)) {
+      return res.sendFile(loginPath);
+    } else {
+      return res.status(404).send("登录页面不存在");
+    }
+  }
+});
+
+// 管理后台首页路由 - 统一直接响应，避免重定向
+app.get("/admin/", (req, res) => {
+  // 重定向到不带斜杠的版本，保持一致性
+  res.redirect("/admin");
+});
+
 // 静态文件服务配置，添加缓存控制
 app.use(
   express.static(".", {
@@ -428,7 +567,46 @@ let todayDataCreated = false; // 全局标记，避免重复日志
 const ensureTodayData = () => {
   try {
     const analyticsPath = "./data/analytics.json";
-    const analytics = JSON.parse(fs.readFileSync(analyticsPath, "utf8"));
+    let analytics;
+
+    // 安全读取analytics文件
+    try {
+      analytics = JSON.parse(fs.readFileSync(analyticsPath, "utf8"));
+    } catch (error) {
+      console.log("⚠️  Analytics文件读取失败，创建新的数据结构");
+      analytics = {
+        daily_stats: {},
+        product_analytics: {},
+        user_analytics: {},
+        total_stats: {
+          total_page_views: 0,
+          total_unique_visitors: 0,
+          total_inquiries: 0,
+          total_product_clicks: 0
+        }
+      };
+    }
+
+    // 确保数据结构正确
+    if (!analytics || typeof analytics !== 'object' || Array.isArray(analytics)) {
+      analytics = {
+        daily_stats: {},
+        product_analytics: {},
+        user_analytics: {},
+        total_stats: {
+          total_page_views: 0,
+          total_unique_visitors: 0,
+          total_inquiries: 0,
+          total_product_clicks: 0
+        }
+      };
+    }
+
+    // 确保必要的属性存在
+    if (!analytics.daily_stats) {
+      analytics.daily_stats = {};
+    }
+
     const today = getLocalDateString(); // 使用本地时间
 
     // 检查是否存在今日数据
@@ -701,30 +879,62 @@ const fileCache = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5分钟缓存
 
 // 辅助函数：读取JSON文件（带缓存优化）
+
+// 🚀 增强版readJsonFile函数（集成智能缓存）
 const readJsonFile = (filePath) => {
   try {
-    // 检查缓存
-    const cacheKey = filePath;
-    const cached = fileCache.get(cacheKey);
-
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      return cached.data;
+    // 特殊处理产品数据，使用专用缓存管理器
+    if (filePath.includes('products.json')) {
+      console.log('📦 使用产品缓存管理器读取:', filePath);
+      return productCacheManager.getProducts();
     }
+    
+    // 其他文件使用智能缓存管理器
+    const cacheKey = path.resolve(filePath);
+    let data = smartCacheManager.get(cacheKey);
+    
+    if (data === null) {
+      // 缓存未命中，从文件读取
+      console.log('💾 缓存未命中，从文件读取:', filePath);
+      
+      if (!fs.existsSync(filePath)) {
+        console.warn(`⚠️ 文件不存在: ${filePath}`);
+        return filePath.includes('products.json') ? [] : 
+               filePath.includes('categories.json') ? [] :
+               filePath.includes('analytics.json') ? { daily_stats: {}, product_analytics: {} } :
+               filePath.includes('inquiries.json') ? [] :
+               filePath.includes('logs.json') ? [] :
+               filePath.includes('company.json') ? {} : {};
+      }
+      
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      data = JSON.parse(fileContent);
+      
+      // 存入缓存
+      smartCacheManager.set(cacheKey, data);
+      console.log('✅ 数据已缓存:', filePath);
+    } else {
+      // 🔧 优化日志输出 - 减少缓存命中的日志噪音
+      const isDebugMode = process.env.NODE_ENV === 'development';
+      const isAnalyticsFile = filePath.includes('analytics.json');
 
-    // 读取文件
-    const data = fs.readFileSync(filePath, "utf8");
-    const parsedData = JSON.parse(data);
-
-    // 更新缓存
-    fileCache.set(cacheKey, {
-      data: parsedData,
-      timestamp: Date.now(),
-    });
-
-    return parsedData;
+      // 只在调试模式下或非analytics文件时输出缓存命中日志
+      if (isDebugMode && !isAnalyticsFile) {
+        console.log('🎯 缓存命中:', filePath);
+      }
+    }
+    
+    return data;
   } catch (error) {
-    console.error(`读取文件失败 ${filePath}:`, error);
-    return [];
+    console.error(`❌ 读取文件失败: ${filePath}`, error.message);
+    
+    // 返回默认值避免程序崩溃
+    return filePath.includes('products.json') ? [] : 
+           filePath.includes('categories.json') ? [] :
+           filePath.includes('analytics.json') ? { daily_stats: {}, product_analytics: {} } :
+           filePath.includes('inquiries.json') ? [] :
+           filePath.includes('logs.json') ? [] :
+           filePath.includes('company.json') ? {} : {};
   }
 };
 
@@ -790,15 +1000,20 @@ const authenticateToken = (req, res, next) => {
   const token =
     req.cookies.auth_token || req.headers.authorization?.split(" ")[1];
 
-  // 🔧 添加调试日志
-  console.log("🔍 认证检查:", {
-    hasCookie: !!req.cookies.auth_token,
-    hasHeader: !!req.headers.authorization,
-    userAgent: req.headers["user-agent"],
-    ip: req.ip || req.connection.remoteAddress,
-    url: req.url,
-    method: req.method,
-  });
+  // 🔧 优化调试日志 - 减少重复输出
+  const isDebugMode = process.env.NODE_ENV === 'development';
+  const shouldLogDetails = isDebugMode || !req.cookies.auth_token;
+
+  if (shouldLogDetails) {
+    console.log("🔍 认证检查:", {
+      hasCookie: !!req.cookies.auth_token,
+      hasHeader: !!req.headers.authorization,
+      userAgent: req.headers["user-agent"],
+      ip: req.ip || req.connection.remoteAddress,
+      url: req.url,
+      method: req.method,
+    });
+  }
 
   if (!token) {
     console.log("❌ 未找到认证令牌");
@@ -829,24 +1044,25 @@ const authenticateToken = (req, res, next) => {
     const tokenExp = decoded.exp;
     const tokenIat = decoded.iat;
 
-    console.log("🕐 令牌时间验证:", {
-      serverTime: new Date().toISOString(),
-      serverTimezone: process.env.TZ,
-      tokenIssued: new Date(tokenIat * 1000).toISOString(),
-      tokenExpires: new Date(tokenExp * 1000).toISOString(),
-      currentTimestamp: now,
-      tokenExpTimestamp: tokenExp,
-      isExpired: tokenExp < now,
-      timeDiff: now - tokenExp,
-    });
+    // 🔧 优化时间验证日志 - 只在必要时输出
+    const timeDiff = now - tokenExp;
+    const isLikelyTimezoneIssue = Math.abs(timeDiff) > 3600 && Math.abs(timeDiff) < 86400;
+
+    if (isDebugMode || isLikelyTimezoneIssue || Math.abs(timeDiff) > 1800) {
+      console.log("🕐 令牌时间验证:", {
+        serverTime: new Date().toISOString(),
+        serverTimezone: process.env.TZ,
+        tokenIssued: new Date(tokenIat * 1000).toISOString(),
+        tokenExpires: new Date(tokenExp * 1000).toISOString(),
+        currentTimestamp: now,
+        tokenExpTimestamp: tokenExp,
+        isExpired: tokenExp < now,
+        timeDiff: timeDiff,
+      });
+    }
 
     // 🕐 增加时间容差，防止时区问题导致的误判 - 国外服务器优化版本
     const TIME_TOLERANCE = 1800; // 30分钟容差，适应国外服务器时区差异
-
-    // 🌍 检测可能的时区问题
-    const timeDiff = now - decoded.exp;
-    const isLikelyTimezoneIssue =
-      Math.abs(timeDiff) > 3600 && Math.abs(timeDiff) < 86400; // 1小时到24小时之间
 
     if (isLikelyTimezoneIssue) {
       console.log("🌍 检测到可能的时区问题，时间差:", timeDiff, "秒");
@@ -2469,6 +2685,35 @@ app.get("/api/public/categories", (req, res) => {
   }
 });
 
+// 🔗 API路由别名 - 为了兼容不同的API调用方式
+// 公开产品API别名
+app.get("/api/products/public", (req, res) => {
+  // 重定向到正确的公开产品API
+  req.url = "/api/public/products";
+  app._router.handle(req, res);
+});
+
+// 公开分类API别名
+app.get("/api/categories/public", (req, res) => {
+  // 重定向到正确的公开分类API
+  req.url = "/api/public/categories";
+  app._router.handle(req, res);
+});
+
+// 公司信息API别名
+app.get("/api/company/info", (req, res) => {
+  // 重定向到正确的公司信息API
+  req.url = "/api/company";
+  app._router.handle(req, res);
+});
+
+// 用户管理API别名
+app.get("/api/admin/users", authenticateToken, (req, res) => {
+  // 重定向到正确的管理员API
+  req.url = "/api/admins";
+  app._router.handle(req, res);
+});
+
 // 获取单个产品详情
 app.get("/api/products/:id", (req, res) => {
   const productId = req.params.id;
@@ -3422,6 +3667,181 @@ app.put("/api/inquiries/:id/status", authenticateToken, (req, res) => {
   }
 });
 
+// 批量操作询价
+app.post("/api/inquiries/batch", authenticateToken, requirePermission("inquiries.update"), (req, res) => {
+  try {
+    const { action, inquiryIds, data } = req.body;
+
+    // 验证参数
+    if (!action || !inquiryIds || !Array.isArray(inquiryIds) || inquiryIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "批量操作参数不完整",
+        code: "INVALID_BATCH_PARAMS"
+      });
+    }
+
+    // 强制刷新缓存以获取最新数据
+    const cacheKey = path.resolve("./data/inquiries.json");
+    smartCacheManager.delete(cacheKey);
+
+    const inquiries = readJsonFile("./data/inquiries.json");
+    const results = [];
+    let successCount = 0;
+    let errorCount = 0;
+
+    // 对于删除操作，需要特殊处理以避免索引变化问题
+    if (action === 'delete') {
+      // 检查删除权限
+      if (!hasPermission(getAdminByUsername(loadAdminConfig(), req.user.username), "inquiries.delete")) {
+        return res.status(403).json({
+          success: false,
+          message: "没有删除权限"
+        });
+      }
+
+      // 收集要删除的记录，从后往前删除以避免索引变化
+      const toDelete = [];
+
+      for (const inquiryId of inquiryIds) {
+        const inquiryIndex = inquiries.findIndex(item => item.id === inquiryId);
+
+        if (inquiryIndex !== -1) {
+          toDelete.push({ id: inquiryId, index: inquiryIndex });
+        } else {
+          errorCount++;
+          results.push({
+            inquiryId,
+            success: false,
+            message: "询价记录不存在"
+          });
+        }
+      }
+
+      // 按索引从大到小排序，从后往前删除
+      toDelete.sort((a, b) => b.index - a.index);
+
+      for (const item of toDelete) {
+        try {
+          inquiries.splice(item.index, 1);
+          successCount++;
+          results.push({
+            inquiryId: item.id,
+            success: true,
+            message: "删除成功"
+          });
+        } catch (error) {
+          errorCount++;
+          results.push({
+            inquiryId: item.id,
+            success: false,
+            message: error.message
+          });
+        }
+      }
+    } else {
+      // 处理其他操作（如状态更新）
+      for (const inquiryId of inquiryIds) {
+        try {
+          const inquiryIndex = inquiries.findIndex(item => item.id === inquiryId);
+
+          if (inquiryIndex === -1) {
+            errorCount++;
+            results.push({
+              inquiryId,
+              success: false,
+              message: "询价记录不存在"
+            });
+            continue;
+          }
+
+          let operationSuccess = false;
+          let operationMessage = "";
+
+          switch (action) {
+            case 'updateStatus':
+              if (!data.status) {
+                throw new Error('状态不能为空');
+              }
+
+              const oldStatus = inquiries[inquiryIndex].status;
+              inquiries[inquiryIndex].status = data.status;
+
+              // 添加处理记录
+              if (!inquiries[inquiryIndex].logs) {
+                inquiries[inquiryIndex].logs = [];
+              }
+
+              inquiries[inquiryIndex].logs.push({
+                action: `批量操作：状态从"${getStatusText(oldStatus)}"更新为"${getStatusText(data.status)}"`,
+                timestamp: new Date().toISOString(),
+                notes: data.notes || ""
+              });
+
+              operationSuccess = true;
+              operationMessage = "状态更新成功";
+              break;
+
+            default:
+              throw new Error(`不支持的批量操作: ${action}`);
+          }
+
+          if (operationSuccess) {
+            successCount++;
+            results.push({
+              inquiryId,
+              success: true,
+              message: operationMessage
+            });
+          }
+
+        } catch (error) {
+          errorCount++;
+          results.push({
+            inquiryId,
+            success: false,
+            message: error.message
+          });
+        }
+      }
+    }
+
+    // 保存更新后的数据
+    writeJsonFile("./data/inquiries.json", inquiries);
+
+    // 更新缓存
+    smartCacheManager.set(cacheKey, inquiries);
+
+    // 记录操作日志
+    addLog("batch_inquiry_operation", {
+      action: action,
+      totalCount: inquiryIds.length,
+      successCount: successCount,
+      errorCount: errorCount,
+      inquiryIds: inquiryIds
+    }, req);
+
+    console.log(`✅ 批量操作完成: ${action}, 成功: ${successCount}, 失败: ${errorCount}`);
+
+    res.json({
+      success: true,
+      message: `批量操作完成，成功: ${successCount}，失败: ${errorCount}`,
+      data: {
+        successCount,
+        errorCount,
+        results
+      }
+    });
+
+  } catch (error) {
+    console.error("批量操作失败:", error);
+    res.status(500).json({
+      success: false,
+      message: "批量操作失败: " + error.message
+    });
+  }
+});
+
 // 清空所有询价数据
 app.delete(
   "/api/inquiries/clear-all",
@@ -3926,67 +4346,7 @@ app.use((error, req, res, next) => {
   res.status(500).json({ error: "服务器内部错误" });
 });
 
-// 管理后台路由处理 - 🚀 性能优化版本
-app.get("/admin", (req, res) => {
-  // 检查是否有认证令牌
-  const token = req.cookies.auth_token;
-
-  // 🔧 添加调试日志
-  console.log("🏠 访问管理后台:", {
-    hasCookie: !!token,
-    userAgent: req.headers["user-agent"],
-    referer: req.headers.referer,
-    ip: req.ip || req.connection.remoteAddress,
-  });
-
-  if (!token) {
-    console.log("❌ 未找到认证令牌，重定向到登录页");
-    // 未登录，重定向到登录页
-    return res.redirect("/admin/login.html");
-  }
-
-  // 验证令牌
-  const config = loadAdminConfig();
-  if (!config) {
-    console.log("❌ 配置加载失败，重定向到登录页");
-    return res.redirect("/admin/login.html");
-  }
-
-  try {
-    const decoded = jwt.verify(token, config.security.jwt_secret);
-
-    // 🕐 时区兼容的令牌过期检查
-    const now = Math.floor(Date.now() / 1000);
-    const TIME_TOLERANCE = 1800; // 30分钟容差
-
-    if (decoded.exp && decoded.exp + TIME_TOLERANCE < now) {
-      console.log("⚠️  令牌真正过期，重定向到登录页");
-      res.clearCookie("auth_token");
-      return res.redirect("/admin/login.html");
-    }
-
-    console.log("✅ 令牌验证成功，直接返回管理后台页面:", decoded.username);
-
-    // 🚀 直接返回HTML内容，避免重定向循环
-    const indexPath = path.join(__dirname, "admin", "index.html");
-    if (fs.existsSync(indexPath)) {
-      res.sendFile(indexPath);
-    } else {
-      console.log("❌ 管理后台文件不存在");
-      res.status(404).send("管理后台页面不存在");
-    }
-  } catch (error) {
-    console.log("❌ 令牌验证失败，重定向到登录页:", error.message);
-    // 令牌无效，清除cookie并重定向到登录页
-    res.clearCookie("auth_token");
-    res.redirect("/admin/login.html");
-  }
-});
-
-// 管理后台首页路由
-app.get("/admin/", (req, res) => {
-  res.redirect("/admin");
-});
+// 🔧 重复的管理后台路由已移动到静态文件服务之前，避免目录重定向问题
 
 // 首页路由
 app.get("/", (req, res) => {
@@ -4279,6 +4639,165 @@ app.get("/api/status", (req, res) => {
   });
 });
 
+
+// 🚀 缓存状态监控API
+app.get('/api/cache/stats', (req, res) => {
+  try {
+    const productStats = productCacheManager.getStats();
+    const smartStats = smartCacheManager.getStats();
+    
+    const combinedStats = {
+      timestamp: new Date().toISOString(),
+      productCache: {
+        hits: productStats.hits,
+        misses: productStats.misses,
+        hitRate: productStats.hits + productStats.misses > 0 ? 
+          ((productStats.hits / (productStats.hits + productStats.misses)) * 100).toFixed(2) + '%' : '0%',
+        cacheSize: productCacheManager.cache.size,
+        errors: productStats.errors
+      },
+      smartCache: {
+        hits: smartStats.hits,
+        misses: smartStats.misses,
+        hitRate: smartStats.hits + smartStats.misses > 0 ? 
+          ((smartStats.hits / (smartStats.hits + smartStats.misses)) * 100).toFixed(2) + '%' : '0%',
+        cacheSize: smartCacheManager.cache.size,
+        evictions: smartStats.evictions,
+        errors: smartStats.errors
+      },
+      overall: {
+        totalHits: productStats.hits + smartStats.hits,
+        totalMisses: productStats.misses + smartStats.misses,
+        overallHitRate: (() => {
+          const totalRequests = productStats.hits + productStats.misses + smartStats.hits + smartStats.misses;
+          const totalHits = productStats.hits + smartStats.hits;
+          return totalRequests > 0 ? ((totalHits / totalRequests) * 100).toFixed(2) + '%' : '0%';
+        })()
+      }
+    };
+    
+    res.json({
+      success: true,
+      data: combinedStats
+    });
+  } catch (error) {
+    console.error('获取缓存统计失败:', error);
+    res.status(500).json({
+      success: false,
+      error: '获取缓存统计失败'
+    });
+  }
+});
+
+// 缓存清理API
+app.post('/api/cache/clear', (req, res) => {
+  try {
+    productCacheManager.clearCache();
+    smartCacheManager.clear();
+    
+    console.log('🧹 缓存已手动清理');
+    
+    res.json({
+      success: true,
+      message: '缓存已清理'
+    });
+  } catch (error) {
+    console.error('清理缓存失败:', error);
+    res.status(500).json({
+      success: false,
+      error: '清理缓存失败'
+    });
+  }
+});
+// 📊 性能监控API
+app.post('/api/performance/report', (req, res) => {
+  try {
+    const perfData = req.body;
+    const timestamp = new Date().toISOString();
+    
+    // 记录性能数据
+    const logEntry = {
+      timestamp: timestamp,
+      type: 'performance',
+      data: perfData,
+      userAgent: req.get('User-Agent'),
+      ip: req.ip || req.connection.remoteAddress
+    };
+    
+    console.log('📈 性能数据收集:', {
+      loadTime: perfData.loadTime?.toFixed(2) + 'ms',
+      domContentLoaded: perfData.domContentLoaded + 'ms',
+      pageLoad: perfData.pageLoad + 'ms',
+      resources: perfData.resources
+    });
+    
+    // 保存到性能日志文件
+    const perfLogPath = './data/performance-logs.json';
+    let perfLogs = [];
+    
+    if (fs.existsSync(perfLogPath)) {
+      try {
+        perfLogs = JSON.parse(fs.readFileSync(perfLogPath, 'utf8'));
+      } catch (e) {
+        perfLogs = [];
+      }
+    }
+    
+    perfLogs.push(logEntry);
+    
+    // 保留最近1000条记录
+    if (perfLogs.length > 1000) {
+      perfLogs = perfLogs.slice(-1000);
+    }
+    
+    fs.writeFileSync(perfLogPath, JSON.stringify(perfLogs, null, 2));
+    
+    res.json({ success: true, message: '性能数据已记录' });
+  } catch (error) {
+    console.error('性能数据处理失败:', error);
+    res.status(500).json({ success: false, error: '性能数据处理失败' });
+  }
+});
+
+// 获取性能统计API
+app.get('/api/performance/stats', (req, res) => {
+  try {
+    const perfLogPath = './data/performance-logs.json';
+    
+    if (!fs.existsSync(perfLogPath)) {
+      return res.json({
+        success: true,
+        data: {
+          totalRecords: 0,
+          avgLoadTime: 0,
+          avgPageLoad: 0,
+          recentRecords: []
+        }
+      });
+    }
+    
+    const perfLogs = JSON.parse(fs.readFileSync(perfLogPath, 'utf8'));
+    const recentLogs = perfLogs.slice(-100); // 最近100条
+    
+    // 计算平均值
+    const avgLoadTime = recentLogs.reduce((sum, log) => sum + (log.data.loadTime || 0), 0) / recentLogs.length;
+    const avgPageLoad = recentLogs.reduce((sum, log) => sum + (log.data.pageLoad || 0), 0) / recentLogs.length;
+    
+    res.json({
+      success: true,
+      data: {
+        totalRecords: perfLogs.length,
+        avgLoadTime: avgLoadTime.toFixed(2),
+        avgPageLoad: avgPageLoad.toFixed(2),
+        recentRecords: recentLogs.slice(-10) // 最近10条
+      }
+    });
+  } catch (error) {
+    console.error('获取性能统计失败:', error);
+    res.status(500).json({ success: false, error: '获取性能统计失败' });
+  }
+});
+
 // 健康检查端点（简化版本）
 app.get("/api/health", (req, res) => {
   const healthCheck = {
@@ -4292,6 +4811,25 @@ app.get("/api/health", (req, res) => {
 
   res.status(200).json(healthCheck);
 });
+
+// 🗄️ 数据库API路由 - Diamond Website 数据库迁移
+try {
+  const databaseApiRoutes = require('./src/routes/database-api');
+  app.use('/api/db', databaseApiRoutes);
+  console.log('✅ 数据库API路由已加载: /api/db/*');
+} catch (error) {
+  console.warn('⚠️ 数据库API路由加载失败:', error.message);
+  console.warn('   如果还未完成数据库迁移，这是正常的');
+}
+
+// 🛠️ 后台管理数据库API路由 - Diamond Website 后台数据库迁移
+try {
+  const adminDatabaseApiRoutes = require('./src/routes/admin-database-api');
+  app.use('/api/admin-db', adminDatabaseApiRoutes);
+  console.log('✅ 后台管理数据库API路由已加载: /api/admin-db/*');
+} catch (error) {
+  console.warn('⚠️ 后台管理数据库API路由加载失败:', error.message);
+}
 
 // 监控指标端点（简单版本）
 app.get("/api/metrics", (req, res) => {

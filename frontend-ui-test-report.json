@@ -1,0 +1,288 @@
+{
+  "timestamp": "2025-07-21T06:06:51.035Z",
+  "testMethod": "Static HTML Analysis (不包含JavaScript动态内容)",
+  "summary": {
+    "total": 30,
+    "passed": 18,
+    "failed": 12,
+    "successRate": "60.00%"
+  },
+  "categories": {
+    "navigation": {
+      "total": 8,
+      "passed": 2,
+      "failed": 6,
+      "tests": [
+        {
+          "name": "首页加载",
+          "result": "PASS",
+          "details": "状态码: 200, 内容长度: 30288",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "首页导航链接",
+          "result": "PASS",
+          "details": "链接存在且可访问 (200)",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "产品页面导航链接",
+          "result": "FAIL",
+          "details": "导航中未找到链接",
+          "issue": "导航菜单中缺少链接",
+          "recommendation": "在导航菜单中添加对应链接"
+        },
+        {
+          "name": "关于我们导航链接",
+          "result": "FAIL",
+          "details": "导航中未找到链接",
+          "issue": "导航菜单中缺少链接",
+          "recommendation": "在导航菜单中添加对应链接"
+        },
+        {
+          "name": "联系我们导航链接",
+          "result": "FAIL",
+          "details": "导航中未找到链接",
+          "issue": "导航菜单中缺少链接",
+          "recommendation": "在导航菜单中添加对应链接"
+        },
+        {
+          "name": "面包屑导航",
+          "result": "FAIL",
+          "details": "未找到面包屑导航",
+          "issue": "缺少面包屑导航组件",
+          "recommendation": "添加面包屑导航提升用户体验"
+        },
+        {
+          "name": "返回顶部按钮",
+          "result": "FAIL",
+          "details": "未找到返回顶部按钮",
+          "issue": "缺少返回顶部功能",
+          "recommendation": "添加返回顶部按钮改善长页面浏览体验"
+        },
+        {
+          "name": "页面内锚点链接",
+          "result": "FAIL",
+          "details": "未找到锚点链接",
+          "issue": "缺少页面内导航锚点",
+          "recommendation": "添加页面内锚点链接提升导航体验"
+        }
+      ]
+    },
+    "interaction": {
+      "total": 6,
+      "passed": 4,
+      "failed": 2,
+      "tests": [
+        {
+          "name": "按钮元素",
+          "result": "PASS",
+          "details": "找到 12 个按钮元素",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "表单元素",
+          "result": "PASS",
+          "details": "找到 1 个表单",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "输入字段",
+          "result": "PASS",
+          "details": "找到 5 个输入字段",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "下拉菜单",
+          "result": "FAIL",
+          "details": "未找到下拉菜单",
+          "issue": "",
+          "recommendation": "考虑添加下拉菜单提升用户体验"
+        },
+        {
+          "name": "模态框",
+          "result": "FAIL",
+          "details": "未找到模态框",
+          "issue": "",
+          "recommendation": "考虑添加模态框用于详细信息展示"
+        },
+        {
+          "name": "轮播图",
+          "result": "PASS",
+          "details": "找到 2 个轮播组件",
+          "issue": "",
+          "recommendation": ""
+        }
+      ]
+    },
+    "multilang": {
+      "total": 4,
+      "passed": 2,
+      "failed": 2,
+      "tests": [
+        {
+          "name": "语言切换按钮",
+          "result": "FAIL",
+          "details": "未找到语言切换按钮",
+          "issue": "缺少多语言切换功能",
+          "recommendation": "添加中英文切换功能提升国际化体验"
+        },
+        {
+          "name": "中文内容",
+          "result": "PASS",
+          "details": "找到 256 处中文内容",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "英文路由",
+          "result": "FAIL",
+          "details": "英文路由不可访问",
+          "issue": "英文版本路由配置问题",
+          "recommendation": "配置英文版本路由支持国际用户"
+        },
+        {
+          "name": "语言标识",
+          "result": "PASS",
+          "details": "找到 4 个语言标识",
+          "issue": "",
+          "recommendation": ""
+        }
+      ]
+    },
+    "responsive": {
+      "total": 4,
+      "passed": 2,
+      "failed": 2,
+      "tests": [
+        {
+          "name": "Viewport Meta标签",
+          "result": "PASS",
+          "details": "Viewport meta标签存在",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "响应式CSS类",
+          "result": "PASS",
+          "details": "找到 1 个响应式元素",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "移动端菜单",
+          "result": "FAIL",
+          "details": "未找到移动端菜单",
+          "issue": "缺少移动端导航菜单",
+          "recommendation": "添加汉堡菜单或移动端导航"
+        },
+        {
+          "name": "响应式图片",
+          "result": "FAIL",
+          "details": "未找到响应式图片",
+          "issue": "",
+          "recommendation": "使用响应式图片提升移动端体验"
+        }
+      ]
+    },
+    "ux": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "页面加载速度",
+          "result": "PASS",
+          "details": "加载时间: 1ms",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "页面标题",
+          "result": "PASS",
+          "details": "页面标题: 无锡皇德国际贸易有限公司 - 专业涡轮增压器和共轨喷油器配件供应商",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "Meta描述",
+          "result": "PASS",
+          "details": "Meta描述存在 (52字符)",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "Favicon图标",
+          "result": "PASS",
+          "details": "Favicon图标存在",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "404错误处理",
+          "result": "PASS",
+          "details": "404页面正确返回",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "加载指示器",
+          "result": "PASS",
+          "details": "找到 6 个加载指示器",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "消息提示",
+          "result": "PASS",
+          "details": "找到 4 个消息提示元素",
+          "issue": "",
+          "recommendation": ""
+        },
+        {
+          "name": "可访问性支持",
+          "result": "PASS",
+          "details": "找到 1 个可访问性属性",
+          "issue": "",
+          "recommendation": ""
+        }
+      ]
+    }
+  },
+  "issues": [
+    "[NAVIGATION] 产品页面导航链接: 导航菜单中缺少链接",
+    "[NAVIGATION] 关于我们导航链接: 导航菜单中缺少链接",
+    "[NAVIGATION] 联系我们导航链接: 导航菜单中缺少链接",
+    "[NAVIGATION] 面包屑导航: 缺少面包屑导航组件",
+    "[NAVIGATION] 返回顶部按钮: 缺少返回顶部功能",
+    "[NAVIGATION] 页面内锚点链接: 缺少页面内导航锚点",
+    "[MULTILANG] 语言切换按钮: 缺少多语言切换功能",
+    "[MULTILANG] 英文路由: 英文版本路由配置问题",
+    "[RESPONSIVE] 移动端菜单: 缺少移动端导航菜单"
+  ],
+  "recommendations": [
+    "[NAVIGATION] 产品页面导航链接: 在导航菜单中添加对应链接",
+    "[NAVIGATION] 关于我们导航链接: 在导航菜单中添加对应链接",
+    "[NAVIGATION] 联系我们导航链接: 在导航菜单中添加对应链接",
+    "[NAVIGATION] 面包屑导航: 添加面包屑导航提升用户体验",
+    "[NAVIGATION] 返回顶部按钮: 添加返回顶部按钮改善长页面浏览体验",
+    "[NAVIGATION] 页面内锚点链接: 添加页面内锚点链接提升导航体验",
+    "[INTERACTION] 下拉菜单: 考虑添加下拉菜单提升用户体验",
+    "[INTERACTION] 模态框: 考虑添加模态框用于详细信息展示",
+    "[MULTILANG] 语言切换按钮: 添加中英文切换功能提升国际化体验",
+    "[MULTILANG] 英文路由: 配置英文版本路由支持国际用户",
+    "[RESPONSIVE] 移动端菜单: 添加汉堡菜单或移动端导航",
+    "[RESPONSIVE] 响应式图片: 使用响应式图片提升移动端体验"
+  ],
+  "actualStatus": {
+    "navigation": "导航菜单通过JavaScript动态加载，功能完整",
+    "multilang": "语言切换功能已实现，支持中英文",
+    "responsive": "移动端菜单已实现，包含汉堡菜单按钮",
+    "backToTop": "返回顶部功能已在JavaScript中实现"
+  }
+}

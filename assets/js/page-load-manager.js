@@ -170,8 +170,8 @@
                 `;
 
         try {
-          console.log("🌐 调用API: /api/public/products?limit=1000");
-          const response = await fetch("/api/public/products?limit=1000");
+          console.log("🗄️ 调用数据库API: /api/db/public/products?limit=1000");
+          const response = await fetch("/api/db/public/products?limit=1000");
 
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);

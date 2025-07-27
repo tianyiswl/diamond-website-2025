@@ -30,18 +30,29 @@
     // 当前页面类型
     pageType: "unknown",
 
+    // 🚨 防重复执行标记
+    executionFlags: {
+      domReady: false,
+      i18nReady: false,
+      componentsReady: false,
+      contentReady: false
+    },
+
     /**
      * 初始化协调器
      */
     init: function () {
       if (this.initialized) return;
 
-      console.log("🎯 初始化页面渲染协调器");
+      console.log("🎯 初始化页面渲染协调器（无加载动画模式）");
+
+      // 🚨 立即强制移除所有加载屏幕
+      this.forceRemoveAllLoadingScreens();
 
       // 检测页面类型
       this.detectPageType();
 
-      // 确保全局加载屏幕已显示
+      // 确保全局加载屏幕已显示（实际上是确保移除）
       this.ensureGlobalLoadingScreen();
 
       // 预设用户语言偏好，避免语言闪烁
@@ -57,7 +68,7 @@
     },
 
     /**
-     * 检测页面类型
+     * 🔍 增强的页面类型检测
      */
     detectPageType: function () {
       const path = window.location.pathname;
@@ -68,6 +79,10 @@
         this.pageType = "products";
       } else if (path.includes("product-detail.html")) {
         this.pageType = "product-detail";
+      } else if (path.includes("about.html")) {
+        this.pageType = "about";
+      } else if (path.includes("contact.html")) {
+        this.pageType = "contact";
       } else if (path.includes("privacy.html")) {
         this.pageType = "privacy";
       } else if (path.includes("terms.html")) {
@@ -77,6 +92,30 @@
       }
 
       console.log(`🔍 检测到页面类型: ${this.pageType}`);
+
+      // 🎯 根据页面类型设置加载策略
+      this.setLoadingStrategy();
+    },
+
+    /**
+     * 🎯 设置页面加载策略
+     */
+    setLoadingStrategy: function () {
+      const heavyLoadPages = ["home", "products", "product-detail"];
+      const staticPages = ["about", "contact", "privacy", "terms"];
+
+      if (heavyLoadPages.includes(this.pageType)) {
+        console.log(`🚀 ${this.pageType} 页面需要完整加载流程`);
+        // 强制显示加载屏幕
+        if (window.GlobalLoadingScreen) {
+          window.GlobalLoadingScreen.forceShow();
+        }
+      } else if (staticPages.includes(this.pageType)) {
+        console.log(`📄 ${this.pageType} 页面使用快速加载策略`);
+        // 静态页面使用智能延迟显示
+      } else {
+        console.log(`❓ ${this.pageType} 页面使用默认加载策略`);
+      }
     },
 
     /**
@@ -85,7 +124,28 @@
     ensureGlobalLoadingScreen: function () {
       if (window.GlobalLoadingScreen) {
         this.managers.globalLoading = window.GlobalLoadingScreen;
-        console.log("✅ 全局加载屏幕已就绪");
+        console.log("✅ 全局加载屏幕已就绪（已禁用状态）");
+
+        // 🔧 确保移除任何旧的组件加载屏幕，防止冲突
+        const oldLoadingScreen = document.getElementById("loading");
+        if (oldLoadingScreen) {
+          console.log("🧹 移除旧的组件加载屏幕，防止LOGO闪烁");
+          oldLoadingScreen.remove();
+        }
+
+        // 🚨 强制移除任何可能存在的全局加载屏幕
+        const globalLoadingScreen = document.getElementById("global-loading-screen");
+        if (globalLoadingScreen) {
+          console.log("🚨 强制移除全局加载屏幕，防止LOGO页面显示");
+          globalLoadingScreen.remove();
+        }
+
+        // 🔧 移除任何可能的加载屏幕样式
+        const loadingStyles = document.getElementById("global-loading-styles");
+        if (loadingStyles) {
+          console.log("🧹 移除全局加载屏幕样式");
+          loadingStyles.remove();
+        }
       } else {
         console.warn("⚠️ 全局加载屏幕未找到");
       }
@@ -203,61 +263,136 @@
     startCoordinatedInitialization: function () {
       console.log("🚀 开始协调初始化流程");
 
-      // 添加总体超时机制
+      // 🚨 加载动画已禁用 - 跳过加载屏幕相关逻辑
+      console.log("🚫 加载动画已禁用，直接执行页面初始化");
+
+      // 🔧 立即移除任何可能存在的加载屏幕元素
+      this.forceRemoveAllLoadingScreens();
+
+      // 添加总体超时机制（延长时间，避免闪烁）
       const overallTimeout = setTimeout(() => {
         console.warn("⚠️ 整体初始化超时，强制完成");
-        if (this.managers.globalLoading) {
-          this.managers.globalLoading.forceHideLoadingScreen();
-        }
-      }, 10000); // 10秒总超时
+        this.forceRemoveAllLoadingScreens();
+      }, 15000); // 延长到15秒，避免4-5秒的闪烁
 
       // 第一阶段：DOM准备
       this.waitForDOM()
         .then(() => {
-          console.log("✅ DOM准备完成");
-          if (this.managers.globalLoading) {
-            this.managers.globalLoading.setState("domReady", true);
+          if (this.executionFlags.domReady) {
+            console.log("⚠️ DOM准备已完成，跳过重复执行");
+            return Promise.resolve();
           }
+          this.executionFlags.domReady = true;
+          console.log("✅ DOM准备完成");
+          // 🚫 跳过加载屏幕状态设置
 
           // 第二阶段：国际化系统
           return this.initializeI18n();
         })
         .then(() => {
-          console.log("✅ 国际化系统完成");
-          if (this.managers.globalLoading) {
-            this.managers.globalLoading.setState("i18nReady", true);
+          if (this.executionFlags.i18nReady) {
+            console.log("⚠️ 国际化系统已完成，跳过重复执行");
+            return Promise.resolve();
           }
+          this.executionFlags.i18nReady = true;
+          console.log("✅ 国际化系统完成");
+          // 🚫 跳过加载屏幕状态设置
 
           // 第三阶段：组件系统
           return this.initializeComponents();
         })
         .then(() => {
-          console.log("✅ 组件系统完成");
-          if (this.managers.globalLoading) {
-            this.managers.globalLoading.setState("componentsReady", true);
+          if (this.executionFlags.componentsReady) {
+            console.log("⚠️ 组件系统已完成，跳过重复执行");
+            return Promise.resolve();
           }
+          this.executionFlags.componentsReady = true;
+          console.log("✅ 组件系统完成");
+          // 🚫 跳过加载屏幕状态设置
 
           // 第四阶段：页面内容
           return this.initializePageContent();
         })
         .then(() => {
-          console.log("✅ 页面内容完成");
-          if (this.managers.globalLoading) {
-            this.managers.globalLoading.setState("contentReady", true);
+          if (this.executionFlags.contentReady) {
+            console.log("⚠️ 页面内容已完成，跳过重复执行");
+            return Promise.resolve();
           }
+          this.executionFlags.contentReady = true;
+          console.log("✅ 页面内容完成");
+          // 🚫 跳过加载屏幕状态设置
 
           clearTimeout(overallTimeout);
-          console.log("🎉 页面渲染协调完成");
+          console.log("🎉 页面渲染协调完成（无加载动画模式）");
+
+          // 🔧 最终确保移除任何加载屏幕
+          this.forceRemoveAllLoadingScreens();
         })
         .catch((error) => {
           console.error("❌ 页面渲染协调失败:", error);
           clearTimeout(overallTimeout);
 
-          // 错误情况下也要隐藏加载屏幕
-          if (this.managers.globalLoading) {
-            this.managers.globalLoading.forceHideLoadingScreen();
+          // 🔧 错误情况下强制移除所有加载屏幕
+          this.forceRemoveAllLoadingScreens();
+        });
+    },
+
+    /**
+     * 🚨 强制移除所有可能的加载屏幕元素
+     */
+    forceRemoveAllLoadingScreens: function () {
+      console.log("🚨 强制移除所有加载屏幕元素");
+
+      // 移除所有可能的加载屏幕元素
+      const loadingSelectors = [
+        "#global-loading-screen",
+        ".global-loading-screen",
+        "#loading",
+        ".loading-screen",
+        ".loading-overlay"
+      ];
+
+      loadingSelectors.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+          if (element) {
+            console.log(`🧹 移除加载屏幕元素: ${selector}`);
+            element.remove();
           }
         });
+      });
+
+      // 移除所有可能的加载屏幕样式
+      const styleSelectors = [
+        "#global-loading-styles",
+        "#loading-styles",
+        "#force-logo-fix-styles"
+      ];
+
+      styleSelectors.forEach(selector => {
+        const styleElement = document.querySelector(selector);
+        if (styleElement) {
+          console.log(`🧹 移除加载屏幕样式: ${selector}`);
+          styleElement.remove();
+        }
+      });
+
+      // 确保body可见
+      if (document.body) {
+        document.body.classList.remove('loading');
+        document.body.style.overflow = 'auto';
+        document.body.style.pointerEvents = 'auto';
+      }
+
+      // 确保main内容可见
+      const main = document.querySelector('main');
+      if (main) {
+        main.style.display = 'block';
+        main.style.visibility = 'visible';
+        main.style.opacity = '1';
+      }
+
+      console.log("✅ 所有加载屏幕元素已强制移除");
     },
 
     /**
@@ -332,7 +467,7 @@
               attempts++;
               return new Promise((resolve) => {
                 setTimeout(() => {
-                  this.setupManagerReferences();
+                  // 避免重复设置管理器引用，只等待组件加载
                   resolve(waitForComponents());
                 }, 100);
               });
@@ -353,7 +488,7 @@
     },
 
     /**
-     * 初始化页面内容
+     * 🚀 优化的页面内容初始化
      */
     initializePageContent: function () {
       return new Promise(async (resolve) => {
@@ -370,6 +505,12 @@
               break;
             case "product-detail":
               await this.initializeProductDetailPage();
+              break;
+            case "about":
+            case "contact":
+            case "privacy":
+            case "terms":
+              await this.initializeStaticPage();
               break;
             default:
               await this.initializeGenericPage();
@@ -442,6 +583,22 @@
     },
 
     /**
+     * 📄 初始化静态页面内容（快速加载）
+     */
+    initializeStaticPage: function () {
+      return new Promise((resolve) => {
+        console.log(`📄 初始化静态页面内容: ${this.pageType}`);
+
+        // 静态页面快速初始化，无需等待
+        // 只需要基本的组件加载即可
+        setTimeout(() => {
+          console.log("✅ 静态页面内容初始化完成（快速模式）");
+          resolve();
+        }, 100); // 极短的延迟，几乎立即完成
+      });
+    },
+
+    /**
      * 初始化通用页面内容
      */
     initializeGenericPage: function () {
@@ -451,7 +608,7 @@
         setTimeout(() => {
           console.log("✅ 通用页面内容初始化完成");
           resolve();
-        }, 500);
+        }, 300); // 减少延迟时间
       });
     },
   };

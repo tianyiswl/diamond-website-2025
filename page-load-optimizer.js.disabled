@@ -1,0 +1,467 @@
+/**
+ * 📈 页面加载性能优化器
+ * 解决页面加载闪烁问题，提升用户体验
+ * 优化CSS加载、JavaScript执行顺序和组件渲染
+ */
+
+(function() {
+    'use strict';
+    
+    console.log('📈 页面加载优化器开始执行...');
+    
+    // 配置选项
+    const CONFIG = {
+        debug: false,                    // 生产环境关闭调试
+        loadingScreenSelector: '.loading-screen',
+        headerSelector: '.header',
+        footerSelector: '.footer',
+        criticalCSSDelay: 50,           // 关键CSS应用延迟
+        componentRenderDelay: 100,      // 组件渲染延迟
+        loadingHideDelay: 300,          // 加载屏幕隐藏延迟
+        smoothTransitionDuration: 300   // 平滑过渡时间
+    };
+    
+    /**
+     * 页面加载优化器类
+     */
+    class PageLoadOptimizer {
+        constructor() {
+            this.loadStartTime = performance.now();
+            this.criticalResourcesLoaded = false;
+            this.componentsRendered = false;
+            this.loadingScreenHidden = false;
+            this.metrics = {};
+        }
+        
+        /**
+         * 调试日志
+         */
+        log(message, type = 'info') {
+            if (!CONFIG.debug) return;
+            
+            const timestamp = performance.now() - this.loadStartTime;
+            const prefix = `📈 [${Math.round(timestamp)}ms] 加载优化:`;
+            
+            switch(type) {
+                case 'success':
+                    console.log(`${prefix} ✅ ${message}`);
+                    break;
+                case 'error':
+                    console.error(`${prefix} ❌ ${message}`);
+                    break;
+                case 'warn':
+                    console.warn(`${prefix} ⚠️ ${message}`);
+                    break;
+                default:
+                    console.log(`${prefix} ${message}`);
+            }
+        }
+        
+        /**
+         * 初始化优化器
+         */
+        init() {
+            this.log('开始页面加载优化...');
+            
+            // 立即应用关键样式
+            this.applyCriticalStyles();
+            
+            // 确保加载屏幕显示
+            this.ensureLoadingScreen();
+            
+            // 监听关键事件
+            this.setupEventListeners();
+            
+            // 开始优化流程
+            this.startOptimizationFlow();
+        }
+        
+        /**
+         * 应用关键样式防止FOUC
+         */
+        applyCriticalStyles() {
+            this.log('应用关键样式防止FOUC...');
+            
+            // 创建关键样式
+            const criticalCSS = `
+                <style id="critical-styles">
+                /* 防止FOUC的关键样式 */
+                .header { 
+                    opacity: 0; 
+                    transition: opacity ${CONFIG.smoothTransitionDuration}ms ease;
+                }
+                .header.loaded { 
+                    opacity: 1; 
+                }
+                .footer { 
+                    opacity: 0; 
+                    transition: opacity ${CONFIG.smoothTransitionDuration}ms ease;
+                }
+                .footer.loaded { 
+                    opacity: 1; 
+                }
+                .loading-screen { 
+                    position: fixed !important; 
+                    top: 0 !important; 
+                    left: 0 !important; 
+                    width: 100% !important; 
+                    height: 100vh !important; 
+                    background: linear-gradient(135deg, #002e5f 0%, #001a3a 100%) !important;
+                    display: flex !important;
+                    justify-content: center !important;
+                    align-items: center !important;
+                    z-index: 9999 !important;
+                    transition: opacity ${CONFIG.smoothTransitionDuration}ms ease !important;
+                }
+                .loading-screen.hiding {
+                    opacity: 0 !important;
+                }
+                .loading-screen.hidden {
+                    display: none !important;
+                }
+                /* 防止内容跳动 */
+                body {
+                    overflow-x: hidden;
+                }
+                .main-content {
+                    min-height: 100vh;
+                }
+                </style>
+            `;
+            
+            // 插入到head中
+            document.head.insertAdjacentHTML('beforeend', criticalCSS);
+            
+            this.log('关键样式已应用', 'success');
+        }
+        
+        /**
+         * 确保加载屏幕显示
+         */
+        ensureLoadingScreen() {
+            let loadingScreen = document.querySelector(CONFIG.loadingScreenSelector);
+            
+            if (!loadingScreen) {
+                this.log('创建加载屏幕...');
+                
+                // 创建加载屏幕
+                loadingScreen = document.createElement('div');
+                loadingScreen.className = 'loading-screen';
+                loadingScreen.innerHTML = `
+                    <div class="loading-content">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">加载中...</div>
+                    </div>
+                `;
+                
+                // 插入到body开头
+                document.body.insertBefore(loadingScreen, document.body.firstChild);
+                
+                this.log('加载屏幕已创建', 'success');
+            } else {
+                this.log('加载屏幕已存在');
+            }
+            
+            // 确保加载屏幕可见
+            loadingScreen.style.display = 'flex';
+            loadingScreen.classList.remove('hiding', 'hidden');
+        }
+        
+        /**
+         * 设置事件监听器
+         */
+        setupEventListeners() {
+            this.log('设置事件监听器...');
+            
+            // 监听DOM内容加载完成
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    this.onDOMContentLoaded();
+                });
+            } else {
+                setTimeout(() => this.onDOMContentLoaded(), 0);
+            }
+            
+            // 监听页面完全加载
+            if (document.readyState !== 'complete') {
+                window.addEventListener('load', () => {
+                    this.onPageLoad();
+                });
+            } else {
+                setTimeout(() => this.onPageLoad(), 0);
+            }
+            
+            // 监听组件加载事件
+            document.addEventListener('headerComponentLoaded', () => {
+                this.onHeaderLoaded();
+            });
+            
+            document.addEventListener('footerComponentLoaded', () => {
+                this.onFooterLoaded();
+            });
+            
+            // 监听所有组件加载完成
+            document.addEventListener('allComponentsLoaded', () => {
+                this.onAllComponentsLoaded();
+            });
+        }
+        
+        /**
+         * 开始优化流程
+         */
+        startOptimizationFlow() {
+            this.log('开始优化流程...');
+            
+            // 预加载关键资源
+            this.preloadCriticalResources();
+            
+            // 优化图片加载
+            this.optimizeImageLoading();
+            
+            // 记录开始时间
+            this.metrics.optimizationStartTime = performance.now();
+        }
+        
+        /**
+         * 预加载关键资源
+         */
+        preloadCriticalResources() {
+            this.log('预加载关键资源...');
+            
+            const criticalResources = [
+                'assets/css/main.css',
+                'assets/js/header-footer-components.js',
+                'lightweight-search-fix.js'
+            ];
+            
+            criticalResources.forEach(resource => {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.as = resource.endsWith('.css') ? 'style' : 'script';
+                link.href = resource;
+                document.head.appendChild(link);
+            });
+            
+            this.log('关键资源预加载已设置', 'success');
+        }
+        
+        /**
+         * 优化图片加载
+         */
+        optimizeImageLoading() {
+            this.log('优化图片加载...');
+            
+            // 为图片添加loading="lazy"
+            const images = document.querySelectorAll('img:not([loading])');
+            images.forEach(img => {
+                img.loading = 'lazy';
+            });
+            
+            this.log(`已优化 ${images.length} 个图片的加载`, 'success');
+        }
+        
+        /**
+         * DOM内容加载完成处理
+         */
+        onDOMContentLoaded() {
+            this.log('DOM内容加载完成');
+            this.metrics.domContentLoadedTime = performance.now();
+            
+            // 开始组件渲染优化
+            setTimeout(() => {
+                this.optimizeComponentRendering();
+            }, CONFIG.componentRenderDelay);
+        }
+        
+        /**
+         * 页面完全加载处理
+         */
+        onPageLoad() {
+            this.log('页面完全加载');
+            this.metrics.pageLoadTime = performance.now();
+            
+            // 如果组件还没渲染完成，等待一段时间后强制显示
+            setTimeout(() => {
+                if (!this.componentsRendered) {
+                    this.log('强制显示页面内容', 'warn');
+                    this.showPageContent();
+                }
+            }, 2000);
+        }
+        
+        /**
+         * 页头加载完成处理
+         */
+        onHeaderLoaded() {
+            this.log('页头组件加载完成');
+            this.metrics.headerLoadedTime = performance.now();
+            
+            // 显示页头
+            const header = document.querySelector(CONFIG.headerSelector);
+            if (header) {
+                header.classList.add('loaded');
+            }
+        }
+        
+        /**
+         * 页脚加载完成处理
+         */
+        onFooterLoaded() {
+            this.log('页脚组件加载完成');
+            this.metrics.footerLoadedTime = performance.now();
+            
+            // 显示页脚
+            const footer = document.querySelector(CONFIG.footerSelector);
+            if (footer) {
+                footer.classList.add('loaded');
+            }
+        }
+        
+        /**
+         * 所有组件加载完成处理
+         */
+        onAllComponentsLoaded() {
+            this.log('所有组件加载完成');
+            this.metrics.allComponentsLoadedTime = performance.now();
+            this.componentsRendered = true;
+            
+            // 显示页面内容
+            setTimeout(() => {
+                this.showPageContent();
+            }, CONFIG.loadingHideDelay);
+        }
+        
+        /**
+         * 优化组件渲染
+         */
+        optimizeComponentRendering() {
+            this.log('优化组件渲染...');
+            
+            // 检查组件管理器是否存在
+            if (window.componentManager) {
+                this.log('使用现有组件管理器');
+            } else {
+                this.log('组件管理器不存在，等待加载...', 'warn');
+                
+                // 等待组件管理器加载
+                const checkComponentManager = () => {
+                    if (window.componentManager) {
+                        this.log('组件管理器已加载', 'success');
+                    } else {
+                        setTimeout(checkComponentManager, 100);
+                    }
+                };
+                
+                checkComponentManager();
+            }
+        }
+        
+        /**
+         * 显示页面内容
+         */
+        showPageContent() {
+            if (this.loadingScreenHidden) return;
+            
+            this.log('显示页面内容...');
+            
+            const loadingScreen = document.querySelector(CONFIG.loadingScreenSelector);
+            const header = document.querySelector(CONFIG.headerSelector);
+            const footer = document.querySelector(CONFIG.footerSelector);
+            
+            // 确保组件可见
+            if (header) header.classList.add('loaded');
+            if (footer) footer.classList.add('loaded');
+            
+            // 平滑隐藏加载屏幕
+            if (loadingScreen) {
+                loadingScreen.classList.add('hiding');
+                
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                    loadingScreen.style.display = 'none';
+                    
+                    // 移除关键样式
+                    const criticalStyles = document.getElementById('critical-styles');
+                    if (criticalStyles) {
+                        criticalStyles.remove();
+                    }
+                    
+                    this.log('加载屏幕已隐藏', 'success');
+                    this.loadingScreenHidden = true;
+                    
+                    // 记录完成时间
+                    this.metrics.contentShownTime = performance.now();
+                    
+                    // 生成性能报告
+                    this.generatePerformanceReport();
+                    
+                }, CONFIG.smoothTransitionDuration);
+            }
+        }
+        
+        /**
+         * 生成性能报告
+         */
+        generatePerformanceReport() {
+            const totalTime = this.metrics.contentShownTime - this.loadStartTime;
+            
+            const report = {
+                totalLoadTime: Math.round(totalTime),
+                domContentLoadedTime: Math.round(this.metrics.domContentLoadedTime - this.loadStartTime),
+                pageLoadTime: Math.round(this.metrics.pageLoadTime - this.loadStartTime),
+                headerLoadedTime: this.metrics.headerLoadedTime ? Math.round(this.metrics.headerLoadedTime - this.loadStartTime) : null,
+                footerLoadedTime: this.metrics.footerLoadedTime ? Math.round(this.metrics.footerLoadedTime - this.loadStartTime) : null,
+                allComponentsLoadedTime: this.metrics.allComponentsLoadedTime ? Math.round(this.metrics.allComponentsLoadedTime - this.loadStartTime) : null,
+                contentShownTime: Math.round(this.metrics.contentShownTime - this.loadStartTime)
+            };
+            
+            this.log('页面加载性能报告:', 'success');
+            this.log(`总加载时间: ${report.totalLoadTime}ms`);
+            this.log(`DOM加载: ${report.domContentLoadedTime}ms`);
+            this.log(`页面加载: ${report.pageLoadTime}ms`);
+            this.log(`内容显示: ${report.contentShownTime}ms`);
+            
+            // 保存到全局变量
+            window.pageLoadPerformanceReport = report;
+            
+            // 触发性能报告事件
+            const event = new CustomEvent('pageLoadPerformanceReport', {
+                detail: report
+            });
+            document.dispatchEvent(event);
+        }
+        
+        /**
+         * 手动显示内容（调试用）
+         */
+        forceShowContent() {
+            this.log('强制显示内容');
+            this.showPageContent();
+        }
+        
+        /**
+         * 获取性能指标
+         */
+        getMetrics() {
+            return this.metrics;
+        }
+    }
+    
+    // 创建全局实例
+    window.pageLoadOptimizer = new PageLoadOptimizer();
+    
+    // 立即初始化
+    window.pageLoadOptimizer.init();
+    
+    // 导出调试接口
+    if (CONFIG.debug) {
+        window.pageLoadOptimizerDebug = {
+            forceShow: () => window.pageLoadOptimizer.forceShowContent(),
+            metrics: () => window.pageLoadOptimizer.getMetrics(),
+            report: () => window.pageLoadPerformanceReport
+        };
+    }
+    
+    console.log('📈 页面加载优化器已启动');
+    
+})();

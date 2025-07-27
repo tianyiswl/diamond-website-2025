@@ -1,0 +1,365 @@
+// 💬 询价服务层
+// 处理客户询价相关的业务逻辑
+
+const BaseService = require('./baseService');
+const dao = require('../dao');
+const utils = require('../utils');
+
+class InquiryService extends BaseService {
+  constructor() {
+    super(dao.getInquiryDao());
+    this.productDao = dao.getProductDao();
+    this.analyticsDao = dao.getAnalyticsDao();
+  }
+
+  /**
+   * 获取询价列表
+   * @param {Object} options - 查询选项
+   * @returns {Object} 询价列表响应
+   */
+  async getInquiries(options = {}) {
+    try {
+      this.logOperation('get_inquiries', '获取询价列表', options);
+      
+      const result = this.dao.findAll(options);
+      
+      // 添加产品信息
+      if (result.data && result.data.length > 0) {
+        const products = this.productDao.read();
+        const productMap = {};
+        products.forEach(product => {
+          productMap[product.id] = product;
+        });
+
+        result.data = result.data.map(inquiry => ({
+          ...inquiry,
+          productInfo: inquiry.productId ? productMap[inquiry.productId] : null
+        }));
+      }
+
+      return this.success(result, '获取询价列表成功');
+    } catch (error) {
+      console.error('❌ 获取询价列表失败:', error);
+      return this.error(['获取询价列表失败'], '服务器错误');
+    }
+  }
+
+  /**
+   * 获取单个询价
+   * @param {string} id - 询价ID
+   * @returns {Object} 询价详情响应
+   */
+  async getInquiry(id) {
+    try {
+      this.logOperation('get_inquiry', '获取询价详情', { id });
+      
+      if (!id) {
+        return this.error(['询价ID不能为空'], '参数错误');
+      }
+
+      const inquiry = this.dao.findById(id);
+      
+      if (!inquiry) {
+        return this.error(['询价记录不存在'], '询价未找到');
+      }
+
+      // 添加产品信息
+      let inquiryWithProduct = { ...inquiry };
+      if (inquiry.productId) {
+        const product = this.productDao.findById(inquiry.productId);
+        inquiryWithProduct.productInfo = product;
+      }
+
+      return this.success(inquiryWithProduct, '获取询价详情成功');
+    } catch (error) {
+      console.error('❌ 获取询价详情失败:', error);
+      return this.error(['获取询价详情失败'], '服务器错误');
+    }
+  }
+
+  /**
+   * 创建询价
+   * @param {Object} inquiryData - 询价数据
+   * @returns {Object} 创建结果响应
+   */
+  async createInquiry(inquiryData) {
+    try {
+      this.logOperation('create_inquiry', '创建询价', inquiryData);
+      
+      // 验证必填字段
+      const requiredFields = ['name', 'email', 'message'];
+      const validation = this.validateRequired(inquiryData, requiredFields);
+      
+      if (!validation.isValid) {
+        return this.error(validation.errors, '数据验证失败');
+      }
+
+      // 验证邮箱格式
+      if (!utils.isValidEmail(inquiryData.email)) {
+        return this.error(['邮箱格式不正确'], '数据验证失败');
+      }
+
+      // 验证手机号（如果提供）
+      if (inquiryData.phone && !utils.isValidPhone(inquiryData.phone)) {
+        return this.error(['手机号格式不正确'], '数据验证失败');
+      }
+
+      // 验证消息长度
+      if (!utils.isValidLength(inquiryData.message, 10, 2000)) {
+        return this.error(['询价内容长度必须在10-2000字符之间'], '数据验证失败');
+      }
+
+      // 验证产品ID（如果提供）
+      if (inquiryData.productId) {
+        const product = this.productDao.findById(inquiryData.productId);
+        if (!product) {
+          return this.error(['指定的产品不存在'], '产品验证失败');
+        }
+        // 自动填充产品名称
+        inquiryData.productName = product.name;
+      }
+
+      // 清理和验证数据
+      const allowedFields = [
+        'name', 'email', 'phone', 'company', 'message',
+        'productId', 'productName', 'source', 'priority',
+        'userAgent', 'ip', 'referer'
+      ];
+      
+      const cleanData = this.sanitizeData(inquiryData, allowedFields);
+      
+      // 设置默认值
+      cleanData.source = cleanData.source || 'website';
+      cleanData.priority = cleanData.priority || 'normal';
+
+      // 反垃圾邮件检查
+      const spamCheck = this.checkSpam(cleanData);
+      if (spamCheck.isSpam) {
+        return this.error(['询价内容可能包含垃圾信息'], '内容验证失败');
+      }
+
+      // 创建询价
+      const result = await this.dao.create(cleanData);
+      
+      if (!result.success) {
+        return this.error(result.errors, '创建询价失败');
+      }
+
+      // 记录分析数据
+      this.analyticsDao.recordVisit({
+        type: 'inquiry',
+        source: cleanData.source,
+        referer: cleanData.referer,
+        country: 'CN' // 可以根据IP获取地理位置
+      });
+
+      return this.success({
+        id: result.data.id,
+        name: result.data.name,
+        email: result.data.email,
+        createdAt: result.data.createdAt
+      }, '询价提交成功，我们会尽快与您联系');
+    } catch (error) {
+      console.error('❌ 创建询价失败:', error);
+      return this.error(['询价提交失败，请稍后重试'], '服务器错误');
+    }
+  }
+
+  /**
+   * 更新询价状态
+   * @param {string} id - 询价ID
+   * @param {string} status - 新状态
+   * @param {string} notes - 备注
+   * @returns {Object} 更新结果响应
+   */
+  async updateInquiryStatus(id, status, notes = '') {
+    try {
+      this.logOperation('update_inquiry_status', '更新询价状态', { id, status, notes });
+      
+      if (!id) {
+        return this.error(['询价ID不能为空'], '参数错误');
+      }
+
+      if (!status) {
+        return this.error(['状态不能为空'], '参数错误');
+      }
+
+      const validStatuses = ['pending', 'processing', 'completed', 'cancelled'];
+      if (!validStatuses.includes(status)) {
+        return this.error(['无效的状态值'], '参数错误');
+      }
+
+      // 检查询价是否存在
+      const existingInquiry = this.dao.findById(id);
+      if (!existingInquiry) {
+        return this.error(['询价记录不存在'], '询价未找到');
+      }
+
+      // 更新状态
+      const result = await this.dao.updateStatus(id, status, notes);
+      
+      if (!result.success) {
+        return this.error(result.errors, '更新询价状态失败');
+      }
+
+      return this.success(result.data, '询价状态更新成功');
+    } catch (error) {
+      console.error('❌ 更新询价状态失败:', error);
+      return this.error(['更新询价状态失败'], '服务器错误');
+    }
+  }
+
+  /**
+   * 删除询价
+   * @param {string} id - 询价ID
+   * @returns {Object} 删除结果响应
+   */
+  async deleteInquiry(id) {
+    try {
+      this.logOperation('delete_inquiry', '删除询价', { id });
+      
+      if (!id) {
+        return this.error(['询价ID不能为空'], '参数错误');
+      }
+
+      // 检查询价是否存在
+      const existingInquiry = this.dao.findById(id);
+      if (!existingInquiry) {
+        return this.error(['询价记录不存在'], '询价未找到');
+      }
+
+      // 删除询价
+      const result = await this.dao.delete(id);
+      
+      if (!result.success) {
+        return this.error(result.errors, '删除询价失败');
+      }
+
+      return this.success(result.data, '询价删除成功');
+    } catch (error) {
+      console.error('❌ 删除询价失败:', error);
+      return this.error(['删除询价失败'], '服务器错误');
+    }
+  }
+
+  /**
+   * 获取询价统计信息
+   * @returns {Object} 统计信息响应
+   */
+  async getInquiryStats() {
+    try {
+      this.logOperation('get_inquiry_stats', '获取询价统计');
+      
+      const stats = this.dao.getInquiryStats();
+      
+      if (!stats) {
+        return this.error(['获取统计信息失败'], '服务器错误');
+      }
+
+      // 添加额外的统计信息
+      const inquiries = this.dao.read();
+      const enhancedStats = {
+        ...stats,
+        todayInquiries: inquiries.filter(inquiry => 
+          utils.isToday(new Date(inquiry.createdAt))
+        ).length,
+        responseRate: stats.completed > 0 ? 
+          ((stats.completed / stats.total) * 100).toFixed(2) : 0
+      };
+
+      return this.success(enhancedStats, '获取询价统计成功');
+    } catch (error) {
+      console.error('❌ 获取询价统计失败:', error);
+      return this.error(['获取询价统计失败'], '服务器错误');
+    }
+  }
+
+  /**
+   * 批量操作询价
+   * @param {string} action - 操作类型
+   * @param {Array} inquiryIds - 询价ID列表
+   * @param {Object} data - 操作数据
+   * @returns {Object} 批量操作结果响应
+   */
+  async batchOperation(action, inquiryIds, data = {}) {
+    try {
+      this.logOperation('batch_operation', '批量操作询价', { action, inquiryIds, data });
+      
+      if (!action || !Array.isArray(inquiryIds) || inquiryIds.length === 0) {
+        return this.error(['批量操作参数不完整'], '参数错误');
+      }
+
+      const operations = {
+        updateStatus: (id) => this.dao.updateStatus(id, data.status, data.notes),
+        delete: (id) => this.dao.delete(id)
+      };
+
+      const operation = operations[action];
+      if (!operation) {
+        return this.error([`不支持的批量操作: ${action}`], '操作不支持');
+      }
+
+      const result = await this.batchOperation(inquiryIds, operation);
+      
+      return this.success(result, `批量${action}操作完成`);
+    } catch (error) {
+      console.error('❌ 批量操作失败:', error);
+      return this.error(['批量操作失败'], '服务器错误');
+    }
+  }
+
+  /**
+   * 导出询价数据
+   * @param {Object} options - 导出选项
+   * @returns {Object} 导出数据响应
+   */
+  async exportInquiries(options = {}) {
+    try {
+      this.logOperation('export_inquiries', '导出询价数据', options);
+      
+      const exportData = this.dao.exportData(options);
+      
+      return this.success(exportData, '导出询价数据成功');
+    } catch (error) {
+      console.error('❌ 导出询价数据失败:', error);
+      return this.error(['导出询价数据失败'], '服务器错误');
+    }
+  }
+
+  /**
+   * 反垃圾邮件检查
+   * @param {Object} inquiryData - 询价数据
+   * @returns {Object} 检查结果
+   */
+  checkSpam(inquiryData) {
+    const spamKeywords = [
+      'viagra', 'casino', 'lottery', 'winner', 'congratulations',
+      '中奖', '恭喜', '免费', '赚钱', '投资'
+    ];
+
+    const content = `${inquiryData.name} ${inquiryData.email} ${inquiryData.message}`.toLowerCase();
+    
+    const hasSpamKeywords = spamKeywords.some(keyword => 
+      content.includes(keyword.toLowerCase())
+    );
+
+    // 检查是否包含过多链接
+    const linkCount = (inquiryData.message.match(/https?:\/\//g) || []).length;
+    const hasExcessiveLinks = linkCount > 3;
+
+    // 检查是否全是大写字母
+    const isAllCaps = inquiryData.message === inquiryData.message.toUpperCase() && 
+                      inquiryData.message.length > 20;
+
+    return {
+      isSpam: hasSpamKeywords || hasExcessiveLinks || isAllCaps,
+      reasons: [
+        hasSpamKeywords && '包含垃圾关键词',
+        hasExcessiveLinks && '包含过多链接',
+        isAllCaps && '全部大写字母'
+      ].filter(Boolean)
+    };
+  }
+}
+
+module.exports = InquiryService;

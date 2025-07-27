@@ -309,7 +309,7 @@
           <div class="contact-layout">
             <!-- 左侧：地图 -->
             <div class="contact-left">
-              <div class="map-container">
+              <div class="map-container" onclick="openFullMap()" role="button" tabindex="0" aria-label="点击查看完整地图">
                 <div class="map-overlay">
                   <i
                     class="fas fa-map-marker-alt"
@@ -319,16 +319,19 @@
                     >无锡皇德国际贸易有限公司</span
                   >
                 </div>
-                <iframe
-                  src="https://maps.google.com/maps?q=31.691717,120.486254&z=16&output=embed&hl=zh-CN&markers=color:red%7Clabel:皇%7C31.691717,120.486254"
-                  width="100%"
-                  height="400"
-                  style="border: 0; border-radius: 15px"
-                  allowfullscreen=""
+                <!-- 静态地图图片 -->
+                <img
+                  id="static-map-image"
+                  src="../assets/images/company-location-map-zh.jpg"
+                  alt="无锡皇德国际贸易有限公司位置地图"
+                  style="width: 100%; height: 400px; object-fit: cover; border-radius: 15px; cursor: pointer;"
                   loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"
-                >
-                </iframe>
+                />
+                <!-- 点击提示覆盖层 -->
+                <div class="map-click-hint">
+                  <i class="fas fa-external-link-alt"></i>
+                  <span data-i18n="contact.map_click_hint">点击查看完整地图</span>
+                </div>
               </div>
             </div>
 
@@ -432,6 +435,9 @@
                     <i class="fas fa-paper-plane"></i>
                     <span data-i18n="contact.submit">提交询价</span>
                   </button>
+
+                  <!-- 表单反馈区域 -->
+                  <div id="contactFormFeedback" class="form-feedback" style="display: none; margin-top: 15px;"></div>
                 </form>
               </div>
             </div>
@@ -628,7 +634,7 @@
                     </div>
 
                     <div class="product-info">
-                        <div class="product-brand">${product.brand || "皇德国际"}</div>
+                        <div class="product-brand">${product.brand || "Diamond"}</div>
                         <h3 class="product-name">${product.name}</h3>
                         <div class="product-model">${product.model || "暂无型号"}</div>
 
@@ -758,42 +764,70 @@
         longitude: 120.486254, // 经度 (东经) - 精确坐标
         zoom: 16, // 缩放级别
         companyName: "无锡皇德国际贸易有限公司",
+        // 谷歌静态地图API密钥（示例密钥，实际使用时需要替换为有效密钥）
+        apiKey: "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"
       };
 
-      // 地图语言切换功能
-      function updateMapLanguage() {
-        const iframe = document.querySelector(".map-container iframe");
-        if (!iframe) return;
+      // 本地静态地图语言切换功能
+      function updateStaticMapLanguage() {
+        const mapImage = document.getElementById("static-map-image");
+        if (!mapImage) return;
 
         const currentLangInfo =
           window.i18nManager?.getCurrentLanguage() || "zh-CN";
         const currentLang = currentLangInfo.code || currentLangInfo; // 兼容新旧版本
+
+        let mapImagePath;
+        if (currentLang === "en-US") {
+          // 英文本地地图
+          mapImagePath = "../assets/images/company-location-map-en.jpg";
+        } else {
+          // 中文本地地图
+          mapImagePath = "../assets/images/company-location-map-zh.jpg";
+        }
+
+        mapImage.src = mapImagePath;
+        console.log(`🗺️ 本地地图语言已切换为: ${currentLang}`);
+        console.log(`📍 地图文件: ${mapImagePath}`);
+      }
+
+      // 打开完整地图功能
+      function openFullMap() {
         const coords = `${MAP_CONFIG.latitude},${MAP_CONFIG.longitude}`;
-        const zoom = MAP_CONFIG.zoom;
+        const currentLangInfo =
+          window.i18nManager?.getCurrentLanguage() || "zh-CN";
+        const currentLang = currentLangInfo.code || currentLangInfo;
 
         let mapUrl;
         if (currentLang === "en-US") {
-          // 英文地图 - 使用精确坐标
-          mapUrl = `https://maps.google.com/maps?q=${coords}&z=${zoom}&output=embed&hl=en&markers=color:red%7Clabel:H%7C${coords}`;
+          mapUrl = `https://www.google.com/maps?q=${coords}&hl=en&z=${MAP_CONFIG.zoom}`;
         } else {
-          // 中文地图 - 使用精确坐标
-          mapUrl = `https://maps.google.com/maps?q=${coords}&z=${zoom}&output=embed&hl=zh-CN&markers=color:red%7Clabel:皇%7C${coords}`;
+          mapUrl = `https://www.google.com/maps?q=${coords}&hl=zh-CN&z=${MAP_CONFIG.zoom}`;
         }
 
-        iframe.src = mapUrl;
+        window.open(mapUrl, '_blank', 'noopener,noreferrer');
+        console.log(`🗺️ 已在新标签页打开完整地图: ${mapUrl}`);
       }
 
-      // 监听语言切换事件
-      document.addEventListener("i18n:changed", updateMapLanguage);
+      // 键盘访问支持
+      document.addEventListener('keydown', function(e) {
+        if (e.target.classList.contains('map-container') && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          openFullMap();
+        }
+      });
 
-      // 地图调试功能 - 在控制台中使用
+      // 监听语言切换事件
+      document.addEventListener("i18n:changed", updateStaticMapLanguage);
+
+      // 地图调试功能 - 在控制台中使用（本地图片版本）
       window.updateMapCoords = function (lat, lng, zoom = 16) {
         MAP_CONFIG.latitude = lat;
         MAP_CONFIG.longitude = lng;
         MAP_CONFIG.zoom = zoom;
-        updateMapLanguage();
         console.log(`🗺️ 地图坐标已更新: ${lat}, ${lng}, 缩放: ${zoom}`);
-        console.log(`📍 使用方法: updateMapCoords(纬度, 经度, 缩放级别)`);
+        console.log(`📍 注意: 当前使用本地地图图片，坐标更新不会影响显示`);
+        console.log(`💡 如需更新地图显示，请重新下载对应坐标的地图图片`);
       };
 
       // 显示当前地图配置
@@ -843,5 +877,11 @@
       });
     </script>
     <script src="./assets/js/resource-checker.js"></script>
+
+    <!-- 🔧 联系表单修复脚本 -->
+    <script src="fix-contact-form.js"></script>
+
+    <!-- 🔍 搜索回车键修复脚本 -->
+    <script src="../search-enter-key-fix.js"></script>
   </body>
 </html>

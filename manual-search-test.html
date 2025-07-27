@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索功能手动测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .test-step {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+        }
+        .test-step h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        .test-step p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .expected {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        .test-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .keyword-tag {
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            border: 1px solid #dee2e6;
+        }
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .checklist li:before {
+            content: "☐ ";
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .status-pass { background: #28a745; }
+        .status-fail { background: #dc3545; }
+        .status-pending { background: #ffc107; }
+        .open-test-btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px;
+        }
+        .open-test-btn:hover {
+            background: #0056b3;
+        }
+        .console-tip {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="test-title">🔍 搜索功能手动测试指南</h1>
+        
+        <div class="test-step">
+            <h4>📋 测试目标</h4>
+            <p>验证主页页头搜索框的回车键搜索功能是否正常工作，确保地图优化后搜索功能不受影响。</p>
+        </div>
+
+        <div class="test-step">
+            <h4>🚀 开始测试</h4>
+            <p>点击下面的按钮在新标签页打开主页进行测试：</p>
+            <a href="http://localhost:3001" target="_blank" class="open-test-btn">🌐 打开主页测试</a>
+            <a href="http://localhost:3001" target="_blank" class="open-test-btn">🔧 打开控制台版本</a>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2 class="test-title">📝 详细测试步骤</h2>
+        
+        <div class="test-step">
+            <h4>步骤 1: 页面加载检查</h4>
+            <ul class="checklist">
+                <li>确认主页完全加载完成</li>
+                <li>确认页头导航栏正常显示</li>
+                <li>确认搜索框在导航栏中可见</li>
+                <li>确认地图区域正常显示（本地图片）</li>
+            </ul>
+        </div>
+
+        <div class="test-step">
+            <h4>步骤 2: 搜索框基础功能</h4>
+            <ul class="checklist">
+                <li>点击搜索框，确认可以获得焦点</li>
+                <li>在搜索框中输入文字，确认可以正常输入</li>
+                <li>确认搜索框placeholder文字显示正确</li>
+                <li>确认搜索按钮（放大镜图标）可见</li>
+            </ul>
+        </div>
+
+        <div class="test-step">
+            <h4>步骤 3: 回车键搜索测试</h4>
+            <p>使用以下测试关键词逐一测试回车键搜索功能：</p>
+            <div class="test-keywords">
+                <span class="keyword-tag">turbo</span>
+                <span class="keyword-tag">injector</span>
+                <span class="keyword-tag">actuator</span>
+                <span class="keyword-tag">GT1749V</span>
+                <span class="keyword-tag">Bosch</span>
+                <span class="keyword-tag">diesel</span>
+            </div>
+            
+            <p><strong>对于每个关键词，执行以下操作：</strong></p>
+            <ul class="checklist">
+                <li>清空搜索框内容</li>
+                <li>输入测试关键词</li>
+                <li>按下 Enter 键</li>
+                <li>观察是否有搜索结果显示</li>
+                <li>确认搜索结果相关性</li>
+                <li>记录响应时间（应该很快）</li>
+            </ul>
+        </div>
+
+        <div class="test-step expected">
+            <h4>✅ 预期行为</h4>
+            <ul class="checklist">
+                <li>按下回车键后立即触发搜索</li>
+                <li>搜索结果在页面下方正确显示</li>
+                <li>搜索结果包含相关产品信息</li>
+                <li>搜索响应时间 < 1秒</li>
+                <li>无JavaScript错误或页面卡顿</li>
+            </ul>
+        </div>
+
+        <div class="test-step">
+            <h4>步骤 4: 搜索按钮测试</h4>
+            <ul class="checklist">
+                <li>在搜索框中输入关键词</li>
+                <li>点击搜索按钮（放大镜图标）</li>
+                <li>确认搜索功能正常触发</li>
+                <li>对比回车键和按钮点击的效果是否一致</li>
+            </ul>
+        </div>
+
+        <div class="test-step">
+            <h4>步骤 5: 边界情况测试</h4>
+            <ul class="checklist">
+                <li>测试空搜索（不输入内容直接回车）</li>
+                <li>测试特殊字符搜索</li>
+                <li>测试很长的搜索词</li>
+                <li>测试中文搜索词</li>
+                <li>测试连续快速搜索</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2 class="test-title">🐛 故障排查</h2>
+        
+        <div class="test-step warning">
+            <h4>⚠️ 如果搜索功能不工作</h4>
+            <p>请按以下步骤排查：</p>
+            <ol>
+                <li><strong>检查控制台错误</strong>：按F12打开开发者工具，查看Console标签页是否有错误信息</li>
+                <li><strong>检查网络请求</strong>：在Network标签页查看是否有失败的请求</li>
+                <li><strong>检查元素存在</strong>：确认搜索框ID为"searchInput"</li>
+                <li><strong>检查事件绑定</strong>：在控制台输入以下代码检查：</li>
+            </ol>
+            
+            <div class="console-tip">
+// 检查搜索框是否存在<br>
+console.log('搜索框:', document.getElementById('searchInput'));<br><br>
+
+// 检查搜索函数是否存在<br>
+console.log('搜索函数:', typeof performSearch);<br><br>
+
+// 手动触发搜索测试<br>
+document.getElementById('searchInput').value = 'turbo';<br>
+performSearch();
+            </div>
+        </div>
+
+        <div class="test-step">
+            <h4>🔧 常见问题解决</h4>
+            <ul>
+                <li><strong>搜索框不响应</strong>：可能是事件监听器未正确绑定，检查main.js是否正常加载</li>
+                <li><strong>搜索结果不显示</strong>：可能是产品数据未加载，检查网络请求</li>
+                <li><strong>页面卡顿</strong>：可能是JavaScript错误，检查控制台</li>
+                <li><strong>搜索结果错误</strong>：可能是搜索逻辑问题，检查performSearch函数</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2 class="test-title">📊 测试结果记录</h2>
+        
+        <div class="test-step">
+            <h4>测试状态记录</h4>
+            <ul class="checklist">
+                <li><span class="status-indicator status-pending"></span>页面加载正常</li>
+                <li><span class="status-indicator status-pending"></span>搜索框可见且可用</li>
+                <li><span class="status-indicator status-pending"></span>回车键搜索功能正常</li>
+                <li><span class="status-indicator status-pending"></span>搜索按钮功能正常</li>
+                <li><span class="status-indicator status-pending"></span>搜索结果显示正确</li>
+                <li><span class="status-indicator status-pending"></span>搜索响应速度快</li>
+                <li><span class="status-indicator status-pending"></span>无控制台错误</li>
+                <li><span class="status-indicator status-pending"></span>地图优化后搜索不受影响</li>
+            </ul>
+        </div>
+
+        <div class="test-step expected">
+            <h4>✅ 测试通过标准</h4>
+            <p>以下条件全部满足时，测试通过：</p>
+            <ul>
+                <li>所有测试关键词都能正常搜索</li>
+                <li>回车键和搜索按钮功能一致</li>
+                <li>搜索响应时间 < 1秒</li>
+                <li>搜索结果准确相关</li>
+                <li>无JavaScript错误</li>
+                <li>地图显示正常，不影响搜索</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2 class="test-title">🎯 测试完成后</h2>
+        
+        <div class="test-step">
+            <h4>📝 报告测试结果</h4>
+            <p>测试完成后，请报告以下信息：</p>
+            <ul>
+                <li>✅ 测试通过 / ❌ 测试失败</li>
+                <li>具体哪些功能正常/异常</li>
+                <li>发现的任何问题或错误信息</li>
+                <li>搜索响应速度评估</li>
+                <li>用户体验评价</li>
+            </ul>
+        </div>
+
+        <div class="test-step">
+            <h4>🔄 后续优化建议</h4>
+            <p>根据测试结果，可能需要的优化：</p>
+            <ul>
+                <li>搜索算法优化</li>
+                <li>搜索结果展示改进</li>
+                <li>搜索响应速度提升</li>
+                <li>错误处理完善</li>
+                <li>用户体验增强</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 简单的交互功能
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 搜索功能测试页面已加载');
+            console.log('📋 请按照页面指引进行手动测试');
+            
+            // 为状态指示器添加点击切换功能
+            document.querySelectorAll('.status-indicator').forEach(indicator => {
+                indicator.style.cursor = 'pointer';
+                indicator.addEventListener('click', function() {
+                    if (this.classList.contains('status-pending')) {
+                        this.classList.remove('status-pending');
+                        this.classList.add('status-pass');
+                    } else if (this.classList.contains('status-pass')) {
+                        this.classList.remove('status-pass');
+                        this.classList.add('status-fail');
+                    } else {
+                        this.classList.remove('status-fail');
+                        this.classList.add('status-pending');
+                    }
+                });
+            });
+            
+            console.log('💡 提示：点击状态指示器可以标记测试结果');
+        });
+    </script>
+</body>
+</html>

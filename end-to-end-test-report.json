@@ -1,0 +1,63 @@
+{
+  "timestamp": "2025-07-21T04:41:04.498Z",
+  "testResults": {
+    "total": 25,
+    "passed": 7,
+    "failed": 18,
+    "categories": {
+      "frontend": {
+        "total": 8,
+        "passed": 0,
+        "failed": 8
+      },
+      "backend": {
+        "total": 3,
+        "passed": 0,
+        "failed": 3
+      },
+      "api": {
+        "total": 6,
+        "passed": 0,
+        "failed": 6
+      },
+      "business": {
+        "total": 4,
+        "passed": 3,
+        "failed": 1
+      },
+      "stability": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      }
+    },
+    "errors": [
+      "[frontend] 网站首页加载: [object Promise]",
+      "[frontend] 产品页面: [object Promise]",
+      "[frontend] 关于我们页面: [object Promise]",
+      "[frontend] 联系我们页面: [object Promise]",
+      "[frontend] 隐私政策页面: [object Promise]",
+      "[frontend] 服务条款页面: [object Promise]",
+      "[frontend] CSS样式文件加载: [object Promise]",
+      "[frontend] JavaScript文件加载: [object Promise]",
+      "[backend] 管理后台首页访问: [object Promise]",
+      "[backend] 管理后台登录页面: [object Promise]",
+      "[backend] 管理后台监控页面: [object Promise]",
+      "[api] 公开产品API: [object Promise]",
+      "[api] 公开分类API: [object Promise]",
+      "[api] 公司信息API: [object Promise]",
+      "[api] 产品管理API认证: [object Promise]",
+      "[api] 询价管理API认证: [object Promise]",
+      "[api] 用户管理API认证: [object Promise]",
+      "[business] 询价系统数据读取: false"
+    ]
+  },
+  "systemStatus": "NEEDS_ATTENTION",
+  "recommendations": [
+    "需要修复失败的测试项目",
+    "检查错误日志获取详细信息",
+    "检查前端页面和静态资源",
+    "检查API接口配置和响应",
+    "检查核心业务逻辑和数据"
+  ]
+}

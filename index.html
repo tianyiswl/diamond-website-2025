@@ -1,16 +1,14 @@
 <!doctype html>
-<html lang="zh-CN" data-i18n-lang="zh-CN">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-i18n="site.title">
+    <title>
       无锡皇德国际贸易有限公司 - 专业涡轮增压器和共轨喷油器配件供应商
     </title>
     <meta
       name="description"
       content="无锡皇德国际贸易有限公司专业供应涡轮增压器配件和共轨喷油器部件，15年行业经验，全球供应网络，品质保证。"
-      data-i18n="site.description"
-      data-i18n-attr="content"
     />
 
     <!-- Favicon -->
@@ -34,11 +32,16 @@
     <!-- 主要样式文件 -->
     <link rel="stylesheet" href="assets/css/main.css" />
 
-    <!-- 国际化样式 -->
-    <link rel="stylesheet" href="assets/css/i18n-styles.css" />
+
 
     <!-- 页脚反馈增强样式 -->
     <link rel="stylesheet" href="assets/css/footer-feedback-enhancement.css" />
+
+    <!-- 🔧 页脚白色条修复样式 -->
+    <link rel="stylesheet" href="assets/css/footer-fix.css" />
+
+    <!-- 🎯 布局间距修复样式 -->
+    <link rel="stylesheet" href="assets/css/layout-spacing-fix.css" />
 
     <!-- 主页产品展示专用样式 -->
     <link rel="stylesheet" href="assets/css/homepage-products.css" />
@@ -130,8 +133,8 @@
       <section id="products" class="products-section">
         <div class="container">
           <div class="section-header">
-            <h2 data-i18n="products.section_title">主要产品</h2>
-            <p data-i18n="products.section_subtitle">
+            <h2>主要产品</h2>
+            <p>
               精心挑选的精品产品，为您提供最新的产品选择
             </p>
           </div>
@@ -140,7 +143,7 @@
             <!-- 产品将通过JavaScript从API动态加载 -->
             <div class="loading-text">
               <i class="fas fa-spinner fa-spin"></i>
-              <span data-i18n="products.loading">正在加载最新产品...</span>
+              <span>正在加载最新产品...</span>
               <br /><br />
               <button
                 onclick="testProductLoad()"
@@ -162,10 +165,10 @@
           <!-- 查看更多按钮 -->
           <div class="products-more-section">
             <a href="pages/products.html" class="btn-view-more">
-              <span data-i18n="products.view_all">查看全部产品</span>
+              <span>查看全部产品</span>
               <i class="fas fa-th-large"></i>
             </a>
-            <p class="more-hint" data-i18n="products.view_all_hint">
+            <p class="more-hint">
               浏览完整产品目录，包含详细技术规格和应用范围
             </p>
           </div>
@@ -181,8 +184,8 @@
                 <div class="feature-icon">
                   <i class="fas fa-trophy"></i>
                 </div>
-                <h4 data-i18n="company.features.0.title">15年专业经验</h4>
-                <p data-i18n="company.features.0.description">
+                <h4>15年专业经验</h4>
+                <p>
                   超过15年行业代理经验，深度了解市场需求
                 </p>
               </div>
@@ -191,8 +194,8 @@
                 <div class="feature-icon">
                   <i class="fas fa-globe"></i>
                 </div>
-                <h4 data-i18n="company.features.1.title">全球供应网络</h4>
-                <p data-i18n="company.features.1.description">
+                <h4>全球供应网络</h4>
+                <p>
                   与全球顶级制造商建立长期合作关系
                 </p>
               </div>
@@ -201,25 +204,25 @@
                 <div class="feature-icon">
                   <i class="fas fa-shield-alt"></i>
                 </div>
-                <h4 data-i18n="company.features.2.title">品质保证</h4>
-                <p data-i18n="company.features.2.description">
+                <h4>品质保证</h4>
+                <p>
                   每个产品都经过严格质量检测，确保最高标准
                 </p>
               </div>
             </div>
 
             <div class="intro-text">
-              <h2 data-i18n="company.intro_title">「公司简介」</h2>
-              <p class="intro-main" data-i18n="company.intro_main">
+              <h2>「公司简介」</h2>
+              <p class="intro-main">
                 无锡皇德国际贸易有限公司是一家专业从事涡轮增压器配件和共轨喷油器部件供应的服务公司。
               </p>
-              <p class="intro-detail" data-i18n="company.intro_detail_1">
+              <p class="intro-detail">
                 我们的专业团队致力于为全球客户采购和提供高质量的涡轮增压器部件和喷油器部件。
               </p>
-              <p class="intro-detail" data-i18n="company.intro_detail_2">
+              <p class="intro-detail">
                 为多个行业提供高性能的汽车零部件解决方案。
               </p>
-              <p class="intro-detail" data-i18n="company.intro_detail_3">
+              <p class="intro-detail">
                 超过15年的代理经验，确保每一个产品都符合最高的质量标准。
               </p>
             </div>
@@ -231,8 +234,8 @@
       <section id="contact" class="contact-section">
         <div class="container">
           <div class="section-header">
-            <h2 data-i18n="contact.section_title">联系我们</h2>
-            <p data-i18n="contact.section_subtitle">
+            <h2>联系我们</h2>
+            <p>
               立即联系我们获取专业的产品咨询和报价服务
             </p>
           </div>
@@ -244,7 +247,7 @@
                 <i class="fas fa-building"></i>
               </div>
               <div class="contact-details">
-                <h4 data-i18n="contact.info.address">地址</h4>
+                <h4>地址</h4>
                 <p id="company-address">正在加载...</p>
                 <p class="postal-code" id="company-postal-code">
                   邮编: 正在加载...
@@ -257,13 +260,12 @@
                 <i class="fas fa-phone"></i>
               </div>
               <div class="contact-details">
-                <h4 data-i18n="contact.info.phone">电话</h4>
+                <h4>电话</h4>
                 <p id="company-phone">正在加载...</p>
                 <a
                   href="tel:"
                   id="company-phone-link"
                   class="btn-contact"
-                  data-i18n="contact.actions.call"
                   >立即通话</a
                 >
               </div>
@@ -274,14 +276,13 @@
                 <i class="fab fa-whatsapp"></i>
               </div>
               <div class="contact-details">
-                <h4 data-i18n="contact.info.whatsapp">WhatsApp</h4>
+                <h4>WhatsApp</h4>
                 <p id="company-whatsapp">正在加载...</p>
                 <a
                   href="https://wa.me/"
                   id="company-whatsapp-link"
                   class="btn-contact"
                   target="_blank"
-                  data-i18n="contact.actions.whatsapp"
                   >WhatsApp联系</a
                 >
               </div>
@@ -292,13 +293,12 @@
                 <i class="fas fa-envelope"></i>
               </div>
               <div class="contact-details">
-                <h4 data-i18n="contact.info.email">邮箱</h4>
+                <h4>邮箱</h4>
                 <p id="company-email">正在加载...</p>
                 <a
                   href="mailto:"
                   id="company-email-link"
                   class="btn-contact"
-                  data-i18n="contact.actions.email"
                   >发送邮件</a
                 >
               </div>
@@ -309,37 +309,35 @@
           <div class="contact-layout">
             <!-- 左侧：地图 -->
             <div class="contact-left">
-              <div class="map-container">
+              <div class="map-container" onclick="openFullMap()" role="button" tabindex="0" aria-label="点击查看完整地图">
                 <div class="map-overlay">
                   <i
                     class="fas fa-map-marker-alt"
                     style="color: #007bff; font-size: 16px"
                   ></i>
-                  <span data-i18n="contact.company_name"
-                    >无锡皇德国际贸易有限公司</span
-                  >
+                  <span>无锡皇德国际贸易有限公司</span>
                 </div>
-                <iframe
-                  src="https://maps.google.com/maps?q=31.691717,120.486254&z=16&output=embed&hl=zh-CN&markers=color:red%7Clabel:皇%7C31.691717,120.486254"
-                  width="100%"
-                  height="400"
-                  style="border: 0; border-radius: 15px"
-                  allowfullscreen=""
+                <!-- 静态地图图片 -->
+                <img
+                  id="static-map-image"
+                  src="assets/images/company-location-map-zh.jpg"
+                  alt="无锡皇德国际贸易有限公司位置地图"
+                  style="width: 100%; height: 400px; object-fit: cover; border-radius: 15px; cursor: pointer;"
                   loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"
-                >
-                </iframe>
+                />
+                <!-- 点击提示覆盖层 -->
+                <div class="map-click-hint">
+                  <i class="fas fa-external-link-alt"></i>
+                  <span>点击查看完整地图</span>
+                </div>
               </div>
             </div>
 
             <!-- 右侧：询价表单 -->
             <div class="contact-right">
               <div class="inquiry-form-container">
-                <h3 data-i18n="contact.form_title">发送询价信息</h3>
-                <p
-                  class="form-description"
-                  data-i18n="contact.form_description"
-                >
+                <h3>发送询价信息</h3>
+                <p class="form-description">
                   请填写以下信息，我们将在24小时内回复您
                 </p>
 
@@ -347,7 +345,8 @@
                   class="inquiry-form"
                   id="inquiryForm"
                   method="POST"
-                  action="/api/inquiries-form"
+                  action="javascript:void(0)"
+                  onsubmit="return false;"
                 >
                   <!-- 第一行：姓名和邮箱并排 -->
                   <div class="form-row">
@@ -356,8 +355,6 @@
                         type="text"
                         id="inquiryName"
                         name="name"
-                        data-i18n="contact.fields.name"
-                        data-i18n-attr="placeholder"
                         placeholder="您的姓名 *"
                         required
                         pattern="^[a-zA-Z\u4e00-\u9fa5\s\-\.]{2,30}$"
@@ -371,8 +368,6 @@
                         type="email"
                         id="inquiryEmail"
                         name="email"
-                        data-i18n="contact.fields.email"
-                        data-i18n-attr="placeholder"
                         placeholder="邮箱地址 *"
                         required
                         pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
@@ -389,8 +384,6 @@
                         type="tel"
                         id="inquiryPhone"
                         name="phone"
-                        data-i18n="contact.fields.phone"
-                        data-i18n-attr="placeholder"
                         placeholder="联系电话"
                         pattern="[\d\s\-\+\(\)]{7,20}"
                         data-error="请输入有效的电话号码"
@@ -403,8 +396,6 @@
                         type="text"
                         id="inquiryCompany"
                         name="company"
-                        data-i18n="contact.fields.company"
-                        data-i18n-attr="placeholder"
                         placeholder="公司名称"
                       />
                     </div>
@@ -416,8 +407,6 @@
                       id="inquiryMessage"
                       name="message"
                       rows="4"
-                      data-i18n="contact.fields.message_placeholder"
-                      data-i18n-attr="placeholder"
                       placeholder="详细需求 * - 请详细描述您的需求，包括产品型号、数量等"
                       required
                       minlength="10"
@@ -429,8 +418,11 @@
 
                   <button type="submit" class="btn-submit">
                     <i class="fas fa-paper-plane"></i>
-                    <span data-i18n="contact.submit">提交询价</span>
+                    <span>提交询价</span>
                   </button>
+
+                  <!-- 表单反馈区域 -->
+                  <div id="contactFormFeedback" class="form-feedback" style="display: none; margin-top: 15px;"></div>
                 </form>
               </div>
             </div>
@@ -442,11 +434,12 @@
     <!-- 页脚组件容器 -->
     <div id="footer-container"></div>
 
-    <!-- 🚀 全局加载屏幕 - 必须最先加载，立即显示加载动画 -->
-    <script src="assets/js/global-loading-screen.js"></script>
-
-    <!-- 🚨 快速修复脚本 - 防止加载卡住 -->
-    <script src="quick-fix-loading.js"></script>
+    <!-- 🚀 优化的统一管理器系统 -->
+    <script src="assets/js/unified-page-manager.js"></script>
+    <script src="assets/js/unified-data-manager.js"></script>
+    <script src="assets/js/unified-search-manager.js"></script>
+    <script src="assets/js/optimized-loading-manager.js"></script>
+    <script src="assets/js/unified-analytics-manager.js"></script>
 
     <!-- 🎯 页面渲染协调器 - 统一管理所有组件的加载顺序 -->
     <script src="assets/js/page-render-coordinator.js"></script>
@@ -457,8 +450,8 @@
     <!-- 🎨 WebP图片优化加载器 -->
     <script src="assets/js/webp-loader.js"></script>
 
-    <!-- 🌍 国际化管理器 -->
-    <script src="assets/js/i18n-manager.js"></script>
+    <!-- 🔧 静态配置文件 -->
+    <script src="assets/js/static-config.js"></script>
 
     <!-- 🔍 SEO结构化数据管理器 -->
     <script src="assets/js/seo-structured-data.js"></script>
@@ -481,14 +474,8 @@
     <!-- 产品卡组件（兼容版本） -->
     <script src="assets/js/product-card-component.js"></script>
 
-    <!-- 网站分析统计脚本 -->
-    <script src="assets/js/analytics.js"></script>
-
     <!-- 主要脚本文件（简化版） -->
     <script src="assets/js/main.js"></script>
-
-    <!-- 🔧 搜索功能修复模块 -->
-    <script src="assets/js/search-fix.js"></script>
 
     <script>
       // 🏠 简化的主页产品展示初始化
@@ -516,12 +503,12 @@
         showcase.innerHTML = `
                 <div class="loading-text" style="text-align: center; padding: 40px; color: #6c757d;">
                     <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
-                    <br><span data-i18n="products.loading">正在加载最新产品...</span>
+                    <br><span>正在加载最新产品...</span>
                 </div>
             `;
 
         try {
-          const response = await fetch("/api/public/products?limit=9");
+          const response = await fetch("/api/db/public/products?limit=9");
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
@@ -546,10 +533,7 @@
 
           console.log("🎉 主页产品展示加载完成");
 
-          // 🔧 通知全局加载屏幕内容已就绪
-          if (window.GlobalLoadingScreen) {
-            window.GlobalLoadingScreen.setState("contentReady", true);
-          }
+          // 内容加载完成
         } catch (error) {
           console.error("❌ 产品加载失败:", error);
           showcase.innerHTML = `
@@ -563,10 +547,7 @@
                     </div>
                 `;
 
-          // 即使失败也要通知加载屏幕
-          if (window.GlobalLoadingScreen) {
-            window.GlobalLoadingScreen.setState("contentReady", true);
-          }
+          // 加载失败处理完成
         }
       }
 
@@ -600,7 +581,22 @@
         const features = product.features
           ? product.features.split(",").slice(0, 3)
           : [];
-        const imageUrl = product.image || "assets/images/carousel/img1.jpg";
+
+        // 🖼️ 获取产品图片URL - 支持新的images数组格式
+        let imageUrl = "assets/images/carousel/img1.jpg"; // 默认图片
+
+        if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+            // 优先使用主图，如果没有主图则使用第一张
+            const primaryImage = product.images.find(img => img.isPrimary) || product.images[0];
+            if (primaryImage && primaryImage.url) {
+                imageUrl = primaryImage.url.startsWith('http') ?
+                    primaryImage.url :
+                    primaryImage.url;
+            }
+        } else if (product.image) {
+            // 兼容旧的单图片格式
+            imageUrl = product.image;
+        }
 
         return `
                 <div class="product-showcase-card">
@@ -616,7 +612,7 @@
                     </div>
 
                     <div class="product-info">
-                        <div class="product-brand">${product.brand || "皇德国际"}</div>
+                        <div class="product-brand">${product.brand || "Diamond"}</div>
                         <h3 class="product-name">${product.name}</h3>
                         <div class="product-model">${product.model || "暂无型号"}</div>
 
@@ -642,12 +638,12 @@
                         <div class="product-buttons">
                             <a href="pages/product-detail.html?id=${product.id}" class="product-btn btn-detail">
                                 <i class="fas fa-info-circle"></i>
-                                <span data-i18n="product.view_details">查看详情</span>
+                                <span>查看详情</span>
                             </a>
                             <a href="https://wa.me/8613656157230?text=我对产品${encodeURIComponent(product.name)}感兴趣，请提供更多信息"
                                target="_blank" class="product-btn btn-inquiry">
                                 <i class="fab fa-whatsapp"></i>
-                                <span data-i18n="product.inquire">立即询价</span>
+                                <span>立即询价</span>
                             </a>
                         </div>
                     </div>
@@ -659,16 +655,15 @@
       function initOtherHomepageFeatures() {
         console.log("🏠 主页其他功能初始化");
 
-        // 📞 初始化公司信息
-        setTimeout(async function () {
+        // 📞 初始化公司信息（使用静态配置）
+        setTimeout(function () {
           try {
             if (window.companyService) {
-              await window.companyService.loadCompanyInfo();
               window.companyService.updatePageElements();
-              console.log("✅ 公司信息已更新");
+              console.log("✅ 公司信息已更新（静态配置）");
             }
           } catch (error) {
-            console.error("❌ 加载公司信息失败:", error);
+            console.error("❌ 更新公司信息失败:", error);
           }
         }, 200);
 
@@ -684,6 +679,18 @@
           }
         }, 300);
       }
+
+      // 🏠 主页产品加载函数（供组件管理器调用）
+      window.loadHomepageProducts = async function () {
+        console.log("🏠 主页产品加载函数被调用");
+        // 使用页面加载管理器的产品加载功能
+        if (window.PageLoadManager && !window.PageLoadManager.isInitialized('homepage-products')) {
+          await window.PageLoadManager.safeInit('homepage-products', async function() {
+            console.log("🏠 开始加载主页产品展示...");
+            // 产品加载逻辑已在PageLoadManager中实现
+          });
+        }
+      };
 
       // 🧪 测试产品加载函数
       window.testProductLoad = async function () {
@@ -702,7 +709,7 @@
 
         try {
           console.log("📡 开始API调用...");
-          const response = await fetch("/api/public/products?limit=9");
+          const response = await fetch("/api/db/public/products?limit=9");
           console.log("📡 API响应状态:", response.status, response.statusText);
 
           const result = await response.json();
@@ -746,42 +753,48 @@
         longitude: 120.486254, // 经度 (东经) - 精确坐标
         zoom: 16, // 缩放级别
         companyName: "无锡皇德国际贸易有限公司",
+        // 谷歌静态地图API密钥（示例密钥，实际使用时需要替换为有效密钥）
+        apiKey: "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"
       };
 
-      // 地图语言切换功能
-      function updateMapLanguage() {
-        const iframe = document.querySelector(".map-container iframe");
-        if (!iframe) return;
+      // 静态地图显示功能（仅中文）
+      function initStaticMap() {
+        const mapImage = document.getElementById("static-map-image");
+        if (!mapImage) return;
 
-        const currentLangInfo =
-          window.i18nManager?.getCurrentLanguage() || "zh-CN";
-        const currentLang = currentLangInfo.code || currentLangInfo; // 兼容新旧版本
-        const coords = `${MAP_CONFIG.latitude},${MAP_CONFIG.longitude}`;
-        const zoom = MAP_CONFIG.zoom;
-
-        let mapUrl;
-        if (currentLang === "en-US") {
-          // 英文地图 - 使用精确坐标
-          mapUrl = `https://maps.google.com/maps?q=${coords}&z=${zoom}&output=embed&hl=en&markers=color:red%7Clabel:H%7C${coords}`;
-        } else {
-          // 中文地图 - 使用精确坐标
-          mapUrl = `https://maps.google.com/maps?q=${coords}&z=${zoom}&output=embed&hl=zh-CN&markers=color:red%7Clabel:皇%7C${coords}`;
-        }
-
-        iframe.src = mapUrl;
+        // 使用中文地图
+        const mapImagePath = "assets/images/company-location-map-zh.jpg";
+        mapImage.src = mapImagePath;
+        console.log(`🗺️ 静态地图已加载: ${mapImagePath}`);
       }
 
-      // 监听语言切换事件
-      document.addEventListener("i18n:changed", updateMapLanguage);
+      // 打开完整地图功能
+      function openFullMap() {
+        const coords = `${MAP_CONFIG.latitude},${MAP_CONFIG.longitude}`;
+        const mapUrl = `https://www.google.com/maps?q=${coords}&hl=zh-CN&z=${MAP_CONFIG.zoom}`;
 
-      // 地图调试功能 - 在控制台中使用
+        window.open(mapUrl, '_blank', 'noopener,noreferrer');
+        console.log(`🗺️ 已在新标签页打开完整地图: ${mapUrl}`);
+      }
+
+      // 键盘访问支持
+      document.addEventListener('keydown', function(e) {
+        if (e.target.classList.contains('map-container') && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          openFullMap();
+        }
+      });
+
+
+
+      // 地图调试功能 - 在控制台中使用（本地图片版本）
       window.updateMapCoords = function (lat, lng, zoom = 16) {
         MAP_CONFIG.latitude = lat;
         MAP_CONFIG.longitude = lng;
         MAP_CONFIG.zoom = zoom;
-        updateMapLanguage();
         console.log(`🗺️ 地图坐标已更新: ${lat}, ${lng}, 缩放: ${zoom}`);
-        console.log(`📍 使用方法: updateMapCoords(纬度, 经度, 缩放级别)`);
+        console.log(`📍 注意: 当前使用本地地图图片，坐标更新不会影响显示`);
+        console.log(`💡 如需更新地图显示，请重新下载对应坐标的地图图片`);
       };
 
       // 显示当前地图配置
@@ -791,49 +804,49 @@
         console.log(`🔍 缩放: ${MAP_CONFIG.zoom}`);
       };
 
-      // 🌍 监听语言切换事件，重新更新联系信息和产品卡片
-      document.addEventListener("i18n:changed", function (event) {
-        console.log("🌍 主页监听到语言切换事件:", event.detail);
 
-        // 重新更新联系信息（包括地址翻译）
-        if (window.companyService) {
-          console.log("📞 重新更新联系信息...");
-          window.companyService.updatePageElements();
 
-          // 验证更新
-          setTimeout(() => {
-            const addressElement = document.getElementById("company-address");
-            if (addressElement) {
-              console.log("✅ 地址已更新为:", addressElement.innerHTML);
-            }
-          }, 100);
-        }
-
-        // 重新渲染产品卡片（更新特性标签翻译）
-        if (window.productCardComponent && window.featuredProducts) {
-          console.log("🏷️ 重新渲染产品卡片...");
-          setTimeout(() => {
-            window.productCardComponent.renderToShowcase(
-              window.featuredProducts,
-              {
-                showDescription: false,
-                imagePath: "",
-              },
-            );
-            console.log("✅ 产品卡片已重新渲染");
-          }, 200);
-        }
-      });
-
-      // 页面加载时初始化地图语言
+      // 页面加载时初始化地图
       document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(updateMapLanguage, 1000); // 延迟确保i18n管理器已加载
+        setTimeout(initStaticMap, 500); // 延迟确保DOM已加载
       });
     </script>
     <script src="./assets/js/resource-checker.js"></script>
 
-    <!-- 🔍 临时调试脚本 -->
-    <script src="./debug-loading-states.js"></script>
-  </body>
+
+
+    <!-- 🚀 性能监控系统 -->
+    <script src="assets/js/performance-monitor.js"></script>
+    <script>
+      // 启用性能监控
+      window.addEventListener('load', function() {
+        console.log('📊 性能监控系统已启用');
+        
+        // 收集页面性能指标
+        setTimeout(function() {
+          const perfData = {
+            loadTime: performance.now(),
+            domContentLoaded: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart,
+            pageLoad: performance.timing.loadEventEnd - performance.timing.navigationStart,
+            firstPaint: performance.getEntriesByType('paint')[0]?.startTime || 0,
+            resources: performance.getEntriesByType('resource').length
+          };
+          
+          console.log('📈 页面性能指标:', perfData);
+          
+          // 发送性能数据到服务器（如果API可用）
+          if (typeof fetch !== 'undefined') {
+            fetch('/api/performance/report', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(perfData)
+            }).catch(err => console.log('性能数据上报失败:', err.message));
+          }
+        }, 1000);
+      });
+    </script>
+
+    <!-- 📊 性能监控器 (可选，用于监控修复效果) -->
+    <script src="performance-monitor.js" async defer></script>
+</body>
 </html>
-<

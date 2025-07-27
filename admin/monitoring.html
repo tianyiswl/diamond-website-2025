@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>性能监控仪表板 - Diamond Website</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .metric { text-align: center; }
+        .metric-value { font-size: 2em; font-weight: bold; color: #2196F3; }
+        .metric-label { color: #666; margin-top: 5px; }
+        .status-good { color: #4CAF50; }
+        .status-warning { color: #FF9800; }
+        .status-error { color: #F44336; }
+        .refresh-btn { background: #2196F3; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        .refresh-btn:hover { background: #1976D2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Diamond Website 性能监控仪表板</h1>
+        
+        <div class="card">
+            <h2>实时性能指标</h2>
+            <button class="refresh-btn" onclick="refreshMetrics()">🔄 刷新数据</button>
+            <div class="metrics" id="metrics">
+                <div class="metric">
+                    <div class="metric-value" id="avgLoadTime">--</div>
+                    <div class="metric-label">平均加载时间 (ms)</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="avgPageLoad">--</div>
+                    <div class="metric-label">平均页面加载 (ms)</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="totalRecords">--</div>
+                    <div class="metric-label">监控记录总数</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="cacheHitRate">--</div>
+                    <div class="metric-label">缓存命中率</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>最近性能记录</h2>
+            <div id="recentRecords">加载中...</div>
+        </div>
+    </div>
+    
+    <script>
+        async function refreshMetrics() {
+            try {
+                // 获取性能统计
+                const perfResponse = await fetch('/api/performance/stats');
+                const perfData = await perfResponse.json();
+                
+                if (perfData.success) {
+                    document.getElementById('avgLoadTime').textContent = perfData.data.avgLoadTime;
+                    document.getElementById('avgPageLoad').textContent = perfData.data.avgPageLoad;
+                    document.getElementById('totalRecords').textContent = perfData.data.totalRecords;
+                    
+                    // 显示最近记录
+                    const recordsDiv = document.getElementById('recentRecords');
+                    if (perfData.data.recentRecords.length > 0) {
+                        recordsDiv.innerHTML = perfData.data.recentRecords.map(record => 
+                            `<div style="margin: 10px 0; padding: 10px; background: #f9f9f9; border-radius: 4px;">
+                                <strong>${new Date(record.timestamp).toLocaleString()}</strong><br>
+                                加载时间: ${record.data.loadTime?.toFixed(2) || 0}ms, 
+                                页面加载: ${record.data.pageLoad || 0}ms, 
+                                资源数: ${record.data.resources || 0}
+                            </div>`
+                        ).join('');
+                    } else {
+                        recordsDiv.innerHTML = '<p>暂无性能记录</p>';
+                    }
+                }
+                
+                // 获取缓存统计
+                const cacheResponse = await fetch('/api/cache/stats');
+                const cacheData = await cacheResponse.json();
+                
+                if (cacheData.success) {
+                    document.getElementById('cacheHitRate').textContent = cacheData.data.overall.overallHitRate;
+                }
+                
+            } catch (error) {
+                console.error('刷新监控数据失败:', error);
+            }
+        }
+        
+        // 页面加载时刷新数据
+        window.addEventListener('load', refreshMetrics);
+        
+        // 每30秒自动刷新
+        setInterval(refreshMetrics, 30000);
+    </script>
+</body>
+</html>

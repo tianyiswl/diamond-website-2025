@@ -87,11 +87,11 @@
   console.log("🚨 快速修复脚本完成");
 })();
 
-// 如果页面在3秒后仍有加载屏幕，自动执行修复
+// 延长检查时间，避免4-5秒闪烁
 setTimeout(() => {
   const loadingScreen = document.getElementById("global-loading-screen");
   if (loadingScreen) {
-    console.warn("⚠️ 3秒后仍有加载屏幕，执行紧急修复");
+    console.warn("⚠️ 8秒后仍有加载屏幕，执行紧急修复");
     loadingScreen.style.display = "none";
 
     // 移除样式
@@ -100,4 +100,4 @@ setTimeout(() => {
       styles.remove();
     }
   }
-}, 3000);
+}, 8000);

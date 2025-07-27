@@ -1,0 +1,90 @@
+{
+  "timestamp": "2025-07-21T04:53:17.322Z",
+  "summary": {
+    "total": 10,
+    "fixed": 8,
+    "stillBroken": 2,
+    "fixRate": "80.00%"
+  },
+  "categories": {
+    "CSS修复": {
+      "total": 1,
+      "fixed": 1
+    },
+    "API修复": {
+      "total": 6,
+      "fixed": 6
+    },
+    "后台修复": {
+      "total": 2,
+      "fixed": 1
+    },
+    "数据修复": {
+      "total": 1,
+      "fixed": 0
+    }
+  },
+  "fixes": [
+    {
+      "category": "CSS修复",
+      "name": "style.css文件访问",
+      "result": "FIXED",
+      "details": "状态码: 200, 内容长度: 3983"
+    },
+    {
+      "category": "API修复",
+      "name": "公开产品API (别名)",
+      "result": "FIXED",
+      "details": "状态码: 200, 类型: application/json; charset=utf-8"
+    },
+    {
+      "category": "API修复",
+      "name": "公开产品API (原路径)",
+      "result": "FIXED",
+      "details": "状态码: 200, 类型: application/json; charset=utf-8"
+    },
+    {
+      "category": "API修复",
+      "name": "公开分类API (别名)",
+      "result": "FIXED",
+      "details": "状态码: 200, 类型: application/json; charset=utf-8"
+    },
+    {
+      "category": "API修复",
+      "name": "公开分类API (原路径)",
+      "result": "FIXED",
+      "details": "状态码: 200, 类型: application/json; charset=utf-8"
+    },
+    {
+      "category": "API修复",
+      "name": "公司信息API (别名)",
+      "result": "FIXED",
+      "details": "状态码: 200, 类型: application/json; charset=utf-8"
+    },
+    {
+      "category": "API修复",
+      "name": "公司信息API (原路径)",
+      "result": "FIXED",
+      "details": "状态码: 200, 类型: application/json; charset=utf-8"
+    },
+    {
+      "category": "后台修复",
+      "name": "管理后台直接访问",
+      "result": "STILL_BROKEN",
+      "details": "状态码: 301 (期望200或302)"
+    },
+    {
+      "category": "后台修复",
+      "name": "管理后台带斜杠访问",
+      "result": "FIXED",
+      "details": "状态码: 200 (期望200或302)"
+    },
+    {
+      "category": "数据修复",
+      "name": "询价数据读取",
+      "result": "STILL_BROKEN",
+      "details": "读取到 undefined 条询价记录"
+    }
+  ],
+  "overallStatus": "MOSTLY_FIXED"
+}

@@ -1,0 +1,171 @@
+{
+  "testTime": "2025-07-20T11:53:15.391Z",
+  "webpFilesCount": 6,
+  "originalFilesCount": 6,
+  "mappingResults": [
+    {
+      "original": "1752939200611-38879355.jpg",
+      "webp": "1752939200611-38879355.webp",
+      "originalSize": 704798,
+      "webpSize": 168166,
+      "compressionRatio": 76.1,
+      "success": true
+    },
+    {
+      "original": "1752939200626-246380395.jpg",
+      "webp": "1752939200626-246380395.webp",
+      "originalSize": 586942,
+      "webpSize": 124718,
+      "compressionRatio": 78.8,
+      "success": true
+    },
+    {
+      "original": "1752939200629-256410535.jpg",
+      "webp": "1752939200629-256410535.webp",
+      "originalSize": 1572695,
+      "webpSize": 473588,
+      "compressionRatio": 69.9,
+      "success": true
+    },
+    {
+      "original": "1752939200633-646887524.jpg",
+      "webp": "1752939200633-646887524.webp",
+      "originalSize": 627505,
+      "webpSize": 142022,
+      "compressionRatio": 77.4,
+      "success": true
+    },
+    {
+      "original": "1752939200635-334821784.jpg",
+      "webp": "1752939200635-334821784.webp",
+      "originalSize": 568717,
+      "webpSize": 115624,
+      "compressionRatio": 79.7,
+      "success": true
+    },
+    {
+      "original": "1752939200638-769435788.jpg",
+      "webp": "1752939200638-769435788.webp",
+      "originalSize": 688698,
+      "webpSize": 164430,
+      "compressionRatio": 76.1,
+      "success": true
+    }
+  ],
+  "pathTests": [
+    {
+      "originalPath": "/uploads/products/1752939200611-38879355.jpg",
+      "expectedWebpPath": "/assets/images-webp/products/1752939200611-38879355.webp",
+      "actualWebpPath": "/assets/images-webp/products/1752939200611-38879355.webp",
+      "correct": true
+    },
+    {
+      "originalPath": "/uploads/products/1752939200626-246380395.jpg",
+      "expectedWebpPath": "/assets/images-webp/products/1752939200626-246380395.webp",
+      "actualWebpPath": "/assets/images-webp/products/1752939200626-246380395.webp",
+      "correct": true
+    },
+    {
+      "originalPath": "/uploads/products/1752939200629-256410535.jpg",
+      "expectedWebpPath": "/assets/images-webp/products/1752939200629-256410535.webp",
+      "actualWebpPath": "/assets/images-webp/products/1752939200629-256410535.webp",
+      "correct": true
+    },
+    {
+      "originalPath": "/uploads/products/1752939200633-646887524.jpg",
+      "expectedWebpPath": "/assets/images-webp/products/1752939200633-646887524.webp",
+      "actualWebpPath": "/assets/images-webp/products/1752939200633-646887524.webp",
+      "correct": true
+    },
+    {
+      "originalPath": "/uploads/products/1752939200635-334821784.jpg",
+      "expectedWebpPath": "/assets/images-webp/products/1752939200635-334821784.webp",
+      "actualWebpPath": "/assets/images-webp/products/1752939200635-334821784.webp",
+      "correct": true
+    },
+    {
+      "originalPath": "/uploads/products/1752939200638-769435788.jpg",
+      "expectedWebpPath": "/assets/images-webp/products/1752939200638-769435788.webp",
+      "actualWebpPath": "/assets/images-webp/products/1752939200638-769435788.webp",
+      "correct": true
+    }
+  ],
+  "productImageTests": [
+    {
+      "productName": "VGT 3798462 Electronic Actuator HW-3798463 P-3798462 for Volvo FL220 Dodge Ram",
+      "type": "主图片",
+      "originalPath": "/uploads/products/1752939200611-38879355.jpg",
+      "webpPath": "/assets/images-webp/products/1752939200611-38879355.webp",
+      "webpExists": true
+    },
+    {
+      "productName": "VGT 3798462 Electronic Actuator HW-3798463 P-3798462 for Volvo FL220 Dodge Ram",
+      "type": "图片1",
+      "originalPath": "/uploads/products/1752939200611-38879355.jpg",
+      "webpPath": "/assets/images-webp/products/1752939200611-38879355.webp",
+      "webpExists": true
+    },
+    {
+      "productName": "VGT 3798462 Electronic Actuator HW-3798463 P-3798462 for Volvo FL220 Dodge Ram",
+      "type": "图片2",
+      "originalPath": "/uploads/products/1752939200626-246380395.jpg",
+      "webpPath": "/assets/images-webp/products/1752939200626-246380395.webp",
+      "webpExists": true
+    },
+    {
+      "productName": "S500W Turbo Charger 3886223 3818410 56509880000 For 2006-08 Volvo D12 w/D12M",
+      "type": "主图片",
+      "originalPath": "/uploads/products/1752939200629-256410535.jpg",
+      "webpPath": "/assets/images-webp/products/1752939200629-256410535.webp",
+      "webpExists": true
+    },
+    {
+      "productName": "S500W Turbo Charger 3886223 3818410 56509880000 For 2006-08 Volvo D12 w/D12M",
+      "type": "图片1",
+      "originalPath": "/uploads/products/1752939200629-256410535.jpg",
+      "webpPath": "/assets/images-webp/products/1752939200629-256410535.webp",
+      "webpExists": true
+    },
+    {
+      "productName": "S500W Turbo Charger 3886223 3818410 56509880000 For 2006-08 Volvo D12 w/D12M",
+      "type": "图片2",
+      "originalPath": "/uploads/products/1752939200633-646887524.jpg",
+      "webpPath": "/assets/images-webp/products/1752939200633-646887524.webp",
+      "webpExists": true
+    },
+    {
+      "productName": "Turbo Cartridge S500W 56501970000 3886223 3801134 Compatible with Volvo Ship D12M D12C-A MP Marine 56509880000",
+      "type": "主图片",
+      "originalPath": "/uploads/products/1752939200635-334821784.jpg",
+      "webpPath": "/assets/images-webp/products/1752939200635-334821784.webp",
+      "webpExists": true
+    },
+    {
+      "productName": "Turbo Cartridge S500W 56501970000 3886223 3801134 Compatible with Volvo Ship D12M D12C-A MP Marine 56509880000",
+      "type": "图片1",
+      "originalPath": "/uploads/products/1752939200635-334821784.jpg",
+      "webpPath": "/assets/images-webp/products/1752939200635-334821784.webp",
+      "webpExists": true
+    },
+    {
+      "productName": "T481042-0028 WASTEGATE,REGULATOR,54.1 HG VACUUM,MODEL CA-2501,FOR VHP-GL,REBUILT,WAUKESHA,208372N ",
+      "type": "主图片",
+      "originalPath": "/uploads/products/1752939200638-769435788.jpg",
+      "webpPath": "/assets/images-webp/products/1752939200638-769435788.webp",
+      "webpExists": true
+    },
+    {
+      "productName": "T481042-0028 WASTEGATE,REGULATOR,54.1 HG VACUUM,MODEL CA-2501,FOR VHP-GL,REBUILT,WAUKESHA,208372N ",
+      "type": "图片1",
+      "originalPath": "/uploads/products/1752939200638-769435788.jpg",
+      "webpPath": "/assets/images-webp/products/1752939200638-769435788.webp",
+      "webpExists": true
+    }
+  ],
+  "summary": {
+    "allWebpGenerated": true,
+    "pathConversionWorking": true,
+    "productImagesSupported": true,
+    "overallSuccess": true
+  }
+}

@@ -18,10 +18,16 @@
     <!-- Main CSS -->
     <link rel="stylesheet" href="../assets/css/main.css">
     <link rel="stylesheet" href="../assets/css/product-detail.css">
+
+    <!-- 页脚白条修复 -->
+    <link rel="stylesheet" href="../assets/css/footer-fix.css">
     
     <!-- 国际化样式 -->
     <link rel="stylesheet" href="../assets/css/i18n-styles.css">
-    
+
+    <!-- 🚀 统一加载屏幕样式修复 -->
+
+
     <!-- 产品详情页专用样式 -->
     <style>
         /* 🎨 产品详情页专用样式 */
@@ -1516,23 +1522,23 @@
                 <!-- 产品详细信息列表 -->
                 <div class="product-info-list">
                     <div class="info-item">
-                        <div class="label" data-i18n="product_detail.labels.model">型号</div>
+                        <div class="label">型号</div>
                         <div class="value"><span id="productModel"></span></div>
                     </div>
                     <div class="info-item">
-                        <div class="label" data-i18n="product_detail.labels.brand">品牌</div>
+                        <div class="label">品牌</div>
                         <div class="value"><span id="productBrand"></span></div>
                     </div>
                     <div class="info-item">
-                        <div class="label" data-i18n="product_detail.labels.product_code">产品编码</div>
+                        <div class="label">产品编码</div>
                         <div class="value"><span id="productCode"></span></div>
                     </div>
                     <div class="info-item">
-                        <div class="label" data-i18n="product_detail.labels.origin">产地</div>
+                        <div class="label">产地</div>
                         <div class="value"><span id="productOrigin"></span></div>
                     </div>
                     <div class="info-item">
-                        <div class="label" data-i18n="product_detail.labels.warranty">质保期</div>
+                        <div class="label">质保期</div>
                         <div class="value"><span id="productWarranty"></span></div>
                     </div>
                 </div>
@@ -1547,15 +1553,15 @@
                     <div class="inquiry-buttons">
                         <button id="emailBtn" class="inquiry-btn email-btn">
                             <i class="fas fa-envelope"></i>
-                            <span data-i18n="product_detail.buttons.email_inquiry">邮件询价</span>
+                            <span>邮件询价</span>
                         </button>
                         <button id="inquiryBtn" class="inquiry-btn whatsapp-btn">
                             <i class="fab fa-whatsapp"></i>
-                            <span data-i18n="product_detail.buttons.instant_inquiry">立即询价</span>
+                            <span>立即询价</span>
                         </button>
                         <button id="shareBtn" class="inquiry-btn share-btn">
                             <i class="fas fa-share-alt"></i>
-                            <span data-i18n="product_detail.buttons.share_product">分享商品</span>
+                            <span>分享商品</span>
                         </button>
                     </div>
                 </div>
@@ -1564,23 +1570,23 @@
                 <div id="shareModal" class="share-modal" style="display: none;">
                     <div class="share-modal-content">
                         <span class="share-modal-close">&times;</span>
-                        <h3 data-i18n="product_detail.share.title">分享商品</h3>
+                        <h3>分享商品</h3>
                         <div class="share-options">
                             <button class="share-option" data-platform="facebook">
                                 <i class="fab fa-facebook"></i>
-                                <span data-i18n="product_detail.share.facebook">分享到Facebook</span>
+                                <span>分享到Facebook</span>
                             </button>
                             <button class="share-option" data-platform="twitter">
                                 <i class="fab fa-twitter"></i>
-                                <span data-i18n="product_detail.share.twitter">分享到Twitter</span>
+                                <span>分享到Twitter</span>
                             </button>
                             <button class="share-option" data-platform="linkedin">
                                 <i class="fab fa-linkedin"></i>
-                                <span data-i18n="product_detail.share.linkedin">分享到LinkedIn</span>
+                                <span>分享到LinkedIn</span>
                             </button>
                             <button class="share-option" data-platform="copy">
                                 <i class="fas fa-link"></i>
-                                <span data-i18n="product_detail.share.copy_link">复制链接</span>
+                                <span>复制链接</span>
                             </button>
                         </div>
                     </div>
@@ -1591,9 +1597,9 @@
         <!-- 产品详情选项卡 -->
         <div id="productTabs" class="product-tabs" style="display: none;">
             <div class="tab-buttons">
-                <button class="tab-btn active" data-tab="specs" data-i18n="product_detail.tabs.specs">技术规格</button>
-                <button class="tab-btn" data-tab="description" data-i18n="product_detail.tabs.description">产品描述</button>
-                <button class="tab-btn" data-tab="packaging" data-i18n="product_detail.tabs.packaging">包装信息</button>
+                <button class="tab-btn active" data-tab="specs">技术规格</button>
+                <button class="tab-btn" data-tab="description">产品描述</button>
+                <button class="tab-btn" data-tab="packaging">包装信息</button>
             </div>
             <div class="tab-content">
                 <div id="specsTab" class="tab-panel active">
@@ -1601,35 +1607,35 @@
                     <div class="specs-section">
                         <table class="product-specs-table">
                             <tr>
-                                <td data-i18n="product_detail.specs.category">分类</td>
+                                <td>分类</td>
                                 <td id="product-category">涡轮增压器</td>
                             </tr>
                             <tr>
-                                <td data-i18n="product_detail.specs.brand">品牌</td>
+                                <td>品牌</td>
                                 <td id="product-brand">Diamond-Auto</td>
                             </tr>
                             <tr>
-                                <td data-i18n="product_detail.specs.model">型号</td>
+                                <td>型号</td>
                                 <td id="product-model">465282-5001</td>
                             </tr>
                             <tr>
-                                <td data-i18n="product_detail.specs.oe_number">OE号码</td>
+                                <td>OE号码</td>
                                 <td id="product-oe">208350, 4652820001, 465282-0001, 4652825001, 465282-5001, 465282S001S, 465282-5001S, 4652829001, 465282-9001, 4652829001R, 465282-9001R, 465282900S, 465282-9001S</td>
                             </tr>
                             <tr>
-                                <td data-i18n="product_detail.specs.compatible_system">兼容系统</td>
+                                <td>适配</td>
                                 <td id="product-system">Waukesha F3521GSI, Waukesha L7042 GSI</td>
                             </tr>
                             <tr>
-                                <td data-i18n="product_detail.specs.origin">产地</td>
+                                <td>产地</td>
                                 <td id="product-origin">中国</td>
                             </tr>
                             <tr>
-                                <td data-i18n="product_detail.specs.warranty">质保期</td>
+                                <td>质保期</td>
                                 <td id="product-warranty">12个月</td>
                             </tr>
                             <tr>
-                                <td data-i18n="product_detail.specs.notes">其他事项</td>
+                                <td>其他事项</td>
                                 <td id="product-notes">无特殊说明</td>
                             </tr>
                         </table>
@@ -1645,9 +1651,9 @@
             <div class="section-header">
                 <h2 class="section-title">
                     <i class="fas fa-thumbs-up"></i>
-                    <span data-i18n="product_detail.related_products.title">相关产品推荐</span>
+                    <span>相关产品推荐</span>
                 </h2>
-                <p class="section-subtitle" data-i18n="product_detail.related_products.subtitle">为您精选同类优质产品</p>
+                <p class="section-subtitle">为您精选同类优质产品</p>
             </div>
             <div id="relatedProducts" class="related-products-grid"></div>
         </section>
@@ -1684,8 +1690,76 @@
         })();
     </script>
 
+    <!-- 🚨 双重刷新修复脚本 - 防止重复执行 -->
+    <script src="../double-refresh-fix.js"></script>
+
+    <!-- 🚨 页面跳转修复脚本 - 防止LOGO页面显示 -->
+    <script src="../page-transition-fix.js"></script>
+
+    <!-- 🚨 产品详情页专用修复脚本 - 立即执行 -->
+    <script>
+        // 🚨 立即移除产品详情页的加载屏幕
+        (function() {
+            console.log('🚨 产品详情页专用修复脚本启动');
+
+            function forceRemoveProductLoadingScreen() {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                    loadingScreen.style.visibility = 'hidden';
+                    loadingScreen.style.opacity = '0';
+                    loadingScreen.style.pointerEvents = 'none';
+                    console.log('🗑️ 产品详情页加载屏幕已强制隐藏');
+                }
+
+                // 确保产品详情内容可见
+                const productDetailContent = document.getElementById('productDetailContent');
+                const productDetailGrid = document.getElementById('productDetailGrid');
+                const productTabs = document.getElementById('productTabs');
+
+                if (productDetailContent) {
+                    productDetailContent.style.display = 'block';
+                    productDetailContent.style.visibility = 'visible';
+                    productDetailContent.style.opacity = '1';
+                }
+                if (productDetailGrid) {
+                    productDetailGrid.style.display = 'grid';
+                    productDetailGrid.style.visibility = 'visible';
+                    productDetailGrid.style.opacity = '1';
+                }
+                if (productTabs) {
+                    productTabs.style.display = 'block';
+                    productTabs.style.visibility = 'visible';
+                    productTabs.style.opacity = '1';
+                }
+            }
+
+            // 立即执行
+            forceRemoveProductLoadingScreen();
+
+            // DOM加载完成后再次执行
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', forceRemoveProductLoadingScreen);
+            } else {
+                forceRemoveProductLoadingScreen();
+            }
+
+            // 定期检查（前3秒）
+            let checkCount = 0;
+            const checkInterval = setInterval(() => {
+                forceRemoveProductLoadingScreen();
+                checkCount++;
+                if (checkCount >= 30) { // 3秒后停止检查
+                    clearInterval(checkInterval);
+                }
+            }, 100);
+
+            console.log('✅ 产品详情页专用修复脚本已启动');
+        })();
+    </script>
+
     <!-- 🚀 全局加载屏幕 - 必须最先加载，立即显示加载动画 -->
-    <script src="../assets/js/global-loading-screen.js"></script>
+
 
     <!-- 🎯 页面渲染协调器 - 统一管理所有组件的加载顺序 -->
     <script src="../assets/js/page-render-coordinator.js"></script>
@@ -1809,58 +1883,72 @@
         <div class="inquiry-modal-content">
             <span class="modal-close" onclick="closeInquiryModal()">&times;</span>
             <div class="inquiry-header">
-                <h3 data-i18n="product_detail.inquiry_modal.title">产品询价</h3>
-                <p data-i18n="product_detail.inquiry_modal.subtitle">请填写以下信息，我们会尽快与您联系</p>
+                <h3>产品询价</h3>
+                <p>请填写以下信息，我们会尽快与您联系</p>
             </div>
             <form id="inquiryForm" class="inquiry-form" method="POST" action="javascript:void(0)" onsubmit="return false;">
                 <div class="form-group">
                     <label for="inquiryName">
-                        <span data-i18n="product_detail.inquiry_modal.form.name_label">您的称呼</span>
-                        <span data-i18n="product_detail.inquiry_modal.form.name_required"> *</span>
+                        <span>您的称呼</span>
+                        <span> *</span>
                     </label>
                     <input type="text" id="inquiryName" name="name" required
-                           data-i18n="product_detail.inquiry_modal.form.name_placeholder" data-i18n-attr="placeholder" placeholder="请输入您的称呼"
+                           placeholder="请输入您的称呼"
                            pattern="^[a-zA-Z\u4e00-\u9fa5\s\-\.]{2,30}$"
                            data-error="请输入2-30个字符的有效姓名，支持中英文、空格、连字符">
                 </div>
                 <div class="form-group">
                     <label for="inquiryEmail">
-                        <span data-i18n="product_detail.inquiry_modal.form.email_label">邮箱地址</span>
-                        <span data-i18n="product_detail.inquiry_modal.form.email_required"> *</span>
+                        <span>邮箱地址</span>
+                        <span> *</span>
                     </label>
                     <input type="email" id="inquiryEmail" name="email" required
-                           data-i18n="product_detail.inquiry_modal.form.email_placeholder" data-i18n-attr="placeholder" placeholder="请输入您的邮箱">
+                           placeholder="请输入您的邮箱">
                 </div>
                 <div class="form-group">
-                    <label for="inquiryPhone" data-i18n="product_detail.inquiry_modal.form.phone_label">联系电话</label>
+                    <label for="inquiryPhone">联系电话</label>
                     <input type="tel" id="inquiryPhone" name="phone"
-                           data-i18n="product_detail.inquiry_modal.form.phone_placeholder" data-i18n-attr="placeholder" placeholder="请输入您的联系电话">
+                           placeholder="请输入您的联系电话">
                 </div>
                 <div class="form-group">
-                    <label for="inquiryQuantity" data-i18n="product_detail.inquiry_modal.form.quantity_label">采购数量</label>
+                    <label for="inquiryQuantity">采购数量</label>
                     <input type="number" id="inquiryQuantity" name="quantity" min="1"
-                           data-i18n="product_detail.inquiry_modal.form.quantity_placeholder" data-i18n-attr="placeholder" placeholder="请输入采购数量">
+                           placeholder="请输入采购数量">
                 </div>
                 <div class="form-group">
                     <label for="inquiryMessage">
-                        <span data-i18n="product_detail.inquiry_modal.form.message_label">询价留言</span>
-                        <span data-i18n="product_detail.inquiry_modal.form.message_required"> *</span>
+                        <span>询价留言</span>
+                        <span> *</span>
                     </label>
                     <textarea id="inquiryMessage" name="message" required rows="4"
-                              data-i18n="product_detail.inquiry_modal.form.message_placeholder" data-i18n-attr="placeholder" placeholder="请详细描述您的采购需求，包括具体规格、交货时间等"></textarea>
+                              placeholder="请详细描述您的采购需求，包括具体规格、交货时间等"></textarea>
                 </div>
                 <div class="form-group">
                     <button type="submit" class="submit-btn">
                         <i class="fas fa-paper-plane"></i>
-                        <span data-i18n="product_detail.inquiry_modal.form.submit_button">发送询价</span>
+                        <span>发送询价</span>
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 加载中状态 -->
-    <div id="loadingScreen" class="loading-screen">
+    <!-- 🚫 加载中状态已禁用 -->
+    <div id="loadingScreen" class="loading-screen" style="display: none !important;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">加载中...</div>
+        </div>
+    </div>
+
+    <!-- JavaScript文件 -->
     <script src="../assets/js/resource-checker.js"></script>
+    <script src="../assets/js/main.js"></script>
+
+    <!-- 🚀 轻量级搜索修复脚本 (解决回车键搜索问题) -->
+    <script src="../lightweight-search-fix.js" async defer></script>
+
+    <!-- 📊 性能监控器 (可选，用于监控修复效果) -->
+    <script src="../performance-monitor.js" async defer></script>
 </body>
-</html> 
+</html>
