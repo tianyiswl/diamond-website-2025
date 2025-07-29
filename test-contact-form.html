@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>联系表单测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 联系表单功能测试</h1>
+        <p>这个页面用于测试主页联系表单的无跳转提交功能。</p>
+
+        <div class="test-section">
+            <h3>📋 测试步骤</h3>
+            <ol>
+                <li>打开主页：<a href="http://127.0.0.1:3001" target="_blank">http://127.0.0.1:3001</a> <strong>(端口已更新为3001)</strong></li>
+                <li>滚动到"联系我们"部分</li>
+                <li>填写询价表单</li>
+                <li>点击"提交询价"按钮</li>
+                <li>观察是否有页面跳转</li>
+                <li>检查成功/失败提示是否正确显示</li>
+            </ol>
+            <p><strong>🔧 修复状态：</strong> 已添加联系表单修复脚本 (fix-contact-form.js)</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 预期行为</h3>
+            <ul>
+                <li>✅ 提交过程中显示加载状态（按钮变为"提交中..."）</li>
+                <li>✅ 表单字段在提交过程中被禁用</li>
+                <li>✅ 提交成功后显示绿色成功提示</li>
+                <li>✅ 提交成功后表单内容被清空</li>
+                <li>✅ 整个过程中页面不发生跳转</li>
+                <li>✅ 提示消息在几秒后自动消失</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 快速测试工具</h3>
+            <p>使用以下按钮快速测试API端点：</p>
+            
+            <button class="test-button" onclick="testSuccessAPI()">测试成功提交</button>
+            <button class="test-button" onclick="testErrorAPI()">测试错误处理</button>
+            <button class="test-button" onclick="testValidation()">测试表单验证</button>
+            
+            <div id="testResult" class="test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 测试记录</h3>
+            <div id="testLog"></div>
+        </div>
+    </div>
+
+    <script>
+        let testCount = 0;
+
+        function logTest(message, type = 'info') {
+            testCount++;
+            const log = document.getElementById('testLog');
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML += `
+                <div style="margin: 5px 0; padding: 8px; border-radius: 4px; background: ${type === 'success' ? '#d4edda' : type === 'error' ? '#f8d7da' : '#d1ecf1'};">
+                    <strong>${testCount}. [${timestamp}]</strong> ${message}
+                </div>
+            `;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function showResult(message, type) {
+            const result = document.getElementById('testResult');
+            result.className = `test-result ${type}`;
+            result.innerHTML = message;
+            result.style.display = 'block';
+            
+            setTimeout(() => {
+                result.style.display = 'none';
+            }, 5000);
+        }
+
+        async function testSuccessAPI() {
+            logTest('开始测试成功提交API', 'info');
+            
+            try {
+                const response = await fetch('/api/inquiries', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: '测试用户',
+                        email: 'test@example.com',
+                        phone: '13800138000',
+                        company: '测试公司',
+                        message: '这是一个测试询价消息',
+                        source: 'test_form'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult('✅ API测试成功！服务器正常响应', 'success');
+                    logTest('API测试成功，服务器返回成功响应', 'success');
+                } else {
+                    showResult('❌ API返回失败响应: ' + data.message, 'error');
+                    logTest('API返回失败响应: ' + data.message, 'error');
+                }
+            } catch (error) {
+                showResult('❌ API测试失败: ' + error.message, 'error');
+                logTest('API测试失败: ' + error.message, 'error');
+            }
+        }
+
+        async function testErrorAPI() {
+            logTest('开始测试错误处理', 'info');
+            
+            try {
+                const response = await fetch('/api/inquiries', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        // 故意发送不完整的数据来测试错误处理
+                        name: '',
+                        email: 'invalid-email'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!data.success) {
+                    showResult('✅ 错误处理测试成功！服务器正确返回错误', 'success');
+                    logTest('错误处理测试成功，服务器正确返回错误响应', 'success');
+                } else {
+                    showResult('⚠️ 错误处理可能有问题，服务器返回了成功响应', 'error');
+                    logTest('错误处理可能有问题，服务器返回了成功响应', 'error');
+                }
+            } catch (error) {
+                showResult('✅ 网络错误处理正常: ' + error.message, 'success');
+                logTest('网络错误处理正常: ' + error.message, 'success');
+            }
+        }
+
+        function testValidation() {
+            logTest('开始测试表单验证', 'info');
+            showResult('📋 请手动测试：在主页表单中提交空白或无效数据，检查验证是否正常工作', 'info');
+        }
+
+        // 页面加载时记录
+        window.addEventListener('load', () => {
+            logTest('测试页面加载完成', 'success');
+        });
+    </script>
+</body>
+</html>

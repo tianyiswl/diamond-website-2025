@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 页面跳转诊断工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .warning { background: #fff3cd; color: #856404; }
+        .danger { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .test-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn.success { background: #28a745; }
+        .btn.warning { background: #ffc107; color: #000; }
+        .btn.danger { background: #dc3545; }
+        .logs {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 页面跳转诊断工具</h1>
+        <p>诊断页面跳转异常和"DIAMOND"显示问题</p>
+        
+        <div class="section">
+            <h3>🎯 问题描述</h3>
+            <div class="status warning">
+                <strong>⚠️ 报告的问题：</strong>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                    <li>页面跳转时显示异常内容（"DIAMOND"页面）</li>
+                    <li>产品页面不显示产品内容（显示"共0个产品"）</li>
+                    <li>移除加载动画后出现功能失效</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>🧪 导航测试</h3>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h4>🏠 主页测试</h4>
+                    <p>测试主页是否正常显示</p>
+                    <a href="/" class="btn" target="_blank">打开主页</a>
+                    <button class="btn warning" onclick="testPage('/')">诊断主页</button>
+                </div>
+                
+                <div class="test-card">
+                    <h4>📦 产品页面</h4>
+                    <p>测试产品页面功能</p>
+                    <a href="/pages/products.html" class="btn" target="_blank">打开产品页</a>
+                    <button class="btn warning" onclick="testPage('/pages/products.html')">诊断产品页</button>
+                </div>
+                
+                <div class="test-card">
+                    <h4>ℹ️ 关于我们</h4>
+                    <p>测试关于页面</p>
+                    <a href="/pages/about.html" class="btn" target="_blank">打开关于页</a>
+                    <button class="btn warning" onclick="testPage('/pages/about.html')">诊断关于页</button>
+                </div>
+                
+                <div class="test-card">
+                    <h4>📞 联系我们</h4>
+                    <p>测试联系页面</p>
+                    <a href="/pages/contact.html" class="btn" target="_blank">打开联系页</a>
+                    <button class="btn warning" onclick="testPage('/pages/contact.html')">诊断联系页</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>🔧 修复状态检查</h3>
+            <div id="fixStatus">
+                <div class="status info">⏳ 正在检查修复状态...</div>
+            </div>
+            <button class="btn success" onclick="checkFixStatus()">重新检查修复状态</button>
+        </div>
+        
+        <div class="section">
+            <h3>📊 诊断结果</h3>
+            <div id="diagnosticResults">
+                <div class="status info">等待诊断...</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>📝 诊断日志</h3>
+            <div id="logs" class="logs">诊断工具已启动...\n</div>
+            <button class="btn" onclick="clearLogs()">清除日志</button>
+        </div>
+    </div>
+
+    <script>
+        // 日志函数
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('logs');
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        // 测试页面
+        async function testPage(url) {
+            log(`开始测试页面: ${url}`, 'info');
+            
+            try {
+                const response = await fetch(url);
+                log(`页面响应状态: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                
+                if (response.ok) {
+                    const content = await response.text();
+                    
+                    // 检查页面内容
+                    const checks = [
+                        { name: '包含DOCTYPE', test: content.includes('<!DOCTYPE') },
+                        { name: '包含HTML标签', test: content.includes('<html') },
+                        { name: '包含HEAD标签', test: content.includes('<head') },
+                        { name: '包含BODY标签', test: content.includes('<body') },
+                        { name: '包含标题', test: content.includes('<title') },
+                        { name: '包含CSS', test: content.includes('<link') || content.includes('<style') },
+                        { name: '包含JavaScript', test: content.includes('<script') },
+                        { name: '不是错误页面', test: !content.toLowerCase().includes('error') && !content.toLowerCase().includes('not found') }
+                    ];
+                    
+                    let passedChecks = 0;
+                    checks.forEach(check => {
+                        if (check.test) {
+                            passedChecks++;
+                            log(`  ✅ ${check.name}`, 'success');
+                        } else {
+                            log(`  ❌ ${check.name}`, 'error');
+                        }
+                    });
+                    
+                    // 特殊检查：是否包含"DIAMOND"
+                    if (content.includes('DIAMOND') && !content.includes('diamond-website')) {
+                        log(`  ⚠️ 检测到可疑的DIAMOND内容`, 'warning');
+                    }
+                    
+                    // 检查产品页面特有内容
+                    if (url.includes('products.html')) {
+                        const productChecks = [
+                            { name: '包含产品网格', test: content.includes('products-grid') || content.includes('productsGrid') },
+                            { name: '包含产品计数', test: content.includes('个产品') },
+                            { name: '包含搜索框', test: content.includes('searchInput') },
+                            { name: '包含分类筛选', test: content.includes('categoryFilter') }
+                        ];
+                        
+                        productChecks.forEach(check => {
+                            if (check.test) {
+                                log(`  ✅ 产品页面: ${check.name}`, 'success');
+                            } else {
+                                log(`  ❌ 产品页面: ${check.name}`, 'error');
+                            }
+                        });
+                    }
+                    
+                    log(`页面检查完成: ${passedChecks}/${checks.length} 项通过`, passedChecks === checks.length ? 'success' : 'warning');
+                    
+                } else {
+                    log(`页面加载失败: ${response.status}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`页面测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 检查修复状态
+        async function checkFixStatus() {
+            log('开始检查修复状态...', 'info');
+            const statusElement = document.getElementById('fixStatus');
+            
+            try {
+                // 检查关键文件是否存在
+                const filesToCheck = [
+                    '/assets/js/global-loading-screen.js',
+                    '/force-logo-fix.js',
+                    '/assets/css/loading-screen-fix.css',
+                    '/pages/products.html',
+                    '/simple-product-test.html'
+                ];
+                
+                let statusHTML = '<h4>📁 文件状态检查:</h4>';
+                
+                for (const file of filesToCheck) {
+                    try {
+                        const response = await fetch(file, { method: 'HEAD' });
+                        const status = response.ok ? '✅ 存在' : '❌ 不存在';
+                        const statusClass = response.ok ? 'success' : 'danger';
+                        statusHTML += `<div class="status ${statusClass}">${file}: ${status}</div>`;
+                        log(`文件检查 ${file}: ${status}`, response.ok ? 'success' : 'error');
+                    } catch (error) {
+                        statusHTML += `<div class="status danger">${file}: ❌ 检查失败</div>`;
+                        log(`文件检查 ${file}: 检查失败 - ${error.message}`, 'error');
+                    }
+                }
+                
+                // 检查API端点
+                statusHTML += '<h4>🔌 API端点检查:</h4>';
+                try {
+                    const apiResponse = await fetch('/api/public/products?limit=1');
+                    const apiStatus = apiResponse.ok ? '✅ 正常' : `❌ 错误 (${apiResponse.status})`;
+                    const apiClass = apiResponse.ok ? 'success' : 'warning';
+                    statusHTML += `<div class="status ${apiClass}">产品API: ${apiStatus}</div>`;
+                    log(`API检查: ${apiStatus}`, apiResponse.ok ? 'success' : 'warning');
+                } catch (error) {
+                    statusHTML += `<div class="status danger">产品API: ❌ 连接失败</div>`;
+                    log(`API检查: 连接失败 - ${error.message}`, 'error');
+                }
+                
+                statusElement.innerHTML = statusHTML;
+                
+            } catch (error) {
+                statusElement.innerHTML = `<div class="status danger">❌ 修复状态检查失败: ${error.message}</div>`;
+                log(`修复状态检查失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 清除日志
+        function clearLogs() {
+            document.getElementById('logs').textContent = '日志已清除...\n';
+            log('日志已清除', 'info');
+        }
+        
+        // 页面加载完成后自动执行
+        document.addEventListener('DOMContentLoaded', function() {
+            log('页面诊断工具已启动', 'success');
+            
+            // 自动检查修复状态
+            setTimeout(() => {
+                checkFixStatus();
+            }, 1000);
+            
+            // 监控页面跳转
+            const originalPushState = history.pushState;
+            const originalReplaceState = history.replaceState;
+            
+            history.pushState = function() {
+                log(`检测到页面跳转 (pushState): ${arguments[2]}`, 'info');
+                return originalPushState.apply(history, arguments);
+            };
+            
+            history.replaceState = function() {
+                log(`检测到页面跳转 (replaceState): ${arguments[2]}`, 'info');
+                return originalReplaceState.apply(history, arguments);
+            };
+            
+            // 监控location变化
+            let currentLocation = window.location.href;
+            setInterval(() => {
+                if (window.location.href !== currentLocation) {
+                    log(`检测到URL变化: ${currentLocation} -> ${window.location.href}`, 'warning');
+                    currentLocation = window.location.href;
+                }
+            }, 1000);
+        });
+        
+        // 错误捕获
+        window.addEventListener('error', function(e) {
+            log(`JavaScript错误: ${e.message} (${e.filename}:${e.lineno})`, 'error');
+        });
+        
+        log('诊断工具初始化完成', 'success');
+    </script>
+</body>
+</html>

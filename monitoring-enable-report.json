@@ -1,0 +1,19 @@
+{
+  "enableTime": "2025-07-20T12:46:23.769Z",
+  "results": {
+    "serverMonitoring": true,
+    "frontendMonitoring": true,
+    "apiMonitoring": true,
+    "performanceBenchmark": true,
+    "monitoringDashboard": true
+  },
+  "enabledCount": 5,
+  "totalCount": 5,
+  "successRate": "100.0%",
+  "nextSteps": [
+    "访问 /admin/monitoring.html 查看监控仪表板",
+    "检查 /api/performance/stats 获取性能统计",
+    "查看 /api/cache/stats 获取缓存状态",
+    "运行 ./server-resource-monitor.sh monitor 启动服务器监控"
+  ]
+}

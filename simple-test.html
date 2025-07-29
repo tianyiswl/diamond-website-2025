@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简化测试 - Diamond Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        #logs {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 简化功能测试</h1>
+        
+        <div id="status-container">
+            <div class="status info">🔄 正在检查基础功能...</div>
+        </div>
+        
+        <div>
+            <button class="button" onclick="testBasicFunctions()">🔍 测试基础功能</button>
+            <button class="button" onclick="testApiCalls()">🌐 测试API调用</button>
+            <button class="button" onclick="testScripts()">📜 测试脚本加载</button>
+            <button class="button" onclick="clearLogs()">🗑️ 清除日志</button>
+        </div>
+        
+        <div id="logs"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.innerHTML = `[${timestamp}] ${message}`;
+            entry.style.color = type === 'error' ? '#dc3545' : 
+                               type === 'success' ? '#28a745' : 
+                               type === 'warning' ? '#ffc107' : '#17a2b8';
+            logs.appendChild(entry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function updateStatus(message, type = 'info') {
+            const container = document.getElementById('status-container');
+            container.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function testBasicFunctions() {
+            log('🔍 开始测试基础功能...', 'info');
+            
+            // 测试DOM
+            const bodyExists = document.body !== null;
+            log(`DOM Body: ${bodyExists ? '✅ 存在' : '❌ 不存在'}`, bodyExists ? 'success' : 'error');
+            
+            // 测试JavaScript基础功能
+            const jsWorks = typeof console !== 'undefined';
+            log(`JavaScript: ${jsWorks ? '✅ 正常' : '❌ 异常'}`, jsWorks ? 'success' : 'error');
+            
+            // 测试Fetch API
+            const fetchExists = typeof fetch !== 'undefined';
+            log(`Fetch API: ${fetchExists ? '✅ 支持' : '❌ 不支持'}`, fetchExists ? 'success' : 'error');
+            
+            // 测试本地存储
+            const storageWorks = typeof localStorage !== 'undefined';
+            log(`本地存储: ${storageWorks ? '✅ 支持' : '❌ 不支持'}`, storageWorks ? 'success' : 'error');
+            
+            updateStatus('✅ 基础功能测试完成', 'success');
+        }
+        
+        async function testApiCalls() {
+            log('🌐 开始测试API调用...', 'info');
+            
+            try {
+                // 测试健康检查
+                log('测试健康检查API...', 'info');
+                const healthResponse = await fetch('/api/health');
+                log(`健康检查: ${healthResponse.ok ? '✅ 正常' : '❌ 异常'}`, healthResponse.ok ? 'success' : 'error');
+            } catch (error) {
+                log(`健康检查失败: ${error.message}`, 'error');
+            }
+            
+            try {
+                // 测试分类API
+                log('测试分类API...', 'info');
+                const categoriesResponse = await fetch('/api/public/categories');
+                if (categoriesResponse.ok) {
+                    const categories = await categoriesResponse.json();
+                    log(`分类API: ✅ 正常 (${categories.length || 0}个分类)`, 'success');
+                } else {
+                    log(`分类API: ❌ 异常 (${categoriesResponse.status})`, 'error');
+                }
+            } catch (error) {
+                log(`分类API失败: ${error.message}`, 'error');
+            }
+            
+            try {
+                // 测试产品API
+                log('测试产品API...', 'info');
+                const productsResponse = await fetch('/api/public/products');
+                if (productsResponse.ok) {
+                    const data = await productsResponse.json();
+                    const productCount = data.products ? data.products.length : 0;
+                    log(`产品API: ✅ 正常 (${productCount}个产品)`, 'success');
+                } else {
+                    log(`产品API: ❌ 异常 (${productsResponse.status})`, 'error');
+                }
+            } catch (error) {
+                log(`产品API失败: ${error.message}`, 'error');
+            }
+            
+            updateStatus('✅ API测试完成', 'success');
+        }
+        
+        function testScripts() {
+            log('📜 开始测试脚本加载...', 'info');
+            
+            // 测试双重刷新修复脚本
+            const doubleRefreshExists = typeof window.PageExecutionState !== 'undefined';
+            log(`双重刷新修复: ${doubleRefreshExists ? '✅ 已加载' : '❌ 未加载'}`, doubleRefreshExists ? 'success' : 'error');
+            
+            // 测试页面跳转修复脚本
+            const pageTransitionExists = typeof window.forceRemoveLoadingScreens !== 'undefined';
+            log(`页面跳转修复: ${pageTransitionExists ? '✅ 已加载' : '❌ 未加载'}`, pageTransitionExists ? 'success' : 'error');
+            
+            // 测试页面加载管理器
+            const pageLoadManagerExists = typeof window.PageLoadManager !== 'undefined';
+            log(`页面加载管理器: ${pageLoadManagerExists ? '✅ 已加载' : '❌ 未加载'}`, pageLoadManagerExists ? 'success' : 'error');
+            
+            // 测试组件管理器
+            const componentManagerExists = typeof window.componentManager !== 'undefined';
+            log(`组件管理器: ${componentManagerExists ? '✅ 已加载' : '❌ 未加载'}`, componentManagerExists ? 'success' : 'error');
+            
+            // 测试渲染协调器
+            const renderCoordinatorExists = typeof window.PageRenderCoordinator !== 'undefined';
+            log(`渲染协调器: ${renderCoordinatorExists ? '✅ 已加载' : '❌ 未加载'}`, renderCoordinatorExists ? 'success' : 'error');
+            
+            // 测试国际化管理器
+            const i18nExists = typeof window.i18nManager !== 'undefined';
+            log(`国际化管理器: ${i18nExists ? '✅ 已加载' : '❌ 未加载'}`, i18nExists ? 'success' : 'error');
+            
+            updateStatus('✅ 脚本测试完成', 'success');
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+            log('🗑️ 日志已清除', 'info');
+        }
+        
+        // 页面加载完成后自动测试
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 简化测试页面已启动', 'success');
+            
+            setTimeout(() => {
+                testBasicFunctions();
+                setTimeout(() => {
+                    testApiCalls();
+                    setTimeout(() => {
+                        testScripts();
+                    }, 1000);
+                }, 1000);
+            }, 500);
+        });
+        
+        // 捕获错误
+        window.addEventListener('error', function(e) {
+            log(`❌ JavaScript错误: ${e.message} (${e.filename}:${e.lineno})`, 'error');
+            updateStatus('❌ 检测到JavaScript错误', 'error');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 简化产品测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .warning { background: #fff3cd; color: #856404; }
+        .danger { background: #f8d7da; color: #721c24; }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        .product-card h4 {
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+        .product-card p {
+            color: #666;
+            margin: 5px 0;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 简化产品页面测试</h1>
+        <p>这个页面用于测试产品数据加载功能，不依赖复杂的组件系统。</p>
+        
+        <div id="status" class="status warning">
+            ⏳ 正在初始化...
+        </div>
+        
+        <div>
+            <button class="btn" onclick="testBasicJS()">测试基础JavaScript</button>
+            <button class="btn" onclick="loadTestProducts()">加载测试产品</button>
+            <button class="btn" onclick="testAPI()">测试API</button>
+            <button class="btn" onclick="clearResults()">清除结果</button>
+        </div>
+        
+        <div id="productCount" style="font-size: 18px; font-weight: bold; margin: 20px 0;">
+            共0个产品
+        </div>
+        
+        <div id="productGrid" class="product-grid">
+            <!-- 产品将在这里显示 -->
+        </div>
+        
+        <div id="logs" style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto;">
+            <strong>日志输出：</strong><br>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let testProducts = [];
+        
+        // 日志函数
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('logs');
+            const color = type === 'error' ? 'red' : type === 'success' ? 'green' : type === 'warning' ? 'orange' : 'black';
+            logElement.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span><br>`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        // 更新状态
+        function updateStatus(message, type = 'warning') {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+        
+        // 更新产品计数
+        function updateProductCount(count) {
+            const countElement = document.getElementById('productCount');
+            countElement.textContent = `共${count}个产品`;
+            log(`产品计数更新: ${count}`, 'info');
+        }
+        
+        // 渲染产品
+        function renderProducts(products) {
+            const grid = document.getElementById('productGrid');
+            
+            if (!products || products.length === 0) {
+                grid.innerHTML = '<div style="text-align: center; color: #666; padding: 40px;">暂无产品数据</div>';
+                updateProductCount(0);
+                return;
+            }
+            
+            grid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <h4>${product.name || '未知产品'}</h4>
+                    <p><strong>品牌:</strong> ${product.brand || '未知品牌'}</p>
+                    <p><strong>分类:</strong> ${product.category || '未知分类'}</p>
+                    <p><strong>型号:</strong> ${product.model || '未知型号'}</p>
+                    <p><strong>描述:</strong> ${product.description || '暂无描述'}</p>
+                </div>
+            `).join('');
+            
+            updateProductCount(products.length);
+            log(`产品渲染完成: ${products.length}个产品`, 'success');
+        }
+        
+        // 测试基础JavaScript
+        function testBasicJS() {
+            log('开始测试基础JavaScript功能...', 'info');
+            
+            try {
+                // 测试基本功能
+                const testArray = [1, 2, 3];
+                const testObject = { name: 'test', value: 123 };
+                const testString = 'Hello World';
+                
+                log(`数组测试: ${JSON.stringify(testArray)}`, 'success');
+                log(`对象测试: ${JSON.stringify(testObject)}`, 'success');
+                log(`字符串测试: ${testString}`, 'success');
+                
+                // 测试DOM操作
+                const testDiv = document.createElement('div');
+                testDiv.textContent = '测试元素';
+                log('DOM操作测试: 成功', 'success');
+                
+                updateStatus('✅ JavaScript基础功能正常', 'success');
+                
+            } catch (error) {
+                log(`JavaScript测试失败: ${error.message}`, 'error');
+                updateStatus('❌ JavaScript基础功能异常', 'danger');
+            }
+        }
+        
+        // 加载测试产品
+        function loadTestProducts() {
+            log('开始加载测试产品数据...', 'info');
+            
+            try {
+                testProducts = [
+                    {
+                        id: "GT1749V",
+                        name: "GT1749V 涡轮增压器总成",
+                        brand: "Garrett",
+                        category: "turbocharger",
+                        model: "GT1749V-724930",
+                        description: "适用于大众、奥迪1.9L TDI发动机，原厂品质，性能稳定"
+                    },
+                    {
+                        id: "0445120123",
+                        name: "0445120123 共轨喷油器",
+                        brand: "Bosch",
+                        category: "diesel-injection",
+                        model: "0445120123",
+                        description: "Bosch原厂共轨喷油器，适用于多种柴油发动机"
+                    }
+                ];
+                
+                log(`测试产品数据加载成功: ${testProducts.length}个产品`, 'success');
+                renderProducts(testProducts);
+                updateStatus('✅ 测试产品加载成功', 'success');
+                
+            } catch (error) {
+                log(`测试产品加载失败: ${error.message}`, 'error');
+                updateStatus('❌ 测试产品加载失败', 'danger');
+            }
+        }
+        
+        // 测试API
+        function testAPI() {
+            log('开始测试API接口...', 'info');
+            updateStatus('⏳ 正在测试API...', 'warning');
+            
+            fetch('/api/public/products?limit=10')
+                .then(response => {
+                    log(`API响应状态: ${response.status}`, response.ok ? 'success' : 'warning');
+                    
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error(`API返回错误状态: ${response.status}`);
+                    }
+                })
+                .then(data => {
+                    log(`API数据获取成功: ${JSON.stringify(data).substring(0, 100)}...`, 'success');
+                    
+                    const products = data.data || data.products || data || [];
+                    log(`解析到产品数量: ${products.length}`, 'info');
+                    
+                    if (products.length > 0) {
+                        renderProducts(products);
+                        updateStatus('✅ API测试成功', 'success');
+                    } else {
+                        log('API返回空数据，使用测试数据', 'warning');
+                        loadTestProducts();
+                        updateStatus('⚠️ API返回空数据，已加载测试数据', 'warning');
+                    }
+                })
+                .catch(error => {
+                    log(`API测试失败: ${error.message}`, 'error');
+                    log('API失败，尝试加载测试数据...', 'warning');
+                    loadTestProducts();
+                    updateStatus('⚠️ API失败，已加载测试数据', 'warning');
+                });
+        }
+        
+        // 清除结果
+        function clearResults() {
+            testProducts = [];
+            renderProducts([]);
+            document.getElementById('logs').innerHTML = '<strong>日志输出：</strong><br>';
+            updateStatus('🔄 已清除所有结果', 'warning');
+            log('结果已清除', 'info');
+        }
+        
+        // 页面加载完成后自动执行
+        document.addEventListener('DOMContentLoaded', function() {
+            log('页面DOM加载完成', 'success');
+            updateStatus('✅ 页面初始化完成', 'success');
+            
+            // 自动测试基础功能
+            setTimeout(() => {
+                testBasicJS();
+            }, 500);
+            
+            // 自动尝试加载产品
+            setTimeout(() => {
+                testAPI();
+            }, 1000);
+        });
+        
+        // 页面完全加载后
+        window.addEventListener('load', function() {
+            log('页面完全加载完成', 'success');
+        });
+        
+        // 错误捕获
+        window.addEventListener('error', function(e) {
+            log(`JavaScript错误: ${e.message} (${e.filename}:${e.lineno})`, 'error');
+            updateStatus('❌ 检测到JavaScript错误', 'danger');
+        });
+        
+        log('脚本初始化完成', 'success');
+    </script>
+</body>
+</html>

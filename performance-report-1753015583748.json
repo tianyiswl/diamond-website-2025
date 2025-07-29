@@ -1,0 +1,115 @@
+{
+  "timestamp": "2025-07-20T12:46:23.747Z",
+  "environment": {
+    "nodeVersion": "v22.16.0",
+    "platform": "win32",
+    "arch": "x64",
+    "memory": {
+      "rss": 49221632,
+      "heapTotal": 11071488,
+      "heapUsed": 7580720,
+      "external": 1566032,
+      "arrayBuffers": 10515
+    }
+  },
+  "results": {
+    "fileIO": {
+      "iterations": 100,
+      "average": 0.1465050000000004,
+      "min": 0.12069999999999936,
+      "max": 0.49439999999999884,
+      "median": 0.13069999999999737,
+      "p95": 0.22749999999999915,
+      "p99": 0.49439999999999884,
+      "fileSize": 9913,
+      "fileSizeKB": "9.68"
+    },
+    "search": {
+      "3886223": {
+        "average": 0.0007033999999999594,
+        "min": 0.0005999999999986017,
+        "max": 0.06629999999999825,
+        "median": 0.0005999999999986017,
+        "p95": 0.0007000000000019213,
+        "p99": 0.0008999999999943498,
+        "iterations": 1000,
+        "matchCount": 2
+      },
+      "turbo": {
+        "average": 0.0015263000000001058,
+        "min": 0.0010999999999938836,
+        "max": 0.15720000000000312,
+        "median": 0.0011999999999972033,
+        "p95": 0.0013999999999967372,
+        "p99": 0.003700000000002035,
+        "iterations": 1000,
+        "matchCount": 2
+      },
+      "S500W": {
+        "average": 0.0011802000000000633,
+        "min": 0.0005999999999986017,
+        "max": 0.15559999999999974,
+        "median": 0.0007000000000019213,
+        "p95": 0.0011999999999972033,
+        "p99": 0.0035999999999987153,
+        "iterations": 1000,
+        "matchCount": 2
+      },
+      "Diamond": {
+        "average": 0.0009659999999998519,
+        "min": 0.0007999999999981355,
+        "max": 0.08370000000000033,
+        "median": 0.0008999999999943498,
+        "p95": 0.0009999999999976694,
+        "p99": 0.0012000000000043087,
+        "iterations": 1000,
+        "matchCount": 0
+      },
+      "Volvo": {
+        "average": 0.0006076000000000974,
+        "min": 0.00039999999999906777,
+        "max": 0.0730000000000004,
+        "median": 0.0005000000000023874,
+        "p95": 0.0005999999999986017,
+        "p99": 0.0008999999999943498,
+        "iterations": 1000,
+        "matchCount": 3
+      }
+    },
+    "memory": {
+      "initialHeapUsed": "5.02",
+      "finalHeapUsed": "6.45",
+      "memoryIncrease": "1.43",
+      "productsLoaded": 400,
+      "memoryPerProduct": "3.65"
+    },
+    "concurrent": {
+      "1": {
+        "totalTime": "0.32",
+        "avgTimePerRequest": "0.32",
+        "requestsPerSecond": "3173.60"
+      },
+      "5": {
+        "totalTime": "0.80",
+        "avgTimePerRequest": "0.16",
+        "requestsPerSecond": "6260.96"
+      },
+      "10": {
+        "totalTime": "1.85",
+        "avgTimePerRequest": "0.18",
+        "requestsPerSecond": "5419.47"
+      },
+      "20": {
+        "totalTime": "3.28",
+        "avgTimePerRequest": "0.16",
+        "requestsPerSecond": "6097.38"
+      },
+      "50": {
+        "totalTime": "7.61",
+        "avgTimePerRequest": "0.15",
+        "requestsPerSecond": "6566.16"
+      }
+    }
+  },
+  "recommendations": []
+}

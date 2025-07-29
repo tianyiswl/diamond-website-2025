@@ -1,0 +1,259 @@
+/**
+ * 🚀 统一加载屏幕样式修复
+ * 解决LOGO闪烁和动画不一致问题
+ * 
+ * 功能：
+ * - 统一所有页面的加载屏幕样式
+ * - 防止LOGO闪烁和重复显示
+ * - 确保平滑的视觉过渡
+ * - 优化加载动画性能
+ */
+
+/* 🔧 重置和覆盖旧的加载屏幕样式 */
+#loading,
+.loading-screen:not(.global-loading-screen) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* 🚨 强制覆盖main.css中的LOGO样式，防止白色框 */
+.loading-logo-img {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* 🚀 全局加载屏幕优化样式 */
+.global-loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #002e5f 0%, #001a3a 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999; /* 确保最高层级 */
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(2px);
+}
+
+.global-loading-screen.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    /* 🚀 移除缩放动画，改为纯淡出效果，提升视觉体验 */
+}
+
+/* 🎨 加载内容样式优化 */
+.global-loading-screen .loading-content {
+    text-align: center;
+    color: white;
+    max-width: 400px;
+    padding: 30px;
+    animation: contentFadeIn 0.8s ease-out;
+}
+
+/* 🏷️ LOGO样式统一和优化 */
+.global-loading-screen .loading-logo {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+/* 🚀 彻底修复LOGO白色框问题 - 使用最高优先级覆盖所有可能的样式冲突 */
+.global-loading-screen .loading-logo-img,
+.loading-logo-img,
+img.loading-logo-img {
+    width: 90px !important;
+    height: 90px !important;
+    border-radius: 0 !important; /* 移除圆角，防止白色框 */
+    object-fit: contain !important;
+    animation: logoFloat 3s ease-in-out infinite, logoGlow 2s ease-in-out infinite alternate !important;
+    /* 🔧 完全移除所有可能导致白色框的样式 */
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important; /* 移除阴影，防止白色框效果 */
+    outline: none !important;
+    transition: all 0.3s ease !important;
+    /* 🎯 确保图片本身透明显示 */
+    mix-blend-mode: normal !important;
+    filter: none !important;
+}
+
+/* 🌟 LOGO动画效果 */
+@keyframes logoFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-8px) scale(1.02);
+    }
+}
+
+@keyframes logoGlow {
+    0% {
+        box-shadow: 
+            0 0 20px rgba(255, 255, 255, 0.3),
+            0 10px 30px rgba(0, 46, 95, 0.4);
+    }
+    100% {
+        box-shadow: 
+            0 0 30px rgba(255, 255, 255, 0.5),
+            0 15px 40px rgba(0, 46, 95, 0.6);
+    }
+}
+
+@keyframes contentFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 📝 文本样式优化 */
+.global-loading-screen .loading-company-name {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 20px 0 12px 0;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;
+}
+
+.global-loading-screen .loading-subtitle {
+    font-size: 16px;
+    margin-bottom: 35px;
+    opacity: 0.9;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 🔄 旋转器样式优化 */
+.global-loading-screen .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-top: 4px solid #00dc82;
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+    margin: 0 auto 25px;
+    box-shadow: 0 0 15px rgba(0, 220, 130, 0.3);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 📊 进度条样式优化 */
+.global-loading-screen .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.global-loading-screen .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00dc82 0%, #00b76c 50%, #00dc82 100%);
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(0, 220, 130, 0.5);
+    animation: progressGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes progressGlow {
+    0% {
+        box-shadow: 0 0 10px rgba(0, 220, 130, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(0, 220, 130, 0.8);
+    }
+}
+
+.global-loading-screen .progress-text {
+    font-size: 13px;
+    opacity: 0.8;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.global-loading-screen .loading-text {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 25px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+}
+
+/* 📱 移动端响应式优化 */
+@media (max-width: 768px) {
+    .global-loading-screen .loading-content {
+        padding: 20px;
+        max-width: 320px;
+    }
+    
+    .global-loading-screen .loading-logo-img {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .global-loading-screen .loading-company-name {
+        font-size: 22px;
+        margin: 15px 0 10px 0;
+    }
+    
+    .global-loading-screen .loading-subtitle {
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+    
+    .global-loading-screen .spinner {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 20px;
+    }
+}
+
+/* 🎯 确保其他加载屏幕不会干扰 */
+.loading-screen:not(.global-loading-screen),
+#loading {
+    z-index: -1 !important;
+    display: none !important;
+}
+
+/* 🔧 防止页面内容在加载时闪现 */
+body.loading {
+    overflow: hidden;
+}
+
+body.loading main,
+body.loading .header:not(.global-loading-screen),
+body.loading .footer {
+    visibility: hidden;
+    opacity: 0;
+}
+
+/* ✨ 加载完成后的平滑显示 */
+body:not(.loading) main,
+body:not(.loading) .header,
+body:not(.loading) .footer {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}

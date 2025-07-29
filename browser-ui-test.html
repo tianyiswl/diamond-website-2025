@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond Website 浏览器端UI功能测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        .test-name {
+            font-weight: 500;
+            color: #333;
+        }
+        .test-result {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-item {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+        }
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        .test-frame {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn.secondary {
+            background: #6c757d;
+        }
+        .btn.secondary:hover {
+            background: #545b62;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🎨 Diamond Website 浏览器端UI功能测试</h1>
+            <p>实时检测JavaScript动态加载的页面功能</p>
+        </div>
+
+        <div class="summary" id="summary">
+            <h3>📊 测试结果概览</h3>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalTests">0</span>
+                    <span class="stat-label">总测试数</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="passedTests">0</span>
+                    <span class="stat-label">通过</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="failedTests">0</span>
+                    <span class="stat-label">失败</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="successRate">0%</span>
+                    <span class="stat-label">成功率</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="runAllTests()">🚀 开始测试</button>
+            <button class="btn secondary" onclick="clearLog()">🗑️ 清空日志</button>
+            <button class="btn secondary" onclick="exportReport()">📄 导出报告</button>
+        </div>
+
+        <iframe id="testFrame" class="test-frame" src="http://localhost:3001/" onload="onFrameLoad()"></iframe>
+
+        <div class="test-section">
+            <h3>🧭 页面导航测试</h3>
+            <div id="navigationTests"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🖱️ 交互功能测试</h3>
+            <div id="interactionTests"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🌍 多语言功能测试</h3>
+            <div id="multilangTests"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📱 响应式设计测试</h3>
+            <div id="responsiveTests"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>😊 用户体验测试</h3>
+            <div id="uxTests"></div>
+        </div>
+
+        <div class="log" id="testLog"></div>
+    </div>
+
+    <script>
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            tests: []
+        };
+
+        let testFrame = null;
+        let frameDoc = null;
+
+        function onFrameLoad() {
+            testFrame = document.getElementById('testFrame');
+            frameDoc = testFrame.contentDocument || testFrame.contentWindow.document;
+            log('✅ 测试页面加载完成');
+            
+            // 等待JavaScript组件加载
+            setTimeout(() => {
+                log('⏳ 等待JavaScript组件加载...');
+                setTimeout(runAllTests, 2000);
+            }, 1000);
+        }
+
+        function log(message) {
+            const logElement = document.getElementById('testLog');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.innerHTML += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+
+        function addTest(category, name, result, details = '') {
+            testResults.total++;
+            const test = {
+                category,
+                name,
+                result: result ? 'PASS' : 'FAIL',
+                details
+            };
+            testResults.tests.push(test);
+            
+            if (result) {
+                testResults.passed++;
+            } else {
+                testResults.failed++;
+            }
+
+            // 更新UI
+            const categoryElement = document.getElementById(category + 'Tests');
+            const testItem = document.createElement('div');
+            testItem.className = 'test-item';
+            testItem.innerHTML = `
+                <span class="test-name">${name}</span>
+                <span class="test-result ${result ? 'pass' : 'fail'}">${result ? '✅ 通过' : '❌ 失败'}</span>
+            `;
+            categoryElement.appendChild(testItem);
+
+            // 更新统计
+            updateSummary();
+            
+            log(`${result ? '✅' : '❌'} [${category.toUpperCase()}] ${name} - ${details}`);
+        }
+
+        function updateSummary() {
+            document.getElementById('totalTests').textContent = testResults.total;
+            document.getElementById('passedTests').textContent = testResults.passed;
+            document.getElementById('failedTests').textContent = testResults.failed;
+            const successRate = testResults.total > 0 ? ((testResults.passed / testResults.total) * 100).toFixed(1) : 0;
+            document.getElementById('successRate').textContent = successRate + '%';
+        }
+
+        function runAllTests() {
+            if (!frameDoc) {
+                log('❌ 测试页面未加载，请等待...');
+                return;
+            }
+
+            log('🎨 开始Diamond Website浏览器端UI功能测试...');
+            
+            // 重置结果
+            testResults = { total: 0, passed: 0, failed: 0, tests: [] };
+            
+            // 清空测试结果显示
+            ['navigation', 'interaction', 'multilang', 'responsive', 'ux'].forEach(category => {
+                document.getElementById(category + 'Tests').innerHTML = '';
+            });
+
+            // 运行各类测试
+            testNavigation();
+            testInteraction();
+            testMultiLanguage();
+            testResponsive();
+            testUserExperience();
+
+            log('🎉 所有测试完成！');
+        }
+
+        function testNavigation() {
+            log('🧭 开始页面导航测试...');
+
+            // 测试页头容器
+            const headerContainer = frameDoc.getElementById('header-container');
+            addTest('navigation', '页头容器', !!headerContainer, headerContainer ? '页头容器存在' : '页头容器缺失');
+
+            // 测试导航菜单
+            const navMenu = frameDoc.querySelector('.nav-menu');
+            addTest('navigation', '导航菜单', !!navMenu, navMenu ? '导航菜单存在' : '导航菜单缺失');
+
+            // 测试导航链接
+            const homeLink = frameDoc.querySelector('a[href*="index"], a[href="#home"]');
+            addTest('navigation', '首页链接', !!homeLink, homeLink ? '首页链接存在' : '首页链接缺失');
+
+            const productsLink = frameDoc.querySelector('a[href*="products"]');
+            addTest('navigation', '产品页面链接', !!productsLink, productsLink ? '产品页面链接存在' : '产品页面链接缺失');
+
+            const contactLink = frameDoc.querySelector('a[href*="contact"], a[href="#contact"]');
+            addTest('navigation', '联系我们链接', !!contactLink, contactLink ? '联系我们链接存在' : '联系我们链接缺失');
+
+            // 测试移动端菜单按钮
+            const mobileMenuBtn = frameDoc.querySelector('.mobile-menu-btn');
+            addTest('navigation', '移动端菜单按钮', !!mobileMenuBtn, mobileMenuBtn ? '移动端菜单按钮存在' : '移动端菜单按钮缺失');
+        }
+
+        function testInteraction() {
+            log('🖱️ 开始交互功能测试...');
+
+            // 测试搜索框
+            const searchInput = frameDoc.getElementById('searchInput');
+            addTest('interaction', '搜索输入框', !!searchInput, searchInput ? '搜索输入框存在' : '搜索输入框缺失');
+
+            const searchBtn = frameDoc.querySelector('.search-btn');
+            addTest('interaction', '搜索按钮', !!searchBtn, searchBtn ? '搜索按钮存在' : '搜索按钮缺失');
+
+            // 测试下拉菜单
+            const dropdown = frameDoc.querySelector('.dropdown-menu');
+            addTest('interaction', '下拉菜单', !!dropdown, dropdown ? '下拉菜单存在' : '下拉菜单缺失');
+
+            // 测试轮播图
+            const carousel = frameDoc.querySelector('.carousel-container');
+            addTest('interaction', '轮播图', !!carousel, carousel ? '轮播图容器存在' : '轮播图容器缺失');
+
+            // 测试联系表单
+            const contactForm = frameDoc.querySelector('#contactForm');
+            addTest('interaction', '联系表单', !!contactForm, contactForm ? '联系表单存在' : '联系表单缺失');
+        }
+
+        function testMultiLanguage() {
+            log('🌍 开始多语言功能测试...');
+
+            // 测试语言切换器
+            const langSwitcher = frameDoc.querySelector('.language-switcher');
+            addTest('multilang', '语言切换器', !!langSwitcher, langSwitcher ? '语言切换器存在' : '语言切换器缺失');
+
+            const langSelect = frameDoc.getElementById('headerLanguageSelect');
+            addTest('multilang', '语言选择下拉框', !!langSelect, langSelect ? '语言选择下拉框存在' : '语言选择下拉框缺失');
+
+            // 测试多语言属性
+            const i18nElements = frameDoc.querySelectorAll('[data-i18n]');
+            addTest('multilang', '多语言元素', i18nElements.length > 0, `找到 ${i18nElements.length} 个多语言元素`);
+
+            // 测试HTML语言标识
+            const htmlLang = frameDoc.documentElement.getAttribute('lang');
+            addTest('multilang', 'HTML语言标识', !!htmlLang, htmlLang ? `语言标识: ${htmlLang}` : 'HTML语言标识缺失');
+        }
+
+        function testResponsive() {
+            log('📱 开始响应式设计测试...');
+
+            // 测试viewport meta标签
+            const viewport = frameDoc.querySelector('meta[name="viewport"]');
+            addTest('responsive', 'Viewport Meta标签', !!viewport, viewport ? 'Viewport meta标签存在' : 'Viewport meta标签缺失');
+
+            // 测试响应式容器
+            const containers = frameDoc.querySelectorAll('.container');
+            addTest('responsive', '响应式容器', containers.length > 0, `找到 ${containers.length} 个容器元素`);
+
+            // 测试移动端菜单
+            const mobileMenu = frameDoc.querySelector('.mobile-menu-btn');
+            addTest('responsive', '移动端菜单', !!mobileMenu, mobileMenu ? '移动端菜单按钮存在' : '移动端菜单按钮缺失');
+
+            // 测试响应式图片
+            const images = frameDoc.querySelectorAll('img');
+            const responsiveImages = Array.from(images).filter(img => 
+                img.style.maxWidth === '100%' || 
+                img.classList.contains('img-responsive') ||
+                img.hasAttribute('srcset')
+            );
+            addTest('responsive', '响应式图片', responsiveImages.length > 0, `找到 ${responsiveImages.length} 个响应式图片`);
+        }
+
+        function testUserExperience() {
+            log('😊 开始用户体验测试...');
+
+            // 测试页面标题
+            const title = frameDoc.title;
+            addTest('ux', '页面标题', !!title && title.length > 0, title ? `页面标题: ${title.substring(0, 50)}...` : '页面标题缺失');
+
+            // 测试Favicon
+            const favicon = frameDoc.querySelector('link[rel*="icon"]');
+            addTest('ux', 'Favicon图标', !!favicon, favicon ? 'Favicon图标存在' : 'Favicon图标缺失');
+
+            // 测试加载指示器
+            const loadingElements = frameDoc.querySelectorAll('.loading, .spinner, .loading-text');
+            addTest('ux', '加载指示器', loadingElements.length > 0, `找到 ${loadingElements.length} 个加载指示器`);
+
+            // 测试返回顶部按钮（可能通过JS动态添加）
+            setTimeout(() => {
+                const backToTop = frameDoc.getElementById('backToTop') || frameDoc.querySelector('.back-to-top');
+                addTest('ux', '返回顶部按钮', !!backToTop, backToTop ? '返回顶部按钮存在' : '返回顶部按钮缺失');
+            }, 1000);
+
+            // 测试可访问性属性
+            const altImages = frameDoc.querySelectorAll('img[alt]');
+            const ariaLabels = frameDoc.querySelectorAll('[aria-label]');
+            const accessibilityCount = altImages.length + ariaLabels.length;
+            addTest('ux', '可访问性支持', accessibilityCount > 0, `找到 ${accessibilityCount} 个可访问性属性`);
+        }
+
+        function clearLog() {
+            document.getElementById('testLog').innerHTML = '';
+        }
+
+        function exportReport() {
+            const report = {
+                timestamp: new Date().toISOString(),
+                testMethod: 'Browser-based Dynamic Content Testing',
+                summary: {
+                    total: testResults.total,
+                    passed: testResults.passed,
+                    failed: testResults.failed,
+                    successRate: ((testResults.passed / testResults.total) * 100).toFixed(2) + '%'
+                },
+                tests: testResults.tests
+            };
+
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'browser-ui-test-report.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            log('📄 测试报告已导出');
+        }
+    </script>
+</body>
+</html>

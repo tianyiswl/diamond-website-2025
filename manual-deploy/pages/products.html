@@ -929,7 +929,7 @@
             id: "GT1749V",
             name: "GT1749V 涡轮增压器总成",
             brand: "Garrett",
-            category: "turbocharger",
+            category: "turbocharger", // ✅ 正确的分类ID
             model: "GT1749V-724930",
             description: "适用于大众、奥迪1.9L TDI发动机，原厂品质，性能稳定",
             features: ["原厂品质", "性能稳定", "质保1年"],
@@ -940,12 +940,45 @@
             id: "0445120123",
             name: "0445120123 共轨喷油器",
             brand: "Bosch",
-            category: "diesel-injection",
+            category: "injector", // 🔧 修复：从 "diesel-injection" 改为 "injector"
             model: "0445120123",
             description: "Bosch原厂共轨喷油器，适用于多种柴油发动机",
             features: ["原厂正品", "高精度", "长寿命"],
             badge: "new",
             image: "../assets/images/carousel/img2.jpg",
+          },
+          {
+            id: "ACT001",
+            name: "VGT 3798462 电子执行器",
+            brand: "Diamond-Auto",
+            category: "actuator", // ✅ 添加执行器产品
+            model: "3798462",
+            description: "适用于沃尔沃FL220、道奇Ram，电子可变几何涡轮执行器",
+            features: ["电子控制", "精准调节", "原厂品质"],
+            badge: "tech",
+            image: "../assets/images/carousel/img1.jpg",
+          },
+          {
+            id: "PARTS001",
+            name: "涡轮增压器维修套件",
+            brand: "Diamond-Auto",
+            category: "turbo-parts", // ✅ 添加涡轮配件产品
+            model: "KIT-GT1749V",
+            description: "GT1749V涡轮增压器专用维修套件，包含密封件、轴承等",
+            features: ["配件齐全", "专业工具", "质保1年"],
+            badge: "parts",
+            image: "../assets/images/carousel/img2.jpg",
+          },
+          {
+            id: "OTHER001",
+            name: "专业诊断工具",
+            brand: "Diamond-Auto",
+            category: "others", // ✅ 添加其他类别产品
+            model: "DIAG-PRO",
+            description: "涡轮增压器和共轨系统专业诊断工具",
+            features: ["专业诊断", "多系统支持", "便携设计"],
+            badge: "pro",
+            image: "../assets/images/carousel/img1.jpg",
           },
         ];
         currentProducts = [...allProducts];
@@ -1040,15 +1073,90 @@
         }
       }
 
-      // 按分类筛选
+      // 按分类筛选 - 增强版本，支持多种分类字段格式
       function filterByCategory(category) {
+        console.log('🔍 开始分类筛选:', category);
+        console.log('📦 当前所有产品数量:', allProducts.length);
+
+        // 打印所有产品的分类信息用于调试
+        console.log('📋 所有产品分类信息:', allProducts.map(p => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          categorySlug: p.categorySlug,
+          categoryName: p.categoryName,
+          categoryInfo: p.categoryInfo
+        })));
+
         if (category === "all") {
           currentProducts = [...allProducts];
+          console.log('✅ 显示全部产品:', currentProducts.length, '个');
         } else {
-          currentProducts = allProducts.filter(
-            (product) => product.category === category,
-          );
+          // 增强的分类筛选逻辑，支持多种分类字段格式
+          currentProducts = allProducts.filter((product) => {
+            // 获取产品的分类信息，支持多种格式
+            let productCategory = '';
+
+            if (typeof product.category === 'string') {
+              // 直接的分类字符串
+              productCategory = product.category;
+            } else if (typeof product.category === 'object' && product.category) {
+              // 分类对象，需要映射到对应的slug
+              const categoryName = product.category.name;
+              // 根据分类名称映射到对应的slug
+              const categoryMapping = {
+                '涡轮增压器': 'turbocharger',
+                '执行器': 'actuator',
+                '共轨喷油器': 'injector',
+                '涡轮配件': 'turbo-parts',
+                '其他': 'others'
+              };
+              productCategory = categoryMapping[categoryName] || '';
+            } else {
+              // 其他格式的分类字段
+              productCategory =
+                product.categorySlug || // 分类slug
+                product.categoryName || // 分类名称
+                (product.categoryInfo && product.categoryInfo.id) || // 分类对象的ID
+                (product.categoryInfo && product.categoryInfo.slug) || // 分类对象的slug
+                '';
+            }
+
+            // 分类匹配逻辑
+            const isMatch = productCategory === category;
+
+            if (isMatch) {
+              console.log('✅ 匹配产品:', product.name, '分类:', productCategory, '(来源:', typeof product.category === 'object' ? product.category.name : product.category, ')');
+            }
+
+            return isMatch;
+          });
+
+          console.log('🎯 筛选结果:', currentProducts.length, '个产品匹配分类', category);
+
+          // 如果没有匹配的产品，打印详细信息帮助调试
+          if (currentProducts.length === 0) {
+            console.warn('⚠️ 没有找到匹配的产品！');
+            console.log('🔍 期望的分类ID:', category);
+            console.log('📋 实际的产品分类:', allProducts.map(p => p.category).filter(Boolean));
+
+            // 检查是否有相似的分类
+            const similarCategories = allProducts
+              .map(p => p.category)
+              .filter(Boolean)
+              .filter(cat => {
+                // 确保cat是字符串
+                const catStr = typeof cat === 'string' ? cat : String(cat);
+                return catStr.toLowerCase().includes(category.toLowerCase()) ||
+                       category.toLowerCase().includes(catStr.toLowerCase());
+              });
+
+            if (similarCategories.length > 0) {
+              console.log('💡 发现相似分类:', similarCategories);
+            }
+          }
         }
+
         renderProducts(currentProducts);
 
         // 更新标签栏状态
@@ -1058,6 +1166,14 @@
             btn.classList.add("active");
           }
         });
+
+        // 更新下拉框状态
+        const categoryFilter = document.getElementById("categoryFilter");
+        if (categoryFilter) {
+          categoryFilter.value = category;
+        }
+
+        console.log('🏁 分类筛选完成');
       }
 
       // 按品牌筛选

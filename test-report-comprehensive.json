@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-07-21T04:20:47.259Z",
+  "testResults": {
+    "total": 20,
+    "passed": 15,
+    "failed": 5,
+    "errors": [
+      "Analytics.json结构验证: [object Object]",
+      "时间工具功能: formatDate is not a function",
+      "验证工具功能: validateEmail is not a function",
+      "询价数据读取: false",
+      "Package.json有效性: [object Object]"
+    ]
+  },
+  "systemStatus": "NEEDS_ATTENTION",
+  "recommendations": [
+    "需要修复失败的测试项目",
+    "检查错误日志获取详细信息"
+  ]
+}

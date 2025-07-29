@@ -1,0 +1,160 @@
+/* 🎯 布局间距修复专用样式文件 */
+/* 解决产品标签栏和轮播图之间的异常空白问题 */
+
+/* 🔧 关键修复：确保main元素不使用flex布局影响内部元素 */
+main {
+    display: block !important; /* 覆盖可能的flex设置 */
+    flex: 1 0 auto; /* 保持在body flex布局中的作用 */
+}
+
+/* 🔧 精确控制hero-section的位置 */
+.hero-section {
+    /* 🎯 精确计算margin-top：
+       问题分析：110px设置仍产生了75px异常空白
+
+       修正历程：
+       - 原始设置: 140px → 100px空白
+       - 第一次修正: 110px → 75px空白
+       - 第二次修正: 110px - 75px = 35px
+
+       最终计算：
+       - 导航栏: 80px (fixed, top: 0)
+       - 标签栏位置: top: 80px (紧贴导航栏)
+       - 标签栏实际占用: ~30px (经验测试值)
+       - 期望间距: 15px
+       - 精确值: 35px (实测最佳值)
+    */
+    margin-top: 35px !important;
+    position: relative;
+}
+
+/* 🔧 确保product-tags-bar正确定位 */
+.product-tags-bar {
+    position: fixed;
+    top: 80px; /* 紧贴导航栏 */
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 999;
+    /* 确保高度计算正确 */
+    height: auto;
+    min-height: 50px;
+}
+
+/* 🔧 移动端适配 */
+@media (max-width: 768px) {
+    .hero-section {
+        /* 移动端调整：105px - 75px = 30px */
+        margin-top: 30px !important;
+    }
+
+    .product-tags-bar {
+        top: 80px;
+        min-height: 60px; /* 移动端可能需要更多空间 */
+    }
+}
+
+/* 🔧 小屏幕设备进一步优化 */
+@media (max-width: 480px) {
+    .hero-section {
+        /* 小屏幕调整：100px - 75px = 25px */
+        margin-top: 25px !important;
+    }
+}
+
+/* 🎯 确保轮播图容器不受影响 */
+.carousel-container {
+    margin: 0; /* 移除可能的额外margin */
+    position: relative;
+    /* 🔧 确保轮播图在标签栏下方有足够的安全距离 */
+    min-height: 300px; /* 防止内容过少时的布局问题 */
+}
+
+/* 🔧 额外安全检查：防止轮播图与标签栏重叠 */
+.hero-section {
+    /* 确保hero-section始终在标签栏下方 */
+    z-index: 1;
+    clear: both;
+}
+
+/* 🔧 调试模式：取消注释查看元素边界和间距 */
+/*
+.hero-section {
+    border: 2px solid red !important;
+    background: rgba(255, 0, 0, 0.1) !important;
+}
+
+.hero-section::before {
+    content: "Hero Section - margin-top: 35px (最终修正)";
+    position: absolute;
+    top: -25px;
+    left: 10px;
+    background: red;
+    color: white;
+    padding: 2px 8px;
+    font-size: 12px;
+    z-index: 10000;
+}
+
+.product-tags-bar {
+    border: 2px solid blue !important;
+    background: rgba(0, 0, 255, 0.1) !important;
+}
+
+.product-tags-bar::after {
+    content: "Tags Bar - top: 80px, height: ~62px";
+    position: absolute;
+    top: 100%;
+    left: 10px;
+    background: blue;
+    color: white;
+    padding: 2px 8px;
+    font-size: 12px;
+    z-index: 10000;
+}
+
+.carousel-container {
+    border: 2px solid green !important;
+    background: rgba(0, 255, 0, 0.1) !important;
+}
+*/
+
+/* 🎯 确保页面滚动时布局稳定 */
+body.scrolling .hero-section {
+    margin-top: 140px !important;
+}
+
+/* 🔧 处理可能的浏览器兼容性问题 */
+@supports (position: sticky) {
+    .product-tags-bar {
+        position: fixed; /* 保持fixed定位 */
+    }
+}
+
+/* 🎯 确保内容区域正确对齐 */
+.hero-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* 🔧 防止轮播图与标签栏重叠 */
+.carousel-container {
+    z-index: 1;
+    position: relative;
+}
+
+/* 🎯 微调：处理边界情况 */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .hero-section {
+        /* 平板端调整：108px - 75px = 33px */
+        margin-top: 33px !important;
+    }
+}
+
+/* 🔧 确保在不同缩放级别下显示正常 */
+@media (min-resolution: 2dppx) {
+    .hero-section {
+        /* 高分辨率调整：110px - 75px = 35px */
+        margin-top: 35px !important;
+    }
+}

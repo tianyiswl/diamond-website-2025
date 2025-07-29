@@ -14,8 +14,8 @@ async function loadProductData() {
             throw new Error('未提供产品ID');
         }
 
-        // 🌐 使用公开API接口加载产品数据
-        const response = await fetch(`/api/public/products/${productId}`);
+        // 🌐 使用数据库公开API接口加载产品数据
+        const response = await fetch(`/api/db/public/products/${productId}`);
         if (!response.ok) {
             throw new Error(`加载失败: ${response.status}`);
         }
@@ -35,32 +35,14 @@ async function loadProductData() {
     }
 }
 
-// 🌍 统一翻译辅助函数
-function getTranslation(key, params = {}) {
-    const i18n = window.i18nManager || window.i18n;
-    return i18n?.t ? i18n.t(key, params) : key;
-}
-
-// 🌍 获取产地翻译
+// 🌍 获取产地文本（固定中文）
 function getOriginText() {
-    const originText = getTranslation('company.location');
-    // 如果翻译失败，返回默认值
-    return (originText && originText !== 'company.location') ? originText : '中国';
+    return '中国';
 }
 
-// 🌍 获取质保期翻译
+// 🌍 获取质保期文本（固定中文）
 function getWarrantyText(warrantyMonths = '12') {
-    const warrantyUnit = getTranslation('product.warranty_unit');
-
-    // 如果翻译成功且不等于原键，返回翻译结果
-    if (warrantyUnit && warrantyUnit !== 'product.warranty_unit') {
-        return `${warrantyMonths}${warrantyUnit}`;
-    }
-
-    // 回退到根据当前语言的默认值
-    const currentLang = window.i18nManager?.currentLanguage || 'zh-CN';
-    const defaultUnit = currentLang === 'en-US' ? ' months warranty' : '个月质保';
-    return `${warrantyMonths}${defaultUnit}`;
+    return `${warrantyMonths}个月质保`;
 }
 
 // 🎨 渲染产品详情
@@ -137,25 +119,38 @@ function updatePageSEO(product) {
     updateBreadcrumbNavigation(product);
 }
 
-// 🍞 更新面包屑导航 - 支持翻译
+// 🍞 更新面包屑导航（固定中文）
 function updateBreadcrumbNavigation(product) {
     const breadcrumbContainer = document.querySelector('.breadcrumb');
 
-    // 使用统一翻译函数
-    const homeText = getTranslation('nav.home');
-    const productsText = getTranslation('nav.products');
-    const categoryKey = `categories.${product.category}`;
-    const categoryText = getTranslation(categoryKey);
+    // 固定中文文本
+    const homeText = '首页';
+    const productsText = '产品展示';
+    const categoryText = getCategoryName(product.category);
 
-    const categoryUrl = `products.html?category=${product.category}`;
+    // 获取分类的URL参数（处理对象和字符串格式）
+    let categoryParam = product.category;
+    if (product.category && typeof product.category === 'object') {
+        // 如果是对象，需要转换为URL参数格式
+        const categoryMap = {
+            '涡轮增压器': 'turbocharger',
+            '执行器': 'actuator',
+            '共轨喷油器': 'injector',
+            '涡轮配件': 'turbo-parts',
+            '其他': 'others'
+        };
+        categoryParam = categoryMap[product.category.name] || 'others';
+    }
 
-    // 构建面包屑HTML - 添加翻译属性
+    const categoryUrl = `products.html?category=${categoryParam}`;
+
+    // 构建面包屑HTML
     breadcrumbContainer.innerHTML = `
-        <a href="../index.html" data-i18n="nav.home">${homeText}</a>
+        <a href="../index.html">${homeText}</a>
         <span>/</span>
-        <a href="products.html" data-i18n="nav.products">${productsText}</a>
+        <a href="products.html">${productsText}</a>
         <span>/</span>
-        <a href="${categoryUrl}" data-i18n="${categoryKey}">${categoryText}</a>
+        <a href="${categoryUrl}">${categoryText}</a>
         <span>/</span>
         <span id="productBreadcrumb">${product.name}</span>
     `;
@@ -165,12 +160,14 @@ function updateBreadcrumbNavigation(product) {
 function renderProductImages(product) {
     const mainImage = document.getElementById('productMainImage');
     const thumbnailsContainer = document.getElementById('productThumbnails');
-    
-    // 获取产品图片数组
+
+    // 获取产品图片数组 - 支持新的images数组格式
     let images = [];
-    if (product.images && Array.isArray(product.images)) {
-        images = product.images;
+    if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+        // 新格式：从images数组中提取URL
+        images = product.images.map(img => img.url || img);
     } else if (product.image) {
+        // 兼容旧格式
         images = [product.image];
     }
 
@@ -182,7 +179,8 @@ function renderProductImages(product) {
     console.log('Product images:', images); // 调试日志
 
     // 设置主图
-    mainImage.src = images[0];
+    const mainImageUrl = images[0];
+    mainImage.src = mainImageUrl;
     mainImage.alt = product.name;
     mainImage.onerror = function() {
         this.src = '/assets/images/logo/diamond-logo.png';
@@ -233,17 +231,23 @@ function renderProductImages(product) {
         
         if (product.isNew === 'true' || product.isNew === true) {
             badgeClass = 'new';
-            badgeText = getTranslation('product.badges.new');
+            badgeText = 'New';
         } else if (product.isHot === 'true' || product.isHot === true) {
             badgeClass = 'hot';
-            badgeText = getTranslation('product.badges.hot');
+            badgeText = 'Hot';
         } else if (product.isRecommend === 'true' || product.isRecommend === true) {
             badgeClass = 'recommend';
-            badgeText = getTranslation('product.badges.recommend');
+            badgeText = 'Recommend';
         } else if (product.badge) {
             // 兼容旧的badge字段
             badgeClass = product.badge.toLowerCase();
-            badgeText = getTranslation(`product.badges.${badgeClass}`);
+            const badgeMap = {
+                'new': 'New',
+                'hot': 'Hot',
+                'recommend': 'Recommend',
+                'sale': 'Sale'
+            };
+            badgeText = badgeMap[badgeClass] || 'Recommend';
         }
         
         if (badgeText) {
@@ -279,15 +283,11 @@ function renderProductInfo(product) {
         console.warn('⚠️  未找到产品标题元素 (.product-title)');
     }
     
-    // 设置分类标签 - 使用翻译系统
+    // 设置分类标签
     const categoryBadge = document.getElementById('categoryBadge');
     if (categoryBadge) {
-        const categoryKey = `categories.${product.category}`;
-        const categoryText = getTranslation(categoryKey);
+        const categoryText = getCategoryName(product.category);
         categoryBadge.textContent = categoryText;
-
-        // 添加翻译属性以便语言切换时更新
-        categoryBadge.setAttribute('data-i18n', categoryKey);
     }
     
     // 设置产品型号
@@ -316,7 +316,7 @@ function renderProductInfo(product) {
         console.log('✅ 产地信息设置成功:', originText);
     }
 
-    // 设置质保期 - 使用统一翻译函数
+    // 设置质保期
     const productWarranty = document.getElementById('productWarranty');
     if (productWarranty) {
         const warrantyText = getWarrantyText(product.warranty || '12');
@@ -335,16 +335,8 @@ function renderProductInfo(product) {
                 const featureTag = document.createElement('span');
                 featureTag.className = 'feature-tag';
 
-                // 获取特性的翻译键
-                const featureKey = getFeatureI18nKey(feature);
-                if (featureKey) {
-                    featureTag.setAttribute('data-i18n', featureKey);
-                    // 使用统一翻译函数
-                    const translatedText = getTranslation(featureKey);
-                    featureTag.innerHTML = `<span class="feature-text">${translatedText}</span>`;
-                } else {
-                    featureTag.innerHTML = `<span class="feature-text">${feature}</span>`;
-                }
+                // 直接使用特性文本（固定中文）
+                featureTag.innerHTML = `<span class="feature-text">${feature}</span>`;
 
                 featuresContainer.appendChild(featureTag);
             });
@@ -366,54 +358,7 @@ function renderProductInfo(product) {
     }
 }
 
-// 🌍 获取特性的翻译键
-function getFeatureI18nKey(feature) {
-    const featureMap = {
-        // 后台预设特性标签（与admin.js中的presetFeatures对应）
-        '原厂品质': 'product.features.original_quality',
-        '钻石品质': 'product.features.diamond_quality',
-        '高性能': 'product.features.high_performance',
-        '精准控制': 'product.features.precise_control',
-        '精密喷射': 'product.features.precision_injection',
-        '配件齐全': 'product.features.complete_parts',
-        '专业工具': 'product.features.professional_tools',
-        '高端产品': 'product.features.premium_product',
-        '现货充足': 'product.features.in_stock',
-        '原厂正品': 'product.features.original_genuine',
-        '高精度': 'product.features.high_precision',
-        '长寿命': 'product.features.long_life',
 
-        // 品牌相关特性
-        '德国工艺': 'product.features.german_craft',
-        '博格华纳': 'product.features.borgwarner',
-        '大陆': 'product.features.continental',
-        '大陆集团': 'product.features.continental',
-        '德尔福': 'product.features.delphi',
-        '电装': 'product.features.denso',
-        'SKF轴承': 'product.features.skf_bearing',
-        '皮尔博格': 'product.features.pierburg',
-
-        // 其他常用特性（兼容性）
-        '精确控制': 'product.features.precise_control',
-        '完整配件': 'product.features.complete_parts',
-        '优质产品': 'product.features.premium_product',
-        '现货供应': 'product.features.in_stock',
-        '原装正品': 'product.features.original_genuine',
-        '性能稳定': 'product.features.stable_performance',
-        '一年保修': 'product.features.one_year_warranty',
-        '高品质': 'product.features.high_quality',
-        '耐用性': 'product.features.durability',
-        '可靠性': 'product.features.reliability',
-        '环保': 'product.features.eco_friendly',
-        '节能环保': 'product.features.eco_friendly',
-        '快速响应': 'product.features.quick_response',
-        '低噪音': 'product.features.low_noise',
-        '易安装': 'product.features.easy_install',
-        '全球保修': 'product.features.global_warranty'
-    };
-
-    return featureMap[feature] || null;
-}
 
 // 🏷️ 获取产品特性
 function getProductFeatures(product) {
@@ -488,52 +433,42 @@ function renderProductSpecs(product) {
     }
     
     if (!hasValidSpecs) {
-        // 使用统一翻译函数生成规格表
-        const categoryLabel = getTranslation('product_detail.specs.category');
-        const brandLabel = getTranslation('product_detail.specs.brand');
-        const modelLabel = getTranslation('product_detail.specs.model');
-        const oeLabel = getTranslation('product_detail.specs.oe_number');
-        const compatibleLabel = getTranslation('product_detail.specs.compatible_system');
-        const originLabel = getTranslation('product_detail.specs.origin');
-        const warrantyLabel = getTranslation('product_detail.specs.warranty');
-
-        // 按照新的顺序生成规格表
+        // 生成规格表（固定中文）
         specs = `
-            <tr><td data-i18n="product_detail.specs.category">${categoryLabel}</td><td>${getCategoryName(product.category)}</td></tr>
-            <tr><td data-i18n="product_detail.specs.brand">${brandLabel}</td><td>${product.brand || 'Diamond-Auto'}</td></tr>
-            <tr><td data-i18n="product_detail.specs.model">${modelLabel}</td><td>${product.model || product.sku || '-'}</td></tr>
+            <tr><td>分类</td><td>${getCategoryName(product.category)}</td></tr>
+            <tr><td>品牌</td><td>${product.brand || 'Diamond-Auto'}</td></tr>
+            <tr><td>型号</td><td>${product.model || product.sku || '-'}</td></tr>
         `;
 
         // 添加OE号码信息（显示全部）
         if (product.oe_number && product.oe_number.trim()) {
             const oeNumbers = product.oe_number.split(/\r?\n/).map(oe => oe.trim()).filter(oe => oe);
             if (oeNumbers.length > 0) {
-                specs += `<tr><td data-i18n="product_detail.specs.oe_number">${oeLabel}</td><td>${oeNumbers.join('<br>')}</td></tr>`;
+                specs += `<tr><td>OE号码</td><td>${oeNumbers.join('<br>')}</td></tr>`;
             }
         }
 
-        // 添加兼容系统信息（显示全部）
+        // 添加适配信息（显示全部）
         if (product.compatibility && product.compatibility.trim()) {
             const compatibilityLines = product.compatibility.split(/\r?\n/).map(line => line.trim()).filter(line => line);
             if (compatibilityLines.length > 0) {
-                specs += `<tr><td data-i18n="product_detail.specs.compatible_system">${compatibleLabel}</td><td>${compatibilityLines.join('<br>')}</td></tr>`;
+                specs += `<tr><td>适配</td><td>${compatibilityLines.join('<br>')}</td></tr>`;
             }
         }
 
         // 添加其他事项信息
         if (product.notes && product.notes.trim()) {
             const notesFormatted = product.notes.replace(/\r?\n/g, '<br>');
-            const notesLabel = getTranslation('product_detail.specs.notes');
-            specs += `<tr><td data-i18n="product_detail.specs.notes">${notesLabel}</td><td>${notesFormatted}</td></tr>`;
+            specs += `<tr><td>其他事项</td><td>${notesFormatted}</td></tr>`;
         }
 
-        // 添加产地和质保期 - 使用统一翻译函数
+        // 添加产地和质保期
         const originText = getOriginText();
         const warrantyText = getWarrantyText(product.warranty || '12');
 
         specs += `
-            <tr><td data-i18n="product_detail.specs.origin">${originLabel}</td><td>${originText}</td></tr>
-            <tr><td data-i18n="product_detail.specs.warranty">${warrantyLabel}</td><td>${warrantyText}</td></tr>
+            <tr><td>产地</td><td>${originText}</td></tr>
+            <tr><td>质保期</td><td>${warrantyText}</td></tr>
         `;
     }
 
@@ -544,18 +479,14 @@ function renderProductSpecs(product) {
     `;
 }
 
-// 🏷️ 获取分类名称 - 支持多语言翻译
+// 🏷️ 获取分类名称（支持对象和字符串格式）
 function getCategoryName(category) {
-    // 使用翻译系统获取分类名称
-    const categoryKey = `categories.${category}`;
-    const translatedName = getTranslation(categoryKey);
-
-    // 如果翻译成功且不等于原键，返回翻译结果
-    if (translatedName && translatedName !== categoryKey) {
-        return translatedName;
+    // 如果是对象，直接返回name属性
+    if (category && typeof category === 'object' && category.name) {
+        return category.name;
     }
 
-    // 回退到硬编码映射（兼容性保证）
+    // 如果是字符串，使用映射表
     const categoryMap = {
         'turbocharger': '涡轮增压器',
         'actuator': '执行器',
@@ -563,7 +494,8 @@ function getCategoryName(category) {
         'turbo-parts': '涡轮配件',
         'others': '其他'
     };
-    return categoryMap[category] || getTranslation('categories.others') || '产品分类';
+
+    return categoryMap[category] || category || '未分类';
 }
 
 // 📋 渲染产品描述选项卡
@@ -597,12 +529,9 @@ function renderDescriptionTab(product) {
         .replace(/\r\n/g, '<br>')
         .replace(/\n/g, '<br>');
     
-    // 使用统一翻译函数获取标题文本
-    const titleText = getTranslation('product_detail.description.title');
-
     descriptionContent = `
         <div class="product-description-content">
-            <h3 data-i18n="product_detail.description.title">${titleText}</h3>
+            <h3>产品描述</h3>
             <div class="description-text">
                 ${formattedDescription}
             </div>
@@ -617,36 +546,25 @@ function renderPackaging(product) {
     const packagingTab = document.getElementById('packagingTab');
     if (!packagingTab) return;
 
-    // 使用统一翻译函数获取文本
-    const titleText = getTranslation('product_detail.packaging.title');
-    const packagingMethodLabel = getTranslation('product_detail.packaging.method');
-    const packagingMethodValue = getTranslation('product_detail.packaging.method_desc');
-    const shippingTimeLabel = getTranslation('product_detail.packaging.shipping_time');
-    const shippingTimeValue = getTranslation('product_detail.packaging.shipping_time_desc');
-    const logisticsLabel = getTranslation('product_detail.packaging.logistics');
-    const logisticsValue = getTranslation('product_detail.packaging.logistics_desc');
-    const warrantyLabel = getTranslation('product_detail.packaging.warranty');
-    const warrantyUnit = getTranslation('product_detail.packaging.warranty_desc');
-
-    // 只显示包装信息，保持简洁
+    // 包装信息（固定中文）
     const packagingContent = `
-        <h3 data-i18n="product_detail.packaging.title">${titleText}</h3>
+        <h3>包装信息</h3>
         <div class="packaging-info">
             <div class="packaging-item">
-                <strong data-i18n="product_detail.packaging.method">${packagingMethodLabel}</strong>
-                <span data-i18n="product_detail.packaging.method_desc">${packagingMethodValue}</span>
+                <strong>包装方式</strong>
+                <span>专业防震包装，确保产品安全</span>
             </div>
             <div class="packaging-item">
-                <strong data-i18n="product_detail.packaging.shipping_time">${shippingTimeLabel}</strong>
-                <span data-i18n="product_detail.packaging.shipping_time_desc">${shippingTimeValue}</span>
+                <strong>发货时间</strong>
+                <span>现货1-3天，定制7-15天</span>
             </div>
             <div class="packaging-item">
-                <strong data-i18n="product_detail.packaging.logistics">${logisticsLabel}</strong>
-                <span data-i18n="product_detail.packaging.logistics_desc">${logisticsValue}</span>
+                <strong>物流方式</strong>
+                <span>DHL、FedEx、UPS等国际快递</span>
             </div>
             <div class="packaging-item">
-                <strong data-i18n="product_detail.packaging.warranty">${warrantyLabel}</strong>
-                <span>${product.warranty || '12'}<span data-i18n="product_detail.packaging.warranty_desc">${warrantyUnit}</span></span>
+                <strong>质保期</strong>
+                <span>${product.warranty || '12'}个月质保</span>
             </div>
         </div>
     `;
@@ -851,15 +769,21 @@ async function initProductDetail() {
 // 获取相关产品
 async function getRelatedProducts(currentProduct) {
     try {
-        const response = await fetch('/data/products.json');
-        const allProducts = await response.json();
-        
+        // 🌐 使用数据库API获取所有产品
+        const response = await fetch('/api/db/public/products?limit=1000');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        const allProducts = result.data || result.products || result || [];
+
         // 过滤掉当前产品
         const otherProducts = allProducts.filter(p => p.id !== currentProduct.id);
-        
+
         // 随机打乱数组
         const shuffledProducts = otherProducts.sort(() => Math.random() - 0.5);
-        
+
         // 取前12个产品（3组，每组4个）
         return shuffledProducts.slice(0, 12);
     } catch (error) {
@@ -945,13 +869,8 @@ async function renderRelatedProducts(currentProduct) {
         // 显示相关产品容器
         relatedProductsContainer.style.display = 'block';
         
-        // 🌍 关键修复：渲染完成后立即应用多语言翻译
-        const i18n = window.i18nManager || window.i18n;
-        if (i18n && i18n.initialized) {
-            console.log('🌍 相关产品渲染完成，开始处理多语言翻译...');
-            i18n.processI18nContainer(relatedProductsContainer);
-            console.log('✅ 相关产品多语言翻译处理完成');
-        }
+        // 相关产品渲染完成
+        console.log('✅ 相关产品渲染完成');
         
     } catch (error) {
         console.error('渲染相关产品失败:', error);
@@ -1007,8 +926,7 @@ function handleLanguageChange(event) {
         // 更新分类标签
         const categoryBadge = document.getElementById('categoryBadge');
         if (categoryBadge) {
-            const categoryKey = `categories.${window.currentProduct.category}`;
-            const categoryText = getTranslation(categoryKey);
+            const categoryText = getCategoryName(window.currentProduct.category);
             categoryBadge.textContent = categoryText;
         }
 
@@ -1036,14 +954,8 @@ function handleLanguageChange(event) {
                     const featureTag = document.createElement('span');
                     featureTag.className = 'feature-tag';
 
-                    const featureKey = getFeatureI18nKey(feature);
-                    if (featureKey) {
-                        featureTag.setAttribute('data-i18n', featureKey);
-                        const translatedText = getTranslation(featureKey);
-                        featureTag.innerHTML = `<i class="fas fa-check"></i><span class="feature-text">${translatedText}</span>`;
-                    } else {
-                        featureTag.innerHTML = `<i class="fas fa-check"></i><span class="feature-text">${feature}</span>`;
-                    }
+                    // 直接使用特性文本（固定中文）
+                    featureTag.innerHTML = `<i class="fas fa-check"></i><span class="feature-text">${feature}</span>`;
 
                     featuresContainer.appendChild(featureTag);
                 });
@@ -1067,25 +979,7 @@ function handleLanguageChange(event) {
         }, 200);
     }
 
-    // 🌍 处理询价模态框的语言切换
-    const modal = document.getElementById('inquiryModal');
-    if (modal && modal.classList.contains('active')) {
-        // 延迟更新，确保i18n系统已完成更新
-        setTimeout(() => {
-            updateInquiryModalI18n();
-
-            // 如果有当前产品，重新填充消息
-            if (window.currentProduct) {
-                fillInquiryMessage(window.currentProduct);
-            }
-
-            console.log('✅ 询价模态框内容已更新');
-        }, 100);
-    }
 }
-
-// 🌍 监听语言切换事件 - 统一处理
-document.addEventListener('i18n:changed', handleLanguageChange);
 
 // 下一组
 function nextGroup() {
@@ -1350,7 +1244,7 @@ function updateProductDetails(product) {
 // 获取产品详情数据
 async function fetchProductDetails(productId) {
     try {
-        const response = await fetch(`/api/public/products/${productId}`);
+        const response = await fetch(`/api/db/public/products/${productId}`);
         if (!response.ok) {
             throw new Error('产品数据获取失败');
         }
@@ -1370,104 +1264,29 @@ function openInquiryModal() {
     const modal = document.getElementById('inquiryModal');
     modal.classList.add('active');
 
-    // 确保模态框内容使用当前语言（先更新翻译）
-    updateInquiryModalI18n();
-
-    // 预填当前产品信息（支持多语言）
+    // 预填当前产品信息
     const currentProduct = window.currentProduct;
     if (currentProduct) {
-        // 延迟填充，确保翻译已完成
-        setTimeout(() => {
-            fillInquiryMessage(currentProduct);
-        }, 50);
+        fillInquiryMessage(currentProduct);
     }
 }
 
-// 🌍 填充询价消息（支持多语言）
+// 填充询价消息（固定中文）
 function fillInquiryMessage(product) {
     const messageTextarea = document.getElementById('inquiryMessage');
     if (!messageTextarea) return;
 
-    // 使用i18n管理器的t方法
-    const i18n = window.i18nManager || window.i18n;
-    if (!i18n || !i18n.initialized) {
-        console.warn('⚠️ i18n管理器未初始化，使用默认消息');
-        // 使用默认消息
-        const defaultMessage = `我对以下产品感兴趣：\n产品名称：${product.name}\n产品型号：${product.model || '未指定'}\n产品编号：${product.sku || product.id || '未指定'}\n请提供更多详细信息和报价。`;
-        messageTextarea.value = defaultMessage;
-        return;
-    }
+    // 使用固定中文消息
+    const defaultMessage = `我对以下产品感兴趣：
+产品名称：${product.name}
+产品型号：${product.model || '未指定'}
+产品编号：${product.sku || product.id || '未指定'}
+请提供更多详细信息和报价。`;
 
-    const t = i18n.t.bind(i18n);
-
-    // 构建多语言消息，使用正确的翻译键路径
-    const template = {
-        intro: t('product_detail.inquiry_modal.prefill_template.intro'),
-        productName: t('product_detail.inquiry_modal.prefill_template.product_name', { name: product.name }),
-        productModel: t('product_detail.inquiry_modal.prefill_template.product_model', { model: product.model || t('common.not_specified') || '未指定' }),
-        productCode: t('product_detail.inquiry_modal.prefill_template.product_code', { code: product.sku || product.id || t('common.not_specified') || '未指定' }),
-        requestInfo: t('product_detail.inquiry_modal.prefill_template.request_info')
-    };
-
-    const message = [
-        template.intro,
-        template.productName,
-        template.productModel,
-        template.productCode,
-        template.requestInfo
-    ].join('\n');
-
-    messageTextarea.value = message;
+    messageTextarea.value = defaultMessage;
 }
 
-// 🌍 更新询价模态框的多语言内容
-function updateInquiryModalI18n() {
-    // 确保i18n管理器已初始化
-    const i18n = window.i18nManager || window.i18n;
-    if (i18n && i18n.initialized) {
-        // 处理模态框内的所有i18n元素
-        const modal = document.getElementById('inquiryModal');
-        if (modal) {
-            if (i18n.processI18nContainer) {
-                i18n.processI18nContainer(modal);
-            } else if (i18n.updateI18nElements) {
-                // 备用方法：直接更新所有i18n元素
-                const elements = modal.querySelectorAll('[data-i18n]');
-                elements.forEach(el => {
-                    const key = el.getAttribute('data-i18n');
-                    const params = parseElementParams(el);
 
-                    // 获取翻译内容
-                    const translation = i18n.t(key, params);
-
-                    // 更新元素内容
-                    const attr = el.getAttribute('data-i18n-attr');
-                    if (attr) {
-                        el.setAttribute(attr, translation);
-                    } else {
-                        el.textContent = translation;
-                    }
-                });
-            }
-            console.log('✅ 询价模态框翻译已更新');
-        }
-    } else {
-        console.warn('⚠️ i18n管理器未初始化，跳过模态框翻译更新');
-    }
-}
-
-// 🌍 解析元素参数（辅助函数）
-function parseElementParams(el) {
-    const paramsAttr = el.getAttribute('data-i18n-params');
-    if (!paramsAttr) return {};
-
-    try {
-        return JSON.parse(paramsAttr);
-    } catch (error) {
-        console.error('❌ 解析i18n参数失败:', paramsAttr, error);
-        return {};
-    }
-}
 
 function closeInquiryModal() {
     const modal = document.getElementById('inquiryModal');

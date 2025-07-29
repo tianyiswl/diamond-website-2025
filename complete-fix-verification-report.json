@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-07-21T05:41:49.811Z",
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "successRate": "100.00%"
+  },
+  "categories": {
+    "301重定向修复": {
+      "total": 2,
+      "passed": 2
+    },
+    "数据读取修复": {
+      "total": 3,
+      "passed": 3
+    }
+  },
+  "tests": [
+    {
+      "category": "301重定向修复",
+      "name": "/admin路径直接访问",
+      "result": "PASS",
+      "details": "状态码: 200 (期望200，避免301重定向)"
+    },
+    {
+      "category": "301重定向修复",
+      "name": "/admin/路径访问",
+      "result": "PASS",
+      "details": "状态码: 200 (期望200)"
+    },
+    {
+      "category": "数据读取修复",
+      "name": "直接文件读取",
+      "result": "PASS",
+      "details": "读取到 24 条记录"
+    },
+    {
+      "category": "数据读取修复",
+      "name": "DAO方式读取（新方法）",
+      "result": "PASS",
+      "details": "读取到 24 条记录"
+    },
+    {
+      "category": "数据读取修复",
+      "name": "数据读取一致性验证",
+      "result": "PASS",
+      "details": "直接读取: 24, DAO读取: 24, 一致: true"
+    }
+  ],
+  "overallStatus": "ALL_FIXED"
+}

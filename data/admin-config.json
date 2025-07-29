@@ -3,14 +3,50 @@
     "a1b2c3d4e5f6": {
       "id": "a1b2c3d4e5f6",
       "username": "admin",
-      "password": "$2b$10$bZ6C09zqy8Ms72u83RzqCuueISB.8NZYzMRiz4m2.q/jDklV1ISXK",
+      "password": "$2b$10$nLoIJtUN1mAuKyY3qA7rn.c9qzLHNxOpy/UtDhN5ipF8WUVEDg2cC",
       "email": "admin@diamond-auto.com",
       "name": "系统管理员",
       "role": "super_admin",
       "status": "active",
       "created_at": "2025-07-10T00:00:00.000Z",
       "created_by": "system",
-      "last_login": "2025-07-18T09:21:32.562Z",
+      "last_login": "2025-07-26T15:32:32.635Z",
+      "login_attempts": 0,
+      "locked_until": null,
+      "session_timeout": 86400000,
+      "permissions": [
+        "products.create",
+        "products.read",
+        "products.update",
+        "products.delete",
+        "categories.create",
+        "categories.read",
+        "categories.update",
+        "categories.delete",
+        "inquiries.read",
+        "inquiries.update",
+        "inquiries.delete",
+        "analytics.read",
+        "logs.read",
+        "settings.update",
+        "admins.create",
+        "admins.read",
+        "admins.update",
+        "admins.delete"
+      ],
+      "last_password_change": "2025-07-19T15:55:54.670Z"
+    },
+    "b70970c2ca41": {
+      "id": "b70970c2ca41",
+      "username": "xiaowang",
+      "password": "$2b$10$fxJaecJY32W2kI/tRH2ff.jijYJde7C5pKHLzKEDp9K6qG4h7ccDm",
+      "email": "tianyiswl@163.com",
+      "name": "小王",
+      "role": "admin",
+      "status": "active",
+      "created_at": "2025-07-19T15:30:57.523Z",
+      "created_by": "admin",
+      "last_login": null,
       "login_attempts": 0,
       "locked_until": null,
       "session_timeout": 86400000,
@@ -27,13 +63,9 @@
         "inquiries.update",
         "analytics.read",
         "logs.read",
-        "settings.update",
-        "admins.create",
-        "admins.read",
-        "admins.update",
-        "admins.delete"
+        "settings.update"
       ],
-      "last_password_change": "2025-07-16T02:17:05.487Z"
+      "last_password_change": "2025-07-19T15:30:57.523Z"
     }
   },
   "security": {

@@ -68,21 +68,22 @@ class CompanyService {
    */
   async _fetchCompanyInfo() {
     try {
-      // 首先尝试从主要API获取
-      const response = await fetch("/data/company.json");
+      // 🗄️ 使用数据库API获取公司信息
+      const response = await fetch("/api/db/company");
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
       return await response.json();
     } catch (error) {
-      // 如果主要API失败，尝试备用API
+      // 如果数据库API失败，尝试备用JSON文件
       try {
-        const backupResponse = await fetch("/api/company-info");
+        console.warn("数据库API失败，尝试备用JSON文件:", error.message);
+        const backupResponse = await fetch("/data/company.json");
         if (backupResponse.ok) {
           return await backupResponse.json();
         }
       } catch (backupError) {
-        console.warn("备用API也失败:", backupError);
+        console.warn("备用JSON文件也失败:", backupError);
       }
 
       // 如果所有API都失败，抛出原始错误

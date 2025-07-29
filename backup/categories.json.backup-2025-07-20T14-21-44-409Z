@@ -1,0 +1,48 @@
+[
+  {
+    "id": "turbocharger",
+    "name": "涡轮增压器",
+    "description": "各种型号的涡轮增压器及配件",
+    "count": 2,
+    "createdAt": "2025-06-19T11:00:00.000Z"
+  },
+  {
+    "id": "actuator",
+    "name": "执行器",
+    "description": "涡轮增压器执行器系列产品",
+    "count": 1,
+    "createdAt": "2025-06-19T11:00:00.000Z"
+  },
+  {
+    "id": "injector",
+    "name": "共轨喷油器",
+    "description": "高压共轨喷油器及相关配件",
+    "count": 0,
+    "createdAt": "2025-06-19T11:00:00.000Z"
+  },
+  {
+    "id": "turbo-parts",
+    "name": "涡轮配件",
+    "description": "涡轮增压器相关配件及维修件",
+    "count": 1,
+    "createdAt": "2025-06-19T11:00:00.000Z"
+  },
+  {
+    "id": "others",
+    "name": "其他",
+    "description": "其他零部件产品",
+    "count": 0,
+    "createdAt": "2025-06-19T11:00:00.000Z"
+  },
+  {
+    "id": "1",
+    "name": "API测试分类",
+    "description": "API测试分类描述",
+    "icon": "",
+    "color": "",
+    "order": 0,
+    "status": "active",
+    "createdAt": "2025-07-20T14:19:23.340Z",
+    "updatedAt": "2025-07-20T14:19:23.340Z"
+  }
+]

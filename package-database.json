@@ -1,0 +1,25 @@
+{
+  "name": "diamond-website-database-migration",
+  "version": "1.0.0",
+  "description": "无锡皇德国际贸易有限公司 - 数据库迁移依赖包",
+  "dependencies": {
+    "@prisma/client": "^5.7.1",
+    "prisma": "^5.7.1",
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.10.9"
+  },
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:reset": "prisma migrate reset",
+    "db:studio": "prisma studio",
+    "db:seed": "node prisma/seed.js",
+    "db:backup": "node scripts/backup-database.js",
+    "db:restore": "node scripts/restore-database.js"
+  }
+}

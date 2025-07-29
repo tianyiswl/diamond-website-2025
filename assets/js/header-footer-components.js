@@ -21,31 +21,23 @@ class ComponentManager {
     console.log("⚠️ 使用备用高级ComponentManager，建议升级到统一版本");
   }
 
-  // 从后台API加载分类数据
-  async loadCategories() {
+  // 使用静态分类数据
+  loadCategories() {
     try {
-      const response = await fetch("/api/public/categories");
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const categories = await response.json();
-
-      // 确保数据格式正确
-      if (Array.isArray(categories)) {
-        // 添加"全部产品"选项
-        this.categories = [
-          { id: "all", name: "全部产品", count: 0 },
-          ...categories,
-        ];
-        this.isLoaded = true;
-        console.log("✅ 分类数据加载成功:", this.categories.length, "个分类");
-        return true;
-      } else {
-        throw new Error("分类数据格式错误");
-      }
+      // 使用静态配置中的分类数据
+      this.categories = window.CATEGORIES_CONFIG || [
+        { id: "all", name: "全部产品", count: 0 },
+        { id: "turbocharger", name: "涡轮增压器", count: 0 },
+        { id: "actuator", name: "执行器", count: 0 },
+        { id: "injector", name: "共轨喷油器", count: 0 },
+        { id: "turbo-parts", name: "涡轮配件", count: 0 },
+        { id: "others", name: "其他", count: 0 },
+      ];
+      this.isLoaded = true;
+      console.log("✅ 静态分类数据加载成功:", this.categories.length, "个分类");
+      return true;
     } catch (error) {
-      console.error("❌ 加载分类数据失败:", error);
+      console.error("❌ 加载静态分类数据失败:", error);
 
       // 使用备用分类数据
       this.categories = [
@@ -131,6 +123,14 @@ class ComponentManager {
   generateProductTags(isHomePage = true) {
     const baseUrl = isHomePage ? "pages/" : "";
 
+    // 获取当前URL的分类参数
+    const getCurrentCategory = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('category') || 'all';
+    };
+
+    const currentCategory = getCurrentCategory();
+
     if (!this.isLoaded || this.categories.length === 0) {
       // 默认分类数据
       const defaultCategories = [
@@ -142,8 +142,9 @@ class ComponentManager {
       ];
 
       return defaultCategories
-        .map((category, index) => {
-          const activeClass = index === 0 ? "active" : "";
+        .map((category) => {
+          // 根据当前URL参数决定是否高亮
+          const activeClass = category.id === currentCategory ? "active" : "";
           const href =
             category.id === "all"
               ? `${baseUrl}products.html`
@@ -154,8 +155,9 @@ class ComponentManager {
     }
 
     return this.categories
-      .map((category, index) => {
-        const activeClass = index === 0 ? "active" : "";
+      .map((category) => {
+        // 根据当前URL参数决定是否高亮
+        const activeClass = category.id === currentCategory ? "active" : "";
         const href =
           category.id === "all"
             ? `${baseUrl}products.html`
@@ -171,18 +173,8 @@ class ComponentManager {
     const productTags = this.generateProductTags(false); // 子页面版本
 
     return `
-            <!-- 页面加载动画 -->
-            <div id="loading" class="loading-screen">
-                <div class="loading-content">
-                    <div class="loading-logo">
-                        <img src="../assets/images/logo/diamond-logo.png" alt="${this.companyInfo?.name || "无锡皇德国际贸易有限公司"}" class="loading-logo-img">
-                    </div>
-                    <h2 class="loading-company-name">${this.companyInfo?.name || "无锡皇德国际贸易有限公司"}</h2>
-                    <p class="loading-subtitle">${this.companyInfo?.description || "专业涡轮增压器和共轨喷油器配件供应商"}</p>
-                    <div class="spinner"></div>
-                    <p class="loading-text">正在加载中...</p>
-                </div>
-            </div>
+            <!-- 🚀 使用统一的全局加载屏幕，移除重复的组件加载屏幕 -->
+            <!-- 原有的页面加载动画已移至全局加载屏幕管理器，避免LOGO闪烁 -->
 
             <!-- 顶部导航 -->
             <header class="header">
@@ -205,24 +197,18 @@ class ComponentManager {
                     
                     <nav class="nav-menu">
                         <ul>
-                            <li><a href="../index.html" class="nav-link" data-i18n="nav.home">首页</a></li>
+                            <li><a href="../index.html" class="nav-link">首页</a></li>
                             <li class="nav-dropdown">
-                                <a href="products.html" class="nav-link" data-i18n="nav.products">产品展示 <i class="fas fa-chevron-down"></i></a>
+                                <a href="products.html" class="nav-link">产品展示 <i class="fas fa-chevron-down"></i></a>
                                 <div class="dropdown-menu">
                                     ${categoryDropdown}
                                 </div>
                             </li>
-                            <li><a href="../index.html#contact" class="nav-link" data-i18n="nav.contact">联系我们</a></li>
+                            <li><a href="../index.html#contact" class="nav-link">联系我们</a></li>
                         </ul>
                     </nav>
 
-                    <!-- 🌍 语言切换器 -->
-                    <div class="language-switcher">
-                        <select class="language-select" id="headerLanguageSelect">
-                            <option value="zh-CN">中文</option>
-                            <option value="en-US">English</option>
-                        </select>
-                    </div>
+
 
                     <!-- 移动端菜单按钮 -->
                     <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
@@ -240,13 +226,13 @@ class ComponentManager {
                                 ${productTags}
                             </div>
                             <div class="social-media-icons">
-                                <a href="https://www.facebook.com/ariel.diamond.883219" target="_blank" class="social-icon facebook" data-i18n="social.facebook" data-i18n-attr="title" title="关注我们的Facebook">
+                                <a href="https://www.facebook.com/ariel.diamond.883219" target="_blank" class="social-icon facebook" title="关注我们的Facebook">
                                     <i class="fab fa-facebook"></i>
                                 </a>
-                                <a href="https://www.instagram.com/diamondautopart01/" target="_blank" class="social-icon instagram" data-i18n="social.instagram" data-i18n-attr="title" title="关注我们的Instagram">
+                                <a href="https://www.instagram.com/diamondautopart01/" target="_blank" class="social-icon instagram" title="关注我们的Instagram">
                                     <i class="fab fa-instagram"></i>
                                 </a>
-                                <a href="https://wa.me/8613656157230" target="_blank" class="social-icon whatsapp" data-i18n="social.whatsapp" data-i18n-attr="title" title="WhatsApp联系我们">
+                                <a href="https://wa.me/8613656157230" target="_blank" class="social-icon whatsapp" title="WhatsApp联系我们">
                                     <i class="fab fa-whatsapp"></i>
                                 </a>
                             </div>
@@ -263,18 +249,8 @@ class ComponentManager {
     const productTags = this.generateProductTags(true); // 首页版本
 
     return `
-            <!-- 页面加载动画 -->
-            <div id="loading" class="loading-screen">
-                <div class="loading-content">
-                    <div class="loading-logo">
-                        <img src="assets/images/logo/diamond-logo.png" alt="${this.companyInfo?.name || "无锡皇德国际贸易有限公司"}" class="loading-logo-img">
-                    </div>
-                    <h2 class="loading-company-name">${this.companyInfo?.name || "无锡皇德国际贸易有限公司"}</h2>
-                    <p class="loading-subtitle">${this.companyInfo?.description || "专业涡轮增压器和共轨喷油器配件供应商"}</p>
-                    <div class="spinner"></div>
-                    <p class="loading-text">正在加载中...</p>
-                </div>
-            </div>
+            <!-- 🚀 使用统一的全局加载屏幕，移除重复的组件加载屏幕 -->
+            <!-- 原有的页面加载动画已移至全局加载屏幕管理器，避免LOGO闪烁 -->
 
             <!-- 顶部导航 -->
             <header class="header">
@@ -297,24 +273,18 @@ class ComponentManager {
                     
                     <nav class="nav-menu">
                         <ul>
-                            <li><a href="index.html" class="nav-link" data-i18n="nav.home">首页</a></li>
+                            <li><a href="index.html" class="nav-link">首页</a></li>
                             <li class="nav-dropdown">
-                                <a href="pages/products.html" class="nav-link" data-i18n="nav.products">产品展示 <i class="fas fa-chevron-down"></i></a>
+                                <a href="pages/products.html" class="nav-link">产品展示 <i class="fas fa-chevron-down"></i></a>
                                 <div class="dropdown-menu">
                                     ${categoryDropdown}
                                 </div>
                             </li>
-                            <li><a href="#contact" class="nav-link" data-i18n="nav.contact">联系我们</a></li>
+                            <li><a href="#contact" class="nav-link">联系我们</a></li>
                         </ul>
                     </nav>
 
-                    <!-- 🌍 语言切换器 -->
-                    <div class="language-switcher">
-                        <select class="language-select" id="headerLanguageSelect">
-                            <option value="zh-CN">中文</option>
-                            <option value="en-US">English</option>
-                        </select>
-                    </div>
+
 
                     <!-- 移动端菜单按钮 -->
                     <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
@@ -332,13 +302,13 @@ class ComponentManager {
                                 ${productTags}
                             </div>
                             <div class="social-media-icons">
-                                <a href="https://www.facebook.com/ariel.diamond.883219" target="_blank" class="social-icon facebook" data-i18n="social.facebook" data-i18n-attr="title" title="关注我们的Facebook">
+                                <a href="https://www.facebook.com/ariel.diamond.883219" target="_blank" class="social-icon facebook" title="关注我们的Facebook">
                                     <i class="fab fa-facebook"></i>
                                 </a>
-                                <a href="https://www.instagram.com/diamondautopart01/" target="_blank" class="social-icon instagram" data-i18n="social.instagram" data-i18n-attr="title" title="关注我们的Instagram">
+                                <a href="https://www.instagram.com/diamondautopart01/" target="_blank" class="social-icon instagram" title="关注我们的Instagram">
                                     <i class="fab fa-instagram"></i>
                                 </a>
-                                <a href="https://wa.me/8613656157230" target="_blank" class="social-icon whatsapp" data-i18n="social.whatsapp" data-i18n-attr="title" title="WhatsApp联系我们">
+                                <a href="https://wa.me/8613656157230" target="_blank" class="social-icon whatsapp" title="WhatsApp联系我们">
                                     <i class="fab fa-whatsapp"></i>
                                 </a>
                             </div>
@@ -360,50 +330,50 @@ class ComponentManager {
                     <div class="container">
                         <div class="footer-grid">
                             <div class="footer-section">
-                                <h4 data-i18n="footer.navigation">快速导航</h4>
+                                <h4>快速导航</h4>
                                 <ul>
-                                    <li><a href="../index.html" data-i18n="nav.home">首页</a></li>
-                                    <li><a href="products.html" data-i18n="nav.products">产品展示</a></li>
-                                    <li><a href="../index.html#contact" data-i18n="nav.contact">联系我们</a></li>
-                                    <li><a href="privacy.html" data-i18n="footer.links.privacy">隐私政策</a></li>
-                                    <li><a href="terms.html" data-i18n="footer.links.terms">使用条款</a></li>
+                                    <li><a href="../index.html">首页</a></li>
+                                    <li><a href="products.html">产品展示</a></li>
+                                    <li><a href="../index.html#contact">联系我们</a></li>
+                                    <li><a href="privacy.html">隐私政策</a></li>
+                                    <li><a href="terms.html">使用条款</a></li>
                                 </ul>
                             </div>
 
                             <div class="footer-section">
-                                <h4 data-i18n="footer.products">主要产品</h4>
+                                <h4>主要产品</h4>
                                 <ul id="footerCategoryLinks">
                                     ${categoryLinks}
                                 </ul>
                             </div>
 
                             <div class="footer-section footer-contact">
-                                <h4 data-i18n="nav.contact">联系我们</h4>
+                                <h4>联系我们</h4>
                                 <div class="contact-info">
                                     <div class="contact-details">
-                                        <p><strong data-i18n="contact.info.phone">电话:</strong> <a href="tel:${this.companyInfo?.contact?.phone || "+86 133 7622 3199"}">${this.companyInfo?.contact?.phone || "+86 133 7622 3199"}</a></p>
-                                        <p><strong data-i18n="contact.info.wechat">微信:</strong> ${this.companyInfo?.contact?.whatsapp || "+86 136 5615 7230"}</p>
-                                        <p><strong data-i18n="contact.info.whatsapp">WhatsApp:</strong> <a href="${this.companyInfo?.social?.whatsapp || "https://wa.me/8613656157230"}">${this.companyInfo?.contact?.whatsapp || "+86 136 5615 7230"}</a></p>
-                                        <p><strong data-i18n="contact.info.email">邮箱:</strong> <a href="mailto:${this.companyInfo?.contact?.email || "sales03@diamond-auto.com"}">${this.companyInfo?.contact?.email || "sales03@diamond-auto.com"}</a></p>
+                                        <p><strong>电话:</strong> <a href="tel:${this.companyInfo?.contact?.phone || "+86 133 7622 3199"}">${this.companyInfo?.contact?.phone || "+86 133 7622 3199"}</a></p>
+                                        <p><strong>微信:</strong> ${this.companyInfo?.contact?.whatsapp || "+86 136 5615 7230"}</p>
+                                        <p><strong>WhatsApp:</strong> <a href="${this.companyInfo?.social?.whatsapp || "https://wa.me/8613656157230"}">${this.companyInfo?.contact?.whatsapp || "+86 136 5615 7230"}</a></p>
+                                        <p><strong>邮箱:</strong> <a href="mailto:${this.companyInfo?.contact?.email || "sales03@diamond-auto.com"}">${this.companyInfo?.contact?.email || "sales03@diamond-auto.com"}</a></p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="footer-section footer-newsletter">
-                                <h4 data-i18n="footer.quick_inquiry">快速询价</h4>
+                                <h4>快速询价</h4>
                                 <form class="inquiry-form" id="footerInquiryForm" method="POST" action="javascript:void(0)" onsubmit="return false;">
-                                    <input type="text" id="footerName" name="name" data-i18n="contact.fields.name" data-i18n-attr="placeholder" placeholder="您的姓名 *" required
+                                    <input type="text" id="footerName" name="name" placeholder="您的姓名 *" required
                                            pattern="^[a-zA-Z\u4e00-\u9fa5\s\-\.]{2,30}$"
                                            data-error="请输入2-30个字符的有效姓名，支持中英文、空格、连字符">
-                                    <input type="email" id="footerEmail" name="email" data-i18n="contact.fields.email" data-i18n-attr="placeholder" placeholder="邮箱地址 *" required
+                                    <input type="email" id="footerEmail" name="email" placeholder="邮箱地址 *" required
                                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                                            data-error="请输入有效的邮箱地址">
-                                    <input type="tel" id="footerPhone" name="phone" data-i18n="contact.fields.phone" data-i18n-attr="placeholder" placeholder="联系电话"
+                                    <input type="tel" id="footerPhone" name="phone" placeholder="联系电话"
                                            pattern="^1[3-9]\d{9}$|^(\+\d{1,4})?[\s-]?\d{1,4}[\s-]?\d{4,10}$"
                                            data-error="请输入有效的电话号码">
                                     <button type="submit" class="btn-submit">
                                         <i class="fas fa-paper-plane"></i>
-                                        <span data-i18n="footer.submit">快速询价</span>
+                                        <span>快速询价</span>
                                     </button>
                                 </form>
                                 <div id="footerFormFeedback" class="form-feedback"></div>
@@ -416,7 +386,7 @@ class ComponentManager {
                     <div class="container">
                         <div class="footer-bottom-content">
                             <div class="copyright">
-                                © ${new Date().getFullYear()} ${this.companyInfo?.name || "无锡皇德国际贸易有限公司"} <span data-i18n="footer.copyright">版权所有</span>
+                                © ${new Date().getFullYear()} ${this.companyInfo?.name || "无锡皇德国际贸易有限公司"} <span>版权所有</span>
                             </div>
                         </div>
                     </div>
@@ -449,50 +419,50 @@ class ComponentManager {
                     <div class="container">
                         <div class="footer-grid">
                             <div class="footer-section">
-                                <h4 data-i18n="footer.navigation">快速导航</h4>
+                                <h4>快速导航</h4>
                                 <ul>
-                                    <li><a href="#home" data-i18n="nav.home">首页</a></li>
-                                    <li><a href="#products" data-i18n="nav.products">产品展示</a></li>
-                                    <li><a href="#contact" data-i18n="nav.contact">联系我们</a></li>
-                                    <li><a href="pages/privacy.html" data-i18n="footer.links.privacy">隐私政策</a></li>
-                                    <li><a href="pages/terms.html" data-i18n="footer.links.terms">使用条款</a></li>
+                                    <li><a href="#home">首页</a></li>
+                                    <li><a href="#products">产品展示</a></li>
+                                    <li><a href="#contact">联系我们</a></li>
+                                    <li><a href="pages/privacy.html">隐私政策</a></li>
+                                    <li><a href="pages/terms.html">使用条款</a></li>
                                 </ul>
                             </div>
 
                             <div class="footer-section">
-                                <h4 data-i18n="footer.products">主要产品</h4>
+                                <h4>主要产品</h4>
                                 <ul id="footerCategoryLinks">
                                     ${categoryLinks}
                                 </ul>
                             </div>
 
                             <div class="footer-section footer-contact">
-                                <h4 data-i18n="nav.contact">联系我们</h4>
+                                <h4>联系我们</h4>
                                 <div class="contact-info">
                                     <div class="contact-details">
-                                        <p><strong data-i18n="contact.info.phone">电话:</strong> <a href="tel:${this.companyInfo?.contact?.phone || "+86 133 7622 3199"}">${this.companyInfo?.contact?.phone || "+86 133 7622 3199"}</a></p>
-                                        <p><strong data-i18n="contact.info.wechat">微信:</strong> ${this.companyInfo?.contact?.whatsapp || "+86 136 5615 7230"}</p>
-                                        <p><strong data-i18n="contact.info.whatsapp">WhatsApp:</strong> <a href="${this.companyInfo?.social?.whatsapp || "https://wa.me/8613656157230"}">${this.companyInfo?.contact?.whatsapp || "+86 136 5615 7230"}</a></p>
-                                        <p><strong data-i18n="contact.info.email">邮箱:</strong> <a href="mailto:${this.companyInfo?.contact?.email || "sales03@diamond-auto.com"}">${this.companyInfo?.contact?.email || "sales03@diamond-auto.com"}</a></p>
+                                        <p><strong>电话:</strong> <a href="tel:${this.companyInfo?.contact?.phone || "+86 133 7622 3199"}">${this.companyInfo?.contact?.phone || "+86 133 7622 3199"}</a></p>
+                                        <p><strong>微信:</strong> ${this.companyInfo?.contact?.whatsapp || "+86 136 5615 7230"}</p>
+                                        <p><strong>WhatsApp:</strong> <a href="${this.companyInfo?.social?.whatsapp || "https://wa.me/8613656157230"}">${this.companyInfo?.contact?.whatsapp || "+86 136 5615 7230"}</a></p>
+                                        <p><strong>邮箱:</strong> <a href="mailto:${this.companyInfo?.contact?.email || "sales03@diamond-auto.com"}">${this.companyInfo?.contact?.email || "sales03@diamond-auto.com"}</a></p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="footer-section footer-newsletter">
-                                <h4 data-i18n="footer.quick_inquiry">快速询价</h4>
+                                <h4>快速询价</h4>
                                 <form class="inquiry-form" id="footerInquiryForm" method="POST" action="javascript:void(0)" onsubmit="return false;">
-                                    <input type="text" id="footerName" name="name" data-i18n="contact.fields.name" data-i18n-attr="placeholder" placeholder="您的姓名 *" required
+                                    <input type="text" id="footerName" name="name" placeholder="您的姓名 *" required
                                            pattern="^[a-zA-Z\u4e00-\u9fa5\s\-\.]{2,30}$"
                                            data-error="请输入2-30个字符的有效姓名，支持中英文、空格、连字符">
-                                    <input type="email" id="footerEmail" name="email" data-i18n="contact.fields.email" data-i18n-attr="placeholder" placeholder="邮箱地址 *" required
+                                    <input type="email" id="footerEmail" name="email" placeholder="邮箱地址 *" required
                                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                                            data-error="请输入有效的邮箱地址">
-                                    <input type="tel" id="footerPhone" name="phone" data-i18n="contact.fields.phone" data-i18n-attr="placeholder" placeholder="联系电话"
+                                    <input type="tel" id="footerPhone" name="phone" placeholder="联系电话"
                                            pattern="^1[3-9]\d{9}$|^(\+\d{1,4})?[\s-]?\d{1,4}[\s-]?\d{4,10}$"
                                            data-error="请输入有效的电话号码">
                                     <button type="submit" class="btn-submit">
                                         <i class="fas fa-paper-plane"></i>
-                                        <span data-i18n="footer.submit">快速询价</span>
+                                        <span>快速询价</span>
                                     </button>
                                 </form>
                                 <div id="footerFormFeedback" class="form-feedback"></div>
@@ -505,7 +475,7 @@ class ComponentManager {
                     <div class="container">
                         <div class="footer-bottom-content">
                             <div class="copyright">
-                                © ${new Date().getFullYear()} ${this.companyInfo?.name || "无锡皇德国际贸易有限公司"} <span data-i18n="footer.copyright">版权所有</span>
+                                © ${new Date().getFullYear()} ${this.companyInfo?.name || "无锡皇德国际贸易有限公司"} <span>版权所有</span>
                             </div>
                         </div>
                     </div>
@@ -704,8 +674,7 @@ class ComponentManager {
     // 初始化页尾快速询价表单
     this.initFooterInquiryForm();
 
-    // 🌍 初始化语言选择器
-    this.initLanguageSwitcher();
+
   }
 
   // 初始化页尾快速询价表单
@@ -905,7 +874,7 @@ class ComponentManager {
         feedbackDiv.style.transform = "translateY(0)";
       }, 50);
 
-      // 延长显示时间到6秒，并添加淡出效果
+      // 延长显示时间到8秒，避免4-5秒闪烁
       setTimeout(() => {
         feedbackDiv.style.opacity = "0";
         feedbackDiv.style.transform = "translateY(-10px)";
@@ -914,7 +883,7 @@ class ComponentManager {
         setTimeout(() => {
           feedbackDiv.style.display = "none";
         }, 300);
-      }, 6000);
+      }, 8000);
 
       console.log("✅ 页脚消息显示成功:", message);
     } else {
@@ -982,48 +951,7 @@ class ComponentManager {
     };
   }
 
-  // 🌍 初始化语言选择器
-  initLanguageSwitcher() {
-    // 等待DOM更新后再绑定事件
-    setTimeout(() => {
-      const languageSelect = document.getElementById("headerLanguageSelect");
-      if (languageSelect) {
-        // 检查是否已经绑定过事件，防止重复绑定
-        if (!languageSelect.hasAttribute("data-event-bound")) {
-          // 设置当前语言
-          if (window.i18n && window.i18n.currentLanguage) {
-            languageSelect.value = window.i18n.currentLanguage;
-          }
 
-          // 绑定语言切换事件
-          languageSelect.addEventListener("change", (e) => {
-            const selectedLang = e.target.value;
-            console.log(`🌍 用户选择语言: ${selectedLang}`);
-
-            if (
-              window.i18n &&
-              typeof window.i18n.switchLanguage === "function"
-            ) {
-              window.i18n.switchLanguage(selectedLang);
-            } else {
-              console.warn("⚠️  i18n管理器未找到，尝试页面跳转");
-              // 备用方案：通过URL参数切换语言
-              const url = new URL(window.location);
-              url.searchParams.set("lang", selectedLang);
-              window.location.href = url.toString();
-            }
-          });
-
-          languageSelect.setAttribute("data-event-bound", "true");
-          console.log("✅ 语言选择器事件绑定成功");
-        } else {
-          console.log("⚠️  语言选择器事件已经绑定过，跳过重复绑定");
-        }
-      } else {
-        console.warn("⚠️  未找到语言选择器元素");
-      }
-    }, 100);
-  }
 }
 
 // 全局组件管理器实例

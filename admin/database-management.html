@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据库管理 - 无锡皇德国际贸易有限公司</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            transition: all 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .status-badge {
+            font-size: 0.8em;
+        }
+        .migration-log {
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        .log-success { color: #28a745; }
+        .log-error { color: #dc3545; }
+        .log-warning { color: #ffc107; }
+        .log-info { color: #17a2b8; }
+        .progress-container {
+            display: none;
+        }
+        .btn-group-custom {
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 侧边栏 -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h5 class="text-white">数据库管理</h5>
+                        <small class="text-white-50">Diamond Website</small>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#migration" data-tab="migration">
+                                <i class="bi bi-database-gear"></i> 数据迁移
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#products" data-tab="products">
+                                <i class="bi bi-box-seam"></i> 产品管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#categories" data-tab="categories">
+                                <i class="bi bi-tags"></i> 分类管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#analytics" data-tab="analytics">
+                                <i class="bi bi-graph-up"></i> 数据分析
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#backup" data-tab="backup">
+                                <i class="bi bi-shield-check"></i> 备份恢复
+                            </a>
+                        </li>
+                        <li class="nav-item mt-3">
+                            <a class="nav-link" href="index.html">
+                                <i class="bi bi-arrow-left"></i> 返回主页
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- 主内容区 -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">数据库管理中心</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="checkDatabaseStatus()">
+                                <i class="bi bi-arrow-clockwise"></i> 刷新状态
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据迁移标签页 -->
+                <div id="migration-tab" class="tab-content">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0"><i class="bi bi-database"></i> 迁移状态</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="migration-status">
+                                        <div class="d-flex align-items-center">
+                                            <div class="spinner-border spinner-border-sm me-2" role="status">
+                                                <span class="visually-hidden">检查中...</span>
+                                            </div>
+                                            <span>正在检查迁移状态...</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-3 btn-group-custom d-flex flex-wrap">
+                                        <button class="btn btn-success" onclick="startMigration()" id="migrate-btn">
+                                            <i class="bi bi-play-circle"></i> 开始迁移
+                                        </button>
+                                        <button class="btn btn-warning" onclick="validateMigration()" id="validate-btn">
+                                            <i class="bi bi-check-circle"></i> 验证数据
+                                        </button>
+                                        <button class="btn btn-info" onclick="generateReport()" id="report-btn">
+                                            <i class="bi bi-file-text"></i> 生成报告
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> 数据统计</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="data-stats">
+                                        <div class="row text-center">
+                                            <div class="col-6">
+                                                <h4 class="text-primary" id="json-products">-</h4>
+                                                <small>JSON产品</small>
+                                            </div>
+                                            <div class="col-6">
+                                                <h4 class="text-success" id="db-products">-</h4>
+                                                <small>数据库产品</small>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row text-center">
+                                            <div class="col-6">
+                                                <h4 class="text-primary" id="json-categories">-</h4>
+                                                <small>JSON分类</small>
+                                            </div>
+                                            <div class="col-6">
+                                                <h4 class="text-success" id="db-categories">-</h4>
+                                                <small>数据库分类</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 迁移进度 -->
+                    <div class="progress-container">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="bi bi-hourglass-split"></i> 迁移进度</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="progress mb-3">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%" id="migration-progress"></div>
+                                </div>
+                                <div id="migration-step" class="text-muted">准备开始迁移...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 迁移日志 -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-terminal"></i> 迁移日志</h5>
+                            <button class="btn btn-sm btn-outline-secondary float-end" onclick="clearLog()">
+                                <i class="bi bi-trash"></i> 清空日志
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="migration-log" class="migration-log">
+                                <div class="log-entry log-info">等待开始迁移...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 产品管理标签页 -->
+                <div id="products-tab" class="tab-content" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-box-seam"></i> 产品管理</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                产品管理功能将在数据迁移完成后启用。迁移后，您可以：
+                                <ul class="mt-2 mb-0">
+                                    <li>通过数据库直接管理产品信息</li>
+                                    <li>批量编辑产品属性</li>
+                                    <li>实时更新产品状态</li>
+                                    <li>查看产品分析数据</li>
+                                </ul>
+                            </div>
+                            
+                            <div id="products-management" style="display: none;">
+                                <!-- 产品管理界面将在这里动态加载 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分类管理标签页 -->
+                <div id="categories-tab" class="tab-content" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-tags"></i> 分类管理</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                分类管理功能将在数据迁移完成后启用。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据分析标签页 -->
+                <div id="analytics-tab" class="tab-content" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-graph-up"></i> 数据分析</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-secondary">
+                                <i class="bi bi-graph-up"></i>
+                                数据分析功能将在数据迁移完成后启用，包括：
+                                <ul class="mt-2 mb-0">
+                                    <li>产品浏览统计</li>
+                                    <li>询价趋势分析</li>
+                                    <li>热门产品排行</li>
+                                    <li>用户行为分析</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 备份恢复标签页 -->
+                <div id="backup-tab" class="tab-content" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-shield-check"></i> 备份恢复</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>数据备份</h6>
+                                    <p class="text-muted">定期备份数据库和文件，确保数据安全。</p>
+                                    <button class="btn btn-primary" onclick="createBackup()">
+                                        <i class="bi bi-download"></i> 创建备份
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>数据恢复</h6>
+                                    <p class="text-muted">从备份文件恢复数据。</p>
+                                    <button class="btn btn-warning" onclick="showRestoreOptions()">
+                                        <i class="bi bi-upload"></i> 恢复数据
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="database-management.js"></script>
+</body>
+</html>

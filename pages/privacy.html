@@ -35,6 +35,9 @@
     <!-- 国际化样式 -->
     <link rel="stylesheet" href="../assets/css/i18n-styles.css" />
 
+    <!-- 🚀 统一加载屏幕样式修复 -->
+
+
     <style>
       /* 页面专用样式 */
       .static-page {
@@ -606,8 +609,14 @@
       })();
     </script>
 
+    <!-- 🚨 双重刷新修复脚本 - 防止重复执行 -->
+    <script src="../double-refresh-fix.js"></script>
+
+    <!-- 🚨 页面跳转修复脚本 - 防止LOGO页面显示 -->
+    <script src="../page-transition-fix.js"></script>
+
     <!-- 🚀 全局加载屏幕 - 必须最先加载，立即显示加载动画 -->
-    <script src="../assets/js/global-loading-screen.js"></script>
+
 
     <!-- 🎯 页面渲染协调器 - 统一管理所有组件的加载顺序 -->
     <script src="../assets/js/page-render-coordinator.js"></script>
@@ -630,6 +639,9 @@
     <script src="../assets/js/search-fix.js"></script>
 
     <script src="../assets/js/main.js"></script>
+
+    <!-- 🚀 轻量级搜索修复脚本 (解决回车键搜索问题) -->
+    <script src="../lightweight-search-fix.js" async defer></script>
 
     <!-- 隐私政策页面初始化脚本（使用统一页面加载管理器，防重复执行） -->
     <script>

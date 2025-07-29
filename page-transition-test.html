@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面跳转修复测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .test-section h2 {
+            color: #00dc82;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .test-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .test-link {
+            display: block;
+            padding: 15px 20px;
+            background: rgba(0, 220, 130, 0.2);
+            border: 2px solid #00dc82;
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .test-link:hover {
+            background: rgba(0, 220, 130, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 220, 130, 0.3);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-good { background: #00dc82; }
+        .status-warning { background: #fbbf24; }
+        .status-error { background: #ef4444; }
+        
+        .log-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .log-success { background: rgba(0, 220, 130, 0.2); }
+        .log-warning { background: rgba(251, 191, 36, 0.2); }
+        .log-error { background: rgba(239, 68, 68, 0.2); }
+        
+        .button {
+            background: linear-gradient(135deg, #00dc82, #36d399);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 220, 130, 0.4);
+        }
+        
+        .button.secondary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00dc82;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 页面跳转修复测试</h1>
+        
+        <div class="test-section">
+            <h2>📊 修复状态检查</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="loading-screens-count">0</div>
+                    <div class="stat-label">检测到的加载屏幕</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="removed-count">0</div>
+                    <div class="stat-label">已移除的元素</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="fix-script-status">❌</div>
+                    <div class="stat-label">修复脚本状态</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="double-refresh-status">❌</div>
+                    <div class="stat-label">双重刷新修复</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔧 手动测试工具</h2>
+            <button class="button" onclick="checkLoadingScreens()">检查加载屏幕</button>
+            <button class="button" onclick="forceRemoveLoadingScreens()">强制移除加载屏幕</button>
+            <button class="button" onclick="checkDoubleRefresh()">检查双重刷新</button>
+            <button class="button secondary" onclick="clearLogs()">清除日志</button>
+            <button class="button secondary" onclick="testPageTransition()">模拟页面跳转</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔗 页面跳转测试</h2>
+            <p>点击以下链接测试页面跳转是否出现LOGO页面：</p>
+            <div class="test-links">
+                <a href="index.html" class="test-link">
+                    <span class="status-indicator status-good"></span>
+                    主页
+                </a>
+                <a href="pages/products.html" class="test-link">
+                    <span class="status-indicator status-good"></span>
+                    产品页面
+                </a>
+                <a href="pages/about.html" class="test-link">
+                    <span class="status-indicator status-good"></span>
+                    关于我们
+                </a>
+                <a href="pages/contact.html" class="test-link">
+                    <span class="status-indicator status-good"></span>
+                    联系我们
+                </a>
+                <a href="pages/privacy.html" class="test-link">
+                    <span class="status-indicator status-warning"></span>
+                    隐私政策
+                </a>
+                <a href="pages/terms.html" class="test-link">
+                    <span class="status-indicator status-warning"></span>
+                    使用条款
+                </a>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📝 实时日志</h2>
+            <div class="log-section" id="log-container">
+                <div class="log-entry log-success">✅ 页面跳转修复测试页面已加载</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🚨 双重刷新修复脚本 -->
+    <script src="double-refresh-fix.js"></script>
+
+    <!-- 🚨 页面跳转修复脚本 -->
+    <script src="page-transition-fix.js"></script>
+    
+    <script>
+        // 测试脚本
+        let removedCount = 0;
+        let loadingScreensCount = 0;
+        
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('log-container');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function updateStats() {
+            document.getElementById('loading-screens-count').textContent = loadingScreensCount;
+            document.getElementById('removed-count').textContent = removedCount;
+            document.getElementById('fix-script-status').textContent =
+                window.forceRemoveLoadingScreens ? '✅' : '❌';
+            document.getElementById('double-refresh-status').textContent =
+                window.PageExecutionState ? '✅' : '❌';
+        }
+        
+        function checkLoadingScreens() {
+            log('🔍 开始检查加载屏幕...', 'info');
+            
+            const selectors = [
+                '#global-loading-screen',
+                '.global-loading-screen',
+                '#loading',
+                '.loading-screen',
+                '.loading-overlay'
+            ];
+            
+            loadingScreensCount = 0;
+            selectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                if (elements.length > 0) {
+                    loadingScreensCount += elements.length;
+                    log(`⚠️ 发现 ${elements.length} 个 ${selector} 元素`, 'warning');
+                }
+            });
+            
+            if (loadingScreensCount === 0) {
+                log('✅ 未发现加载屏幕元素', 'success');
+            }
+            
+            updateStats();
+        }
+        
+        function forceRemoveLoadingScreens() {
+            log('🚨 执行强制移除加载屏幕...', 'info');
+            
+            if (window.forceRemoveLoadingScreens) {
+                try {
+                    window.forceRemoveLoadingScreens();
+                    removedCount++;
+                    log('✅ 强制移除执行成功', 'success');
+                } catch (error) {
+                    log(`❌ 强制移除失败: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ 修复脚本未加载', 'error');
+            }
+            
+            updateStats();
+        }
+        
+        function clearLogs() {
+            const logContainer = document.getElementById('log-container');
+            logContainer.innerHTML = '<div class="log-entry log-success">✅ 日志已清除</div>';
+        }
+        
+        function checkDoubleRefresh() {
+            log('🔍 检查双重刷新状态...', 'info');
+
+            if (window.PageExecutionState) {
+                const state = window.getPageExecutionState();
+                log(`✅ 双重刷新修复脚本已加载`, 'success');
+                log(`📊 DOMContentLoaded执行次数: ${state.executionCounts.domContentLoaded}`, 'info');
+                log(`📊 页面初始化执行次数: ${state.executionCounts.pageInit}`, 'info');
+                log(`📊 组件初始化执行次数: ${state.executionCounts.componentInit}`, 'info');
+
+                if (state.executionCounts.domContentLoaded > 1 ||
+                    state.executionCounts.pageInit > 1 ||
+                    state.executionCounts.componentInit > 1) {
+                    log('⚠️ 检测到重复执行，修复脚本正在工作', 'warning');
+                } else {
+                    log('✅ 未检测到重复执行', 'success');
+                }
+
+                if (window.showPageExecutionStats) {
+                    window.showPageExecutionStats();
+                }
+            } else {
+                log('❌ 双重刷新修复脚本未加载', 'error');
+            }
+
+            updateStats();
+        }
+
+        function testPageTransition() {
+            log('🔄 模拟页面跳转测试...', 'info');
+
+            // 模拟 pushState
+            history.pushState({}, '', window.location.href + '#test');
+            log('📍 执行 pushState', 'info');
+
+            setTimeout(() => {
+                // 模拟 popstate
+                window.dispatchEvent(new PopStateEvent('popstate'));
+                log('📍 触发 popstate 事件', 'info');
+
+                setTimeout(() => {
+                    checkLoadingScreens();
+                    checkDoubleRefresh();
+                }, 100);
+            }, 100);
+        }
+        
+        // 页面加载完成后执行初始检查
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 页面加载完成，开始初始检查', 'success');
+            
+            setTimeout(() => {
+                checkLoadingScreens();
+                checkDoubleRefresh();
+                updateStats();
+            }, 500);
+            
+            // 监控页面跳转
+            const originalPushState = history.pushState;
+            history.pushState = function() {
+                log('🔄 检测到 pushState 调用', 'info');
+                return originalPushState.apply(history, arguments);
+            };
+            
+            window.addEventListener('popstate', function() {
+                log('🔄 检测到 popstate 事件', 'info');
+            });
+            
+            log('👁️ 页面跳转监控已启动', 'success');
+        });
+    </script>
+</body>
+</html>

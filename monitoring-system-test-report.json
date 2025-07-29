@@ -1,0 +1,27 @@
+{
+  "testTime": "2025-07-20T12:48:11.655Z",
+  "testResults": {
+    "serverMonitoringScript": false,
+    "frontendMonitoringIntegration": true,
+    "performanceAPI": true,
+    "monitoringDashboard": true,
+    "performanceLogs": true,
+    "cacheMonitoring": true
+  },
+  "passedTests": 5,
+  "totalTests": 6,
+  "successRate": "83.3%",
+  "verificationResults": {
+    "monitoringDataCollection": true,
+    "dashboardAvailable": true,
+    "serverMonitoringReady": false,
+    "cacheIntegrated": true,
+    "overallSuccess": false
+  },
+  "recommendations": [
+    "检查失败的监控组件",
+    "确保所有API正常工作",
+    "验证前端监控脚本加载",
+    "测试监控仪表板功能"
+  ]
+}

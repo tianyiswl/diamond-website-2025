@@ -1,0 +1,250 @@
+/**
+ * 🚀 强制LOGO白色框修复脚本
+ * 使用JavaScript在运行时强制移除导致白色框的样式属性
+ * 这是最后的保障措施，确保无论CSS如何冲突都能解决问题
+ */
+
+(function() {
+    'use strict';
+    
+    console.log('🚀 强制LOGO白色框修复脚本启动...');
+    
+    // 配置
+    const CONFIG = {
+        checkInterval: 100, // 检查间隔（毫秒）
+        maxAttempts: 50,    // 最大尝试次数
+        selectors: [
+            '.loading-logo-img',
+            '.global-loading-screen .loading-logo-img',
+            'img.loading-logo-img',
+            '#global-loading-screen .loading-logo-img',
+            '.loading-logo img'
+        ]
+    };
+    
+    let attemptCount = 0;
+    let fixedElements = new Set();
+    
+    /**
+     * 强制移除导致白色框的样式
+     */
+    function forceRemoveWhiteBoxStyles(element) {
+        if (!element || fixedElements.has(element)) return false;
+        
+        try {
+            // 强制设置样式，移除白色框
+            element.style.setProperty('border-radius', '0', 'important');
+            element.style.setProperty('box-shadow', 'none', 'important');
+            element.style.setProperty('background', 'transparent', 'important');
+            element.style.setProperty('background-color', 'transparent', 'important');
+            element.style.setProperty('border', 'none', 'important');
+            element.style.setProperty('outline', 'none', 'important');
+            
+            // 确保图片本身的显示属性
+            element.style.setProperty('object-fit', 'contain', 'important');
+            element.style.setProperty('display', 'block', 'important');
+            
+            // 移除可能的类名导致的样式
+            if (element.classList.contains('rounded')) {
+                element.classList.remove('rounded');
+            }
+            if (element.classList.contains('shadow')) {
+                element.classList.remove('shadow');
+            }
+            
+            fixedElements.add(element);
+            console.log('✅ 已强制修复LOGO元素:', element);
+            return true;
+        } catch (error) {
+            console.warn('⚠️ 修复LOGO元素时出错:', error);
+            return false;
+        }
+    }
+    
+    /**
+     * 查找并修复所有LOGO元素
+     */
+    function findAndFixLogoElements() {
+        let foundElements = 0;
+        let fixedCount = 0;
+        
+        CONFIG.selectors.forEach(selector => {
+            try {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    foundElements++;
+                    if (forceRemoveWhiteBoxStyles(element)) {
+                        fixedCount++;
+                    }
+                });
+            } catch (error) {
+                console.warn(`⚠️ 查找选择器 ${selector} 时出错:`, error);
+            }
+        });
+        
+        return { foundElements, fixedCount };
+    }
+    
+    /**
+     * 创建样式覆盖
+     */
+    function createStyleOverride() {
+        // 检查是否已经创建了样式覆盖
+        if (document.getElementById('force-logo-fix-styles')) {
+            return;
+        }
+        
+        const style = document.createElement('style');
+        style.id = 'force-logo-fix-styles';
+        style.textContent = `
+            /* 🚀 强制LOGO白色框修复 - 最高优先级 */
+            .loading-logo-img,
+            .global-loading-screen .loading-logo-img,
+            img.loading-logo-img,
+            #global-loading-screen .loading-logo-img,
+            .loading-logo img {
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                background: transparent !important;
+                background-color: transparent !important;
+                border: none !important;
+                outline: none !important;
+                object-fit: contain !important;
+            }
+            
+            /* 移除可能的Bootstrap或其他框架的圆角类 */
+            .loading-logo-img.rounded,
+            .loading-logo-img.rounded-circle {
+                border-radius: 0 !important;
+            }
+            
+            /* 移除可能的阴影类 */
+            .loading-logo-img.shadow,
+            .loading-logo-img.shadow-sm,
+            .loading-logo-img.shadow-lg {
+                box-shadow: none !important;
+            }
+        `;
+        
+        // 插入到head的最后，确保最高优先级
+        document.head.appendChild(style);
+        console.log('✅ 已创建强制样式覆盖');
+    }
+    
+    /**
+     * 执行修复检查
+     */
+    function performFix() {
+        attemptCount++;
+        
+        // 创建样式覆盖
+        createStyleOverride();
+        
+        // 查找并修复元素
+        const result = findAndFixLogoElements();
+        
+        console.log(`🔍 第${attemptCount}次检查: 找到${result.foundElements}个元素, 修复${result.fixedCount}个`);
+        
+        // 如果找到了元素或达到最大尝试次数，停止检查
+        if (result.foundElements > 0 || attemptCount >= CONFIG.maxAttempts) {
+            console.log('🎯 强制修复完成');
+            
+            if (result.foundElements > 0) {
+                console.log('✅ LOGO白色框问题已通过JavaScript强制修复');
+            } else {
+                console.log('ℹ️ 未找到LOGO元素（可能已隐藏或尚未加载）');
+            }
+            
+            return;
+        }
+        
+        // 继续检查
+        setTimeout(performFix, CONFIG.checkInterval);
+    }
+    
+    /**
+     * 监听DOM变化，处理动态添加的元素
+     */
+    function setupMutationObserver() {
+        if (typeof MutationObserver === 'undefined') {
+            console.warn('⚠️ 浏览器不支持MutationObserver');
+            return;
+        }
+        
+        const observer = new MutationObserver(function(mutations) {
+            let shouldCheck = false;
+            
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            // 检查新添加的节点是否包含LOGO元素
+                            CONFIG.selectors.forEach(selector => {
+                                try {
+                                    if (node.matches && node.matches(selector)) {
+                                        shouldCheck = true;
+                                    } else if (node.querySelector && node.querySelector(selector)) {
+                                        shouldCheck = true;
+                                    }
+                                } catch (e) {
+                                    // 忽略选择器错误
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            
+            if (shouldCheck) {
+                console.log('🔄 检测到DOM变化，重新检查LOGO元素...');
+                setTimeout(findAndFixLogoElements, 50);
+            }
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+        
+        console.log('👁️ DOM变化监听器已启动');
+    }
+    
+    /**
+     * 初始化修复
+     */
+    function init() {
+        console.log('🚀 初始化强制LOGO修复...');
+        
+        // 立即执行一次修复
+        performFix();
+        
+        // 设置DOM变化监听
+        setupMutationObserver();
+        
+        // 页面完全加载后再次检查
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(findAndFixLogoElements, 100);
+            });
+        }
+        
+        window.addEventListener('load', () => {
+            setTimeout(findAndFixLogoElements, 500);
+        });
+    }
+    
+    // 立即初始化
+    init();
+    
+    // 暴露手动修复函数到全局
+    window.forceFixLogo = function() {
+        console.log('🔧 手动触发强制LOGO修复...');
+        fixedElements.clear();
+        attemptCount = 0;
+        performFix();
+    };
+    
+})();
+
+console.log('✅ 强制LOGO白色框修复脚本已加载');
+console.log('💡 可以调用 forceFixLogo() 手动触发强制修复');

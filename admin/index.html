@@ -355,18 +355,7 @@
             }
         }
 
-        .category-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease;
-            border-left: 4px solid var(--primary-color);
-        }
 
-        .category-card:hover {
-            transform: translateY(-2px);
-        }
 
         .log-item {
             background: white;
@@ -398,10 +387,7 @@
             color: #64748b;
         }
 
-        .log-user {
-            color: var(--primary-color);
-            font-weight: 500;
-        }
+
 
         .log-action {
             font-weight: 500;
@@ -751,6 +737,169 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
         }
+
+        /* 添加产品页面UI优化样式 */
+        .progress-indicator {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.active .step-circle {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .step-item.completed .step-circle {
+            background-color: #198754;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        .step-item.active .step-label {
+            color: #0d6efd;
+            font-weight: bold;
+        }
+
+        .step-line {
+            height: 2px;
+            background-color: #e9ecef;
+            flex: 1;
+            margin: 0 10px;
+            margin-top: 20px;
+        }
+
+        .step-item.completed ~ .step-line {
+            background-color: #198754;
+        }
+
+        .smart-suggestion {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .preview-mode {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .char-counter {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .char-counter.warning {
+            color: #fd7e14;
+        }
+
+        .char-counter.danger {
+            color: #dc3545;
+        }
+
+        /* 批量操作面板样式 */
+        #inquiry-batch-panel {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 2px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+
+        #inquiry-batch-panel .btn {
+            transition: all 0.2s ease;
+        }
+
+        #inquiry-batch-panel .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        /* 复选框样式优化 */
+        .inquiry-checkbox {
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+
+        .inquiry-checkbox:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        /* 全选复选框样式 */
+        #inquiry-select-all {
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        #inquiry-select-all:indeterminate {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        /* 选中行高亮 */
+        .table tbody tr.selected {
+            background-color: rgba(13, 110, 253, 0.05);
+            border-left: 3px solid #0d6efd;
+        }
+
+        /* 批量操作按钮动画 */
+        .batch-operation-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .batch-operation-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .batch-operation-btn:hover::before {
+            left: 100%;
+        }
     </style>
     <script src="../assets/js/loading-manager.js"></script>
     <script src="../assets/js/style-forcer.js"></script>
@@ -779,23 +928,13 @@
                 <i class="bi bi-plus-circle"></i>
                 <span>添加产品</span>
             </a>
-            <a href="#categories" class="menu-item" data-page="categories">
-                <i class="bi bi-tags"></i>
-                <span>分类管理</span>
-            </a>
-            <a href="#logs" class="menu-item" data-page="logs">
-                <i class="bi bi-clock-history"></i>
-                <span>操作记录</span>
-            </a>
+
             <a href="#inquiries" class="menu-item" data-page="inquiries">
                 <i class="bi bi-chat-dots"></i>
                 <span>询价管理</span>
                 <span class="badge bg-danger rounded-pill ms-auto" id="pending-inquiries-count">0</span>
             </a>
-            <a href="#company" class="menu-item" data-page="company">
-                <i class="bi bi-building"></i>
-                <span>公司信息</span>
-            </a>
+
             <a href="#admins" class="menu-item" data-page="admins" id="admin-menu-item" style="display: none;">
                 <i class="bi bi-people"></i>
                 <span>管理员管理</span>
@@ -1079,19 +1218,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <div class="stats-card">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1">
-                                <div class="text-muted">产品分类</div>
-                                <div class="stats-number" id="total-categories">0</div>
-                            </div>
-                            <div class="text-warning fs-1">
-                                <i class="bi bi-tags"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="stats-card">
                         <div class="d-flex align-items-center">
@@ -1209,54 +1336,130 @@
 
         <!-- 添加产品页面 -->
         <div id="add-product-page" class="page-content">
+            <!-- 页面标题和操作按钮 -->
             <div class="d-flex justify-content-between align-items-center mb-4 page-title">
-                <h2 class="h3 mb-0">添加产品</h2>
+                <div>
+                    <h2 class="h3 mb-2">➕ 添加产品</h2>
+                    <p class="text-muted mb-0">添加新的产品信息到系统中</p>
+                </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-primary" onclick="generateAllContent()" title="填写产品名称和型号后，一键生成所有内容">
+                    <button class="btn btn-success" onclick="generateAllContent()" title="根据产品名称和分类自动生成所有内容">
                         <i class="bi bi-magic me-2"></i>一键生成所有内容
+                    </button>
+                    <button class="btn btn-outline-info" onclick="togglePreviewMode()" id="preview-toggle-btn">
+                        <i class="bi bi-eye me-2"></i>预览模式
                     </button>
                     <button class="btn btn-outline-secondary" onclick="showPage('products')">
                         <i class="bi bi-arrow-left me-2"></i>返回列表
                     </button>
                 </div>
             </div>
+
+            <!-- 进度指示器 -->
+            <div class="progress-indicator mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="step-item active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">手动填写</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step-item" data-step="2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">产品描述</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step-item" data-step="3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">SEO优化</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step-item" data-step="4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">完成</div>
+                    </div>
+                </div>
+            </div>
             
-            <div class="card">
-                <div class="card-body">
-                    <form id="addProductForm" enctype="multipart/form-data" onsubmit="submitAddProductForm(event)">
-                        <!-- 基本信息 -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0">基本信息</h5>
+            <!-- 表单和预览容器 -->
+            <div class="row">
+                <!-- 左侧表单区域 -->
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form id="addProductForm" enctype="multipart/form-data" onsubmit="submitAddProductForm(event)">
+                        <!-- 步骤1: 基本信息 -->
+                        <div class="card mb-4 form-step" data-step="1">
+                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-info-circle me-2"></i>步骤1: 基本信息
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-light" onclick="clearBasicInfo()" title="清空基本信息">
+                                        <i class="bi bi-eraser"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" onclick="generateBasicInfo()" title="智能填充基本信息">
+                                        <i class="bi bi-magic"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <!-- 产品名称输入组 -->
-                                    <div class="mb-3">
-                                        <label for="product-name" class="form-label">产品名称 <span class="text-danger">*</span></label>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="product-name" class="form-label fw-bold">
+                                            产品名称 <span class="text-danger">*</span>
+                                            <i class="bi bi-question-circle text-muted ms-1" title="输入完整的产品名称，如：涡轮增压器" data-bs-toggle="tooltip"></i>
+                                        </label>
                                         <div class="input-group">
-                                            <input type="text" class="form-control" id="product-name" name="name" required maxlength="120">
-                                            <span class="input-group-text" id="name-char-count">0/120</span>
+                                            <input type="text" class="form-control form-control-lg" id="product-name" name="name" required maxlength="120"
+                                                   placeholder="例如：涡轮增压器" tabindex="1" oninput="onBasicInfoChange()" autocomplete="off">
+                                            <span class="input-group-text char-counter" id="name-char-count">0/120</span>
                                         </div>
-                                        <div class="form-text">请输入产品名称，最多120个字符</div>
+                                        <div class="form-text">
+                                            <i class="bi bi-lightbulb text-warning me-1"></i>
+                                            输入产品名称后可使用"一键生成"功能
+                                        </div>
                                     </div>
+
+                                    <!-- 产品型号输入组 -->
                                     <div class="col-md-6 mb-3">
-                                        <label for="product-category" class="form-label">产品分类 <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="product-category" name="category" required tabindex="10">
-                                            <option value="turbocharger" selected>涡轮增压器</option>
-                                            <option value="actuator">执行器</option>
-                                            <option value="injector">共轨喷油器</option>
-                                            <option value="turbo-parts">涡轮配件</option>
-                                            <option value="others">其他</option>
+                                        <label for="product-model" class="form-label fw-bold">
+                                            产品型号 <span class="text-danger">*</span>
+                                            <i class="bi bi-question-circle text-muted ms-1" title="输入具体的产品型号，如：GT1749V" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <input type="text" class="form-control form-control-lg" id="product-model" name="model" required
+                                               placeholder="例如：GT1749V" tabindex="2" oninput="onBasicInfoChange()" autocomplete="off">
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle text-info me-1"></i>
+                                            请输入准确的产品型号
+                                        </div>
+                                    </div>
+                                    <!-- 产品分类选择 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="product-category" class="form-label fw-bold">
+                                            产品分类 <span class="text-danger">*</span>
+                                            <i class="bi bi-question-circle text-muted ms-1" title="选择产品所属的分类" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <select class="form-select form-select-lg" id="product-category" name="category" required tabindex="3" onchange="onCategoryChange()">
+                                            <option value="turbocharger" selected>Turbocharger</option>
+                                            <option value="actuator">Actuator</option>
+                                            <option value="injector">Common Rail Injector</option>
+                                            <option value="turbo-parts">Turbo Parts</option>
+                                            <option value="others">Others</option>
                                         </select>
+                                        <div class="form-text">
+                                            <i class="bi bi-tag text-success me-1"></i>
+                                            选择分类后会自动推荐相关特性
+                                        </div>
                                     </div>
+
+                                    <!-- 品牌选择 -->
                                     <div class="col-md-6 mb-3">
-                                        <label for="product-model" class="form-label">产品型号 <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="product-model" name="model" required tabindex="2">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="product-brand" class="form-label">品牌</label>
-                                        <select class="form-select" id="product-brand" name="brand" tabindex="11">
+                                        <label for="product-brand" class="form-label fw-bold">
+                                            品牌
+                                            <i class="bi bi-question-circle text-muted ms-1" title="选择产品品牌" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <select class="form-select form-select-lg" id="product-brand" name="brand" tabindex="4" onchange="onBrandChange()">
                                             <option value="Diamond-Auto" selected>Diamond-Auto</option>
                                             <option value="Garrett">Garrett</option>
                                             <option value="BorgWarner">BorgWarner</option>
@@ -1266,56 +1469,138 @@
                                             <option value="Delphi">Delphi</option>
                                             <option value="Other">其他</option>
                                         </select>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="product-price" class="form-label">产品价格 (USD)</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">$</span>
-                                            <input type="number" class="form-control" id="product-price" name="price" step="0.01" min="0" placeholder="0.00" tabindex="3">
+                                        <div class="form-text">
+                                            <i class="bi bi-award text-primary me-1"></i>
+                                            Diamond-Auto为推荐品牌
                                         </div>
                                     </div>
+                                    <!-- 产品价格 -->
                                     <div class="col-md-6 mb-3">
-                                        <label for="product-warranty" class="form-label">保修期</label>
-                                        <select class="form-select" id="product-warranty" name="warranty" tabindex="12">
-                                            <option value="6">6个月</option>
-                                            <option value="12" selected>12个月</option>
-                                            <option value="24">24个月</option>
-                                            <option value="36">36个月</option>
-                                        </select>
+                                        <label for="product-price" class="form-label fw-bold">
+                                            产品价格 (USD)
+                                            <i class="bi bi-question-circle text-muted ms-1" title="输入产品的美元价格" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" id="product-price" name="price" step="0.01" min="0"
+                                                   placeholder="99.00" value="99" tabindex="5" oninput="onPriceChange()">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="suggestPrice()" title="价格建议">
+                                                <i class="bi bi-calculator"></i>
+                                            </button>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="bi bi-currency-dollar text-success me-1"></i>
+                                            默认价格为$99，可根据实际情况调整
+                                        </div>
                                     </div>
-                                    <div class="col-12 mb-3">
-                                        <label for="product-oe" class="form-label">OEM号</label>
+
+                                    <!-- 保修期 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="product-warranty" class="form-label fw-bold">
+                                            保修期
+                                            <i class="bi bi-question-circle text-muted ms-1" title="选择产品保修期限" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <select class="form-select form-select-lg" id="product-warranty" name="warranty" tabindex="6" onchange="onWarrantyChange()">
+                                            <option value="6">6 Months</option>
+                                            <option value="12" selected>12 Months</option>
+                                            <option value="24">24 Months</option>
+                                            <option value="36">36 Months</option>
+                                        </select>
+                                        <div class="form-text">
+                                            <i class="bi bi-shield-check text-info me-1"></i>
+                                            推荐选择12个月保修期
+                                        </div>
+                                    </div>
+
+                                    <!-- 智能建议区域 -->
+                                    <div class="col-12" id="basic-info-suggestions" style="display: none;">
+                                        <div class="smart-suggestion">
+                                            <h6 class="mb-2">
+                                                <i class="bi bi-lightbulb text-warning me-2"></i>智能建议
+                                            </h6>
+                                            <div id="suggestion-content">
+                                                <!-- 建议内容将通过JavaScript动态生成 -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- OEM号和适配同一行 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="product-oe" class="form-label fw-bold">
+                                            OEM号
+                                            <i class="bi bi-question-circle text-muted ms-1" title="输入原厂编号，多个编号请换行输入" data-bs-toggle="tooltip"></i>
+                                        </label>
                                         <textarea class="form-control" id="product-oe" name="oe_number" rows="3" placeholder="请输入原厂编号，多个编号请换行输入" tabindex="4"></textarea>
                                     </div>
-                                    <div class="col-12 mb-3">
-                                        <label for="product-compatibility" class="form-label">适配</label>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="product-compatibility" class="form-label fw-bold">
+                                            适配
+                                            <i class="bi bi-question-circle text-muted ms-1" title="输入适配的车型/发动机型号" data-bs-toggle="tooltip"></i>
+                                        </label>
                                         <textarea class="form-control" id="product-compatibility" name="compatibility" rows="3" placeholder="请输入适配的车型/发动机型号，多个请用逗号分隔" tabindex="5"></textarea>
                                     </div>
-                                                                    <div class="col-12 mb-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <label for="product-description" class="form-label mb-0">产品描述</label>
-                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="generateProductDescription()" tabindex="21">
-                                            <i class="bi bi-magic"></i> 自动生成
-                                        </button>
-                                    </div>
-                                    <textarea class="form-control" id="product-description" name="description" rows="4" placeholder="请输入产品的详细描述，或点击自动生成" tabindex="6"></textarea>
-                                </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- 产品特性 -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">产品特性</h5>
-                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="generateProductFeatures()" tabindex="22">
-                                    <i class="bi bi-magic"></i> 智能推荐
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
+                                    <!-- 其他事项 -->
                                     <div class="col-12 mb-3">
-                                        <label class="form-label">选择产品特性标签</label>
+                                        <label for="product-notes" class="form-label fw-bold">
+                                            附加说明
+                                            <i class="bi bi-question-circle text-muted ms-1" title="输入产品的附加说明、注意事项或其他重要信息" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <textarea class="form-control" id="product-notes" name="notes" rows="4" placeholder="请输入产品的附加说明、注意事项或其他重要信息" tabindex="6" oninput="updateFormProgress()"></textarea>
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle text-info me-1"></i>
+                                            可选填写，用于补充重要信息
+                                        </div>
+                                    </div>
+
+                                    <!-- 产品图片上传 -->
+                                    <div class="col-12 mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <label class="form-label mb-0 fw-bold">
+                                                产品图片
+                                                <i class="bi bi-question-circle text-muted ms-1" title="上传产品图片，支持多张图片" data-bs-toggle="tooltip"></i>
+                                            </label>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearAllImages()" title="清空所有图片">
+                                                <i class="bi bi-trash"></i> 清空图片
+                                            </button>
+                                        </div>
+
+                                        <div class="upload-area" id="addUploadArea"
+                                             onclick="document.getElementById('addProductImages').click()"
+                                             ondragover="handleDragOver(event)"
+                                             ondragenter="handleDragEnter(event)"
+                                             ondragleave="handleDragLeave(event)"
+                                             ondrop="handleFileDrop(event)">
+                                            <i class="bi bi-cloud-upload fs-1 text-muted mb-3"></i>
+                                            <h6 class="text-muted">点击上传图片或拖拽文件到此处</h6>
+                                            <p class="text-muted mb-0 small">支持 JPG, PNG, GIF 格式，可选择多张图片</p>
+                                            <input type="file" id="addProductImages" name="images" accept="image/*" multiple style="display: none;" onchange="handleAddPageMultipleFileSelection(this.files)">
+                                        </div>
+
+                                        <!-- 图片预览和拖拽排序区域 -->
+                                        <div id="addImagePreviews" class="mt-3" style="display: none;">
+                                            <div class="form-text mb-2">
+                                                <i class="bi bi-info-circle me-1"></i>
+                                                可以拖拽图片调整顺序，第一张图片将作为主图显示
+                                            </div>
+                                            <div id="addImageContainer" class="d-flex flex-wrap gap-3">
+                                                <!-- 图片预览卡片将在这里动态生成 -->
+                                            </div>
+                                        </div>
+
+                                        <div class="form-text mt-2">
+                                            <i class="bi bi-lightbulb text-warning me-1"></i>
+                                            <strong>手动填写区域结束</strong> - 以下内容可使用自动生成功能
+                                        </div>
+                                    </div>
+
+                                    <!-- 产品特性 -->
+                                    <div class="col-12 mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <label class="form-label mb-0 fw-bold">产品特性</label>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="generateProductFeatures()" tabindex="8">
+                                                <i class="bi bi-magic"></i> 智能推荐
+                                            </button>
+                                        </div>
                                         <div id="features-container" class="d-flex flex-wrap gap-2 mb-2"></div>
                                         <input type="hidden" id="product-features" name="features">
                                         <small class="form-text text-muted">点击标签选择产品特性，可多选，或点击"智能推荐"自动选择</small>
@@ -1324,20 +1609,37 @@
                             </div>
                         </div>
 
-                        <!-- 其他事项 -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0">其他事项</h5>
+                        <!-- 步骤2: 产品描述 -->
+                        <div class="card mb-4 form-step" data-step="2">
+                            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-file-text me-2"></i>步骤2: 产品描述
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-light" onclick="generateProductDescription()" tabindex="21">
+                                        <i class="bi bi-magic"></i> 自动生成
+                                    </button>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-12 mb-3">
-                                        <label for="product-notes" class="form-label">附加说明</label>
-                                        <textarea class="form-control" id="product-notes" name="notes" rows="4" placeholder="请输入产品的附加说明、注意事项或其他重要信息" tabindex="7"></textarea>
+                                        <label for="product-description" class="form-label fw-bold">
+                                            产品描述
+                                            <i class="bi bi-question-circle text-muted ms-1" title="详细描述产品的功能、特点和优势" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <textarea class="form-control" id="product-description" name="description" rows="4"
+                                                  placeholder="请输入产品的详细描述，或点击自动生成" tabindex="9" oninput="updateFormProgress()"></textarea>
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle text-info me-1"></i>
+                                            详细的产品描述有助于客户了解产品特点
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+
 
                         <!-- SEO信息 -->
                         <div class="card mb-4">
@@ -1363,104 +1665,193 @@
                             </div>
                         </div>
 
-                        <!-- 产品图片上传区域 -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">产品图片</label>
-                            <div class="upload-area" id="addUploadArea" 
-                                 onclick="document.getElementById('addProductImages').click()"
-                                 ondragover="handleDragOver(event)" 
-                                 ondragenter="handleDragEnter(event)" 
-                                 ondragleave="handleDragLeave(event)" 
-                                 ondrop="handleFileDrop(event)">
-                                <i class="bi bi-cloud-upload fs-1 text-muted mb-3"></i>
-                                <h5 class="text-muted">点击上传图片或拖拽文件到此处</h5>
-                                <p class="text-muted mb-0">支持 JPG, PNG, GIF 格式，可选择多张图片</p>
-                                <input type="file" id="addProductImages" name="images" accept="image/*" multiple style="display: none;" onchange="handleAddPageMultipleFileSelection(this.files)">
-                            </div>
-                            
-                            <!-- 图片预览和拖拽排序区域 -->
-                            <div id="addImagePreviews" class="mt-3" style="display: none;">
-                                <div class="form-text mb-2">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    可以拖拽图片调整顺序，第一张图片将作为主图显示
+                        <!-- 步骤5: 产品标签设置 -->
+                        <div class="card mb-4 form-step" data-step="5">
+                            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-tags me-2"></i>步骤5: 产品标签设置
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-light" onclick="clearProductTags()" title="清空所有标签">
+                                        <i class="bi bi-eraser"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" onclick="setDefaultProductTags()" title="设置默认标签">
+                                        <i class="bi bi-magic"></i>
+                                    </button>
                                 </div>
-                                <div id="addImageContainer" class="d-flex flex-wrap gap-3">
-                                    <!-- 图片预览卡片将在这里动态生成 -->
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- 产品标签选择 -->
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label fw-bold">
+                                            产品标签
+                                            <i class="bi bi-question-circle text-muted ms-1" title="选择产品的特殊标签，用于前台展示" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <div class="d-flex gap-4 mt-2">
+                                            <div class="form-check form-check-lg">
+                                                <input class="form-check-input" type="checkbox" id="addIsNew" name="isNew" checked>
+                                                <label class="form-check-label fw-bold text-success" for="addIsNew">
+                                                    <i class="bi bi-star me-1"></i>New
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-lg">
+                                                <input class="form-check-input" type="checkbox" id="addIsHot" name="isHot">
+                                                <label class="form-check-label fw-bold text-danger" for="addIsHot">
+                                                    <i class="bi bi-fire me-1"></i>Hot
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-lg">
+                                                <input class="form-check-input" type="checkbox" id="addIsRecommend" name="isRecommend">
+                                                <label class="form-check-label fw-bold text-primary" for="addIsRecommend">
+                                                    <i class="bi bi-heart me-1"></i>Recommend
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle text-info me-1"></i>
+                                            标签会在产品列表和详情页中显示，帮助客户快速识别产品特点
+                                        </div>
+                                    </div>
+
+                                    <!-- 标签说明 -->
+                                    <div class="col-12">
+                                        <div class="alert alert-light border">
+                                            <h6 class="alert-heading mb-2">
+                                                <i class="bi bi-lightbulb text-warning me-2"></i>标签说明
+                                            </h6>
+                                            <ul class="mb-0 small">
+                                                <li><strong class="text-success">New</strong>：新上架的产品，适合刚添加的产品</li>
+                                                <li><strong class="text-danger">Hot</strong>：热门产品，适合销量好或点击率高的产品</li>
+                                                <li><strong class="text-primary">Recommend</strong>：推荐产品，适合高质量或特色产品</li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- 操作按钮 -->
-                        <div class="d-flex justify-content-end gap-3">
-                            <button type="button" class="btn btn-outline-secondary btn-lg" onclick="resetAddProductForm()">
-                                <i class="bi bi-arrow-clockwise me-2"></i>重置表单
-                            </button>
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-plus-lg me-2"></i>添加产品
-                            </button>
-                        </div>
+
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- 分类管理页面 -->
-        <div id="categories-page" class="page-content">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0">分类管理</h1>
-                <button class="btn btn-primary" onclick="showAddCategoryModal()">
-                    <i class="bi bi-plus-lg me-2"></i>添加分类
-                </button>
-            </div>
-
-            <!-- 分类列表 -->
-            <div class="row" id="categories-list">
-                <!-- 分类卡片将在这里动态生成 -->
-            </div>
-        </div>
-
-        <!-- 操作记录页面 -->
-        <div id="logs-page" class="page-content">
-            <div class="container-fluid">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>操作记录</h2>
-                    <div class="d-flex align-items-center gap-3">
-                        <!-- 时间筛选组件 -->
-                        <div class="time-filter-component">
-                            <div class="d-flex align-items-center gap-2">
-                                <small class="text-muted">时间范围：</small>
-                                <span id="logs-time-range-text" class="fw-bold text-primary">今天</span>
-                                <button class="btn btn-outline-secondary btn-sm" onclick="showTimeFilterModal('logs')" title="选择时间范围">
-                                    <i class="bi bi-calendar-range me-1"></i>筛选
-                                </button>
-                            </div>
-                        </div>
-                        <button onclick="clearLogs()" class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash-alt"></i> 清空
+        <!-- 右侧预览面板 -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 20px;">
+                <!-- 实时预览卡片 -->
+                <div class="card mb-4" id="product-preview-card">
+                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="bi bi-eye me-2"></i>实时预览
+                        </h6>
+                        <button type="button" class="btn btn-sm btn-outline-light" onclick="refreshPreview()" title="刷新预览">
+                            <i class="bi bi-arrow-clockwise"></i>
                         </button>
                     </div>
+                    <div class="card-body">
+                        <div id="product-preview-content">
+                            <div class="text-center text-muted py-4">
+                                <i class="bi bi-image fs-1 mb-3"></i>
+                                <p>填写产品信息后将显示预览</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
+
+                <!-- 快捷操作面板 -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0">
+                            <i class="bi bi-lightning me-2"></i>快捷操作
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="generateAllContent()"
+                                    title="根据产品名称和分类自动生成所有内容">
+                                <i class="bi bi-magic me-2"></i>一键生成所有内容
+                            </button>
+                            <button type="button" class="btn btn-outline-info btn-sm" onclick="generateProductFeatures()"
+                                    title="根据分类智能推荐产品特性">
+                                <i class="bi bi-tags me-2"></i>智能推荐特性
+                            </button>
+                            <button type="button" class="btn btn-outline-warning btn-sm" onclick="generateSEODescription()"
+                                    title="自动生成SEO描述和关键词">
+                                <i class="bi bi-search me-2"></i>生成SEO内容
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetAddProductForm()"
+                                    title="重置所有表单内容">
+                                <i class="bi bi-arrow-clockwise me-2"></i>重置表单
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 填写进度 -->
                 <div class="card">
-                    <div class="card-body p-0">
-                        <table id="logs-table" class="table table-hover table-sm mb-0">
-                            <thead>
-                                <tr>
-                                    <th>时间</th>
-                                    <th>操作员</th>
-                                    <th>操作</th>
-                                    <th>SKU</th>
-                                    <th>改动</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- 操作记录将通过JavaScript动态加载 -->
-                            </tbody>
-                        </table>
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="mb-0">
+                            <i class="bi bi-clipboard-check me-2"></i>填写进度
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar" id="form-progress-bar" style="width: 0%"></div>
+                        </div>
+                        <div id="progress-details">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">手动填写区域</small>
+                                <span class="badge bg-secondary" id="manual-fields-status">0/11</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">产品描述</small>
+                                <span class="badge bg-secondary" id="description-status">0/1</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">SEO信息</small>
+                                <span class="badge bg-secondary" id="seo-status">0/2</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">整体完成度</small>
+                                <span class="badge bg-primary" id="overall-status">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h6 class="mb-0">
+                            <i class="bi bi-gear me-2"></i>操作按钮
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-3">
+                            <button type="button" class="btn btn-outline-secondary btn-lg" onclick="resetAddProductForm()" title="清空所有表单内容">
+                                <i class="bi bi-arrow-clockwise me-2"></i>重置表单
+                            </button>
+                            <button type="submit" form="addProductForm" class="btn btn-primary btn-lg" title="保存并添加产品">
+                                <i class="bi bi-plus-lg me-2"></i>添加产品
+                            </button>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                建议填写完成度达到80%以上再提交
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+
+
+
 
         <!-- 询价管理页面 -->
         <div id="inquiries-page" class="page-content">
@@ -1558,10 +1949,58 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
+                    <!-- 批量操作控制面板 -->
+                    <div id="inquiry-batch-panel" class="border-bottom bg-light p-3" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="text-muted">
+                                    <i class="bi bi-check-square me-1"></i>
+                                    已选择 <span id="inquiry-selected-count" class="fw-bold text-primary">0</span> 条记录
+                                </span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="inquiry-clear-selection">
+                                    <i class="bi bi-x-circle me-1"></i>清除选择
+                                </button>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <!-- 批量状态更新 -->
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle batch-operation-btn" type="button" id="inquiry-batch-status-dropdown" data-bs-toggle="dropdown">
+                                        <i class="bi bi-flag me-1"></i>批量更新状态
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" data-status="pending">
+                                            <span class="badge bg-warning text-dark me-2">待处理</span>设为待处理
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="#" data-status="processing">
+                                            <span class="badge bg-info me-2">处理中</span>设为处理中
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="#" data-status="completed">
+                                            <span class="badge bg-success me-2">已完成</span>设为已完成
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="#" data-status="cancelled">
+                                            <span class="badge bg-secondary me-2">已取消</span>设为已取消
+                                        </a></li>
+                                    </ul>
+                                </div>
+                                <!-- 批量删除 -->
+                                <button type="button" class="btn btn-sm btn-outline-danger batch-operation-btn" id="inquiry-batch-delete">
+                                    <i class="bi bi-trash me-1"></i>批量删除
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
                             <thead class="table-light">
                                 <tr>
+                                    <th style="width: 50px;">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="inquiry-select-all" title="全选/取消全选">
+                                            <label class="form-check-label" for="inquiry-select-all">
+                                                <i class="bi bi-check-square me-1"></i>
+                                            </label>
+                                        </div>
+                                    </th>
                                     <th style="width: 100px;">
                                         <i class="bi bi-hash me-1"></i>询价ID
                                     </th>
@@ -1588,7 +2027,7 @@
                             <tbody id="inquiry-list">
                                 <!-- 询价记录将通过JavaScript动态加载 -->
                                 <tr id="inquiry-loading-row">
-                                    <td colspan="7" class="text-center py-5">
+                                    <td colspan="8" class="text-center py-5">
                                         <div class="spinner-border text-primary" role="status">
                                             <span class="visually-hidden">加载中...</span>
                                         </div>
@@ -1802,111 +2241,7 @@
             </div>
         </div>
 
-        <!-- 公司信息管理页面 -->
-        <div id="company-page" class="page-content" style="display: none;">
-            <div class="content-header">
-                <h2>公司信息管理</h2>
-                <button onclick="saveCompanyInfo()" class="btn btn-primary">
-                    <i class="bi bi-save"></i> 保存修改
-                </button>
-            </div>
-            
-            <div class="content-body">
-                <form id="company-info-form" class="grid gap-4">
-                    <div class="form-section">
-                        <h3 class="section-title">基本信息</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group">
-                                <label for="companyName">公司全称</label>
-                                <input type="text" id="companyName" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="companyShortName">公司简称</label>
-                                <input type="text" id="companyShortName" class="form-control" required>
-                            </div>
-                            <div class="form-group col-span-2">
-                                <label for="companyDescription">公司描述</label>
-                                <textarea id="companyDescription" class="form-control" rows="3" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="companyEstablished">成立年份</label>
-                                <input type="text" id="companyEstablished" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="companyExperience">行业经验</label>
-                                <input type="text" id="companyExperience" class="form-control" required>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="form-section">
-                        <h3 class="section-title">联系方式</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group">
-                                <label for="companyPhone">联系电话</label>
-                                <input type="text" id="companyPhone" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="companyEmail">电子邮箱</label>
-                                <input type="email" id="companyEmail" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="companyWhatsapp">WhatsApp</label>
-                                <input type="text" id="companyWhatsapp" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="companyAddress">公司地址</label>
-                                <input type="text" id="companyAddress" class="form-control" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h3 class="section-title">社交媒体管理</h3>
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle me-2"></i>
-                            这些链接会显示在网站页头的产品标签栏右侧，方便用户关注和联系。
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group">
-                                <label for="companyFacebook">Facebook 链接</label>
-                                <input type="url" id="companyFacebook" class="form-control" placeholder="https://www.facebook.com/your-page">
-                                <div class="form-text">Facebook 页面链接，用于页头社交媒体图标</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="companyInstagram">Instagram 链接</label>
-                                <input type="url" id="companyInstagram" class="form-control" placeholder="https://www.instagram.com/your-account">
-                                <div class="form-text">Instagram 账号链接，用于页头社交媒体图标</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="companySocialWhatsapp">WhatsApp 链接</label>
-                                <input type="url" id="companySocialWhatsapp" class="form-control" placeholder="https://wa.me/8613656157230">
-                                <div class="form-text">WhatsApp 联系链接，格式：https://wa.me/国家代码+电话号码</div>
-                            </div>
-                            <div class="form-group">
-                                <label for="companySocialEmail">邮箱链接</label>
-                                <input type="email" id="companySocialEmail" class="form-control" placeholder="mailto:your-email@company.com">
-                                <div class="form-text">邮箱地址，用于生成邮件链接</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h3 class="section-title">营业时间</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group">
-                                <label for="companyWeekdays">工作日营业时间</label>
-                                <input type="text" id="companyWeekdays" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="companyWeekend">周末营业时间</label>
-                                <input type="text" id="companyWeekend" class="form-control" required>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
 
         <!-- 管理员管理页面 -->
         <div id="admins-page" class="page-content" style="display: none;">
@@ -1967,201 +2302,469 @@
                     <form id="editProductForm" class="needs-validation" novalidate>
                         <!-- 隐藏字段用于存储产品ID -->
                         <input type="hidden" id="editProductId" name="id">
-                        
+
                         <!-- 一键生成功能 -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="alert alert-info d-flex align-items-center">
-                                    <i class="bi bi-lightbulb me-2"></i>
-                                    <span class="me-auto">智能生成功能：填写产品名称/型号和分类后，可自动生成产品特性、描述和SEO信息</span>
-                                    <button type="button" class="btn btn-primary btn-sm" onclick="generateAllEditContent()">
-                                        <i class="bi bi-magic"></i> 一键生成所有内容
+                        <div class="alert alert-info d-flex align-items-center mb-4">
+                            <i class="bi bi-lightbulb me-2"></i>
+                            <span class="me-auto">智能生成功能：填写产品名称/型号和分类后，可自动生成产品特性、描述和SEO信息</span>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="generateAllEditContent()">
+                                <i class="bi bi-magic"></i> 一键生成所有内容
+                            </button>
+                        </div>
+
+                        <!-- 步骤1: 基本信息 -->
+                        <div class="card mb-4 form-step" data-step="1">
+                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-info-circle me-2"></i>步骤1: 基本信息
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-light" onclick="clearEditBasicInfo()" title="清空基本信息">
+                                        <i class="bi bi-eraser"></i>
                                     </button>
+                                    <button type="button" class="btn btn-sm btn-light" onclick="generateEditBasicInfo()" title="智能填充基本信息">
+                                        <i class="bi bi-magic"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- 产品名称输入组 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editProductName" class="form-label fw-bold">
+                                            产品名称 <span class="text-danger">*</span>
+                                            <i class="bi bi-question-circle text-muted ms-1" title="输入完整的产品名称" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control form-control-lg" id="editProductName" name="name" required maxlength="120"
+                                                   placeholder="例如：涡轮增压器" tabindex="1" autocomplete="off">
+                                            <span class="input-group-text char-counter" id="edit-name-char-count">0/120</span>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="bi bi-lightbulb text-warning me-1"></i>
+                                            修改产品名称后可使用"一键生成"功能
+                                        </div>
+                                    </div>
+
+                                    <!-- 产品型号输入组 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editProductModel" class="form-label fw-bold">
+                                            产品型号 <span class="text-danger">*</span>
+                                            <i class="bi bi-question-circle text-muted ms-1" title="输入具体的产品型号" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <input type="text" class="form-control form-control-lg" id="editProductModel" name="model" required
+                                               placeholder="例如：GT1749V" tabindex="2" autocomplete="off">
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle text-info me-1"></i>
+                                            请输入准确的产品型号
+                                        </div>
+                                    </div>
+
+                                    <!-- 产品分类选择 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editProductCategory" class="form-label fw-bold">
+                                            产品分类 <span class="text-danger">*</span>
+                                            <i class="bi bi-question-circle text-muted ms-1" title="选择产品所属的分类" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <select class="form-select form-select-lg" id="editProductCategory" name="category" required tabindex="3">
+                                            <option value="turbocharger" selected>Turbocharger</option>
+                                            <option value="actuator">Actuator</option>
+                                            <option value="injector">Common Rail Injector</option>
+                                            <option value="turbo-parts">Turbo Parts</option>
+                                            <option value="others">Others</option>
+                                        </select>
+                                        <div class="form-text">
+                                            <i class="bi bi-tag text-success me-1"></i>
+                                            选择分类后会自动推荐相关特性
+                                        </div>
+                                    </div>
+
+                                    <!-- 品牌选择 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editProductBrand" class="form-label fw-bold">
+                                            品牌
+                                            <i class="bi bi-question-circle text-muted ms-1" title="选择产品品牌" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <select class="form-select form-select-lg" id="editProductBrand" name="brand" tabindex="4">
+                                            <option value="Diamond-Auto" selected>Diamond-Auto</option>
+                                            <option value="Garrett">Garrett</option>
+                                            <option value="BorgWarner">BorgWarner</option>
+                                            <option value="Bosch">Bosch</option>
+                                            <option value="Denso">Denso</option>
+                                            <option value="Continental">Continental</option>
+                                            <option value="Delphi">Delphi</option>
+                                            <option value="Other">其他</option>
+                                        </select>
+                                        <div class="form-text">
+                                            <i class="bi bi-award text-primary me-1"></i>
+                                            Diamond-Auto为推荐品牌
+                                        </div>
+                                    </div>
+
+                                    <!-- 产品价格 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editProductPrice" class="form-label fw-bold">
+                                            产品价格 (USD)
+                                            <i class="bi bi-question-circle text-muted ms-1" title="输入产品的美元价格" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" id="editProductPrice" name="price" step="0.01" min="0"
+                                                   placeholder="99.00" tabindex="5">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="suggestEditPrice()" title="价格建议">
+                                                <i class="bi bi-calculator"></i>
+                                            </button>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="bi bi-currency-dollar text-success me-1"></i>
+                                            可根据实际情况调整价格
+                                        </div>
+                                    </div>
+
+                                    <!-- 保修期 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editProductWarranty" class="form-label fw-bold">
+                                            保修期
+                                            <i class="bi bi-question-circle text-muted ms-1" title="选择产品保修期限" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <select class="form-select form-select-lg" id="editProductWarranty" name="warranty" tabindex="6">
+                                            <option value="6">6 Months</option>
+                                            <option value="12" selected>12 Months</option>
+                                            <option value="24">24 Months</option>
+                                            <option value="36">36 Months</option>
+                                        </select>
+                                        <div class="form-text">
+                                            <i class="bi bi-shield-check text-info me-1"></i>
+                                            推荐选择12个月保修期
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="row g-3">
-                            <!-- 基本信息 -->
-                            <div class="col-md-6 mb-3">
-                                <label for="editProductName" class="form-label">产品名称 *</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="editProductName" name="name" required maxlength="120" tabindex="1">
-                                    <span class="input-group-text" id="edit-name-char-count">0/120</span>
-                                </div>
-                                <div class="form-text">请输入产品名称，最多120个字符</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editProductCategory" class="form-label">产品分类 *</label>
-                                <select class="form-select" id="editProductCategory" name="category" required tabindex="11">
-                                    <option value="">选择分类</option>
-                                    <option value="turbocharger" selected>涡轮增压器</option>
-                                    <option value="actuator">执行器</option>
-                                    <option value="injector">共轨喷油器</option>
-                                    <option value="turbo-parts">涡轮配件</option>
-                                    <option value="others">其他</option>
-                                </select>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label for="editProductModel" class="form-label">产品型号 *</label>
-                                <input type="text" class="form-control" id="editProductModel" name="model" required tabindex="2">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editProductBrand" class="form-label">品牌</label>
-                                <select class="form-select" id="editProductBrand" name="brand" tabindex="11">
-                                    <option value="Diamond-Auto" selected>Diamond-Auto</option>
-                                    <option value="原厂">原厂</option>
-                                    <option value="OEM">OEM</option>
-                                    <option value="其他">其他</option>
-                                </select>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label for="editProductPrice" class="form-label">产品价格 (USD)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" id="editProductPrice" name="price" step="0.01" min="0" placeholder="0.00" tabindex="3">
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editProductWarranty" class="form-label">保修期</label>
-                                <select class="form-select" id="editProductWarranty" name="warranty" tabindex="12">
-                                    <option value="6">6个月</option>
-                                    <option value="12" selected>12个月</option>
-                                    <option value="24">24个月</option>
-                                    <option value="36">36个月</option>
-                                </select>
-                            </div>
-                            
-                            <div class="col-12 mb-3">
-                                <label for="editProductOe" class="form-label">OEM号</label>
-                                <textarea class="form-control" id="editProductOe" name="oe_number" rows="3" placeholder="请输入原厂编号，多个编号请换行输入" tabindex="4"></textarea>
-                            </div>
-                            
-                            <div class="col-12 mb-3">
-                                <label for="editProductCompatibility" class="form-label">适配</label>
-                                <textarea class="form-control" id="editProductCompatibility" name="compatibility" rows="3" placeholder="请输入适配的车型/发动机型号，多个请用逗号分隔" tabindex="5"></textarea>
-                            </div>
-                            
-                            <div class="col-12 mb-3">
-                                <label for="editProductDescription" class="form-label">产品描述</label>
-                                <textarea class="form-control" id="editProductDescription" name="description" rows="6" placeholder="详细的产品描述..." tabindex="6"></textarea>
-                                <div class="mt-2">
-                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="generateEditProductDescription()">
-                                        <i class="bi bi-robot"></i> 智能生成描述
+
+                        <!-- 步骤2: 详细信息 -->
+                        <div class="card mb-4 form-step" data-step="2">
+                            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-list-ul me-2"></i>步骤2: 详细信息
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-light" onclick="clearEditDetailInfo()" title="清空详细信息">
+                                        <i class="bi bi-eraser"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" onclick="generateEditDetailInfo()" title="智能填充详细信息">
+                                        <i class="bi bi-magic"></i>
                                     </button>
                                 </div>
                             </div>
-                            
-                            <!-- 产品特性选择 -->
-                            <div class="col-12 mb-3">
-                                <label class="form-label">产品特性</label>
-                                <div class="mb-2">
-                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="generateEditProductFeatures()">
-                                        <i class="bi bi-stars"></i> 智能推荐特性
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- OEM号 -->
+                                    <div class="col-12 mb-3">
+                                        <label for="editProductOe" class="form-label fw-bold">
+                                            OEM号
+                                            <i class="bi bi-question-circle text-muted ms-1" title="输入原厂编号，多个编号请换行输入" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <textarea class="form-control form-control-lg" id="editProductOe" name="oe_number" rows="3"
+                                                  placeholder="请输入原厂编号，多个编号请换行输入" tabindex="7"></textarea>
+                                        <div class="form-text">
+                                            <i class="bi bi-hash text-info me-1"></i>
+                                            每行输入一个OEM号，支持多个编号
+                                        </div>
+                                    </div>
+
+                                    <!-- 适配信息 -->
+                                    <div class="col-12 mb-3">
+                                        <label for="editProductCompatibility" class="form-label fw-bold">
+                                            适配信息
+                                            <i class="bi bi-question-circle text-muted ms-1" title="输入适配的车型/发动机型号" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <textarea class="form-control form-control-lg" id="editProductCompatibility" name="compatibility" rows="3"
+                                                  placeholder="请输入适配的车型/发动机型号，多个请用逗号分隔" tabindex="8"></textarea>
+                                        <div class="form-text">
+                                            <i class="bi bi-car-front text-success me-1"></i>
+                                            输入车型、发动机型号等适配信息
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 步骤3: 产品描述与特性 -->
+                        <div class="card mb-4 form-step" data-step="3">
+                            <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-file-text me-2"></i>步骤3: 产品描述与特性
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-dark" onclick="clearEditDescriptionInfo()" title="清空描述信息">
+                                        <i class="bi bi-eraser"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-dark" onclick="generateEditDescriptionInfo()" title="智能生成描述">
+                                        <i class="bi bi-magic"></i>
                                     </button>
                                 </div>
-                                <div class="feature-tags-container d-flex flex-wrap gap-2 mb-3" id="editFeatureTags">
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="原厂品质">原厂品质</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="钻石品质">钻石品质</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="高性能">高性能</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="精准控制">精准控制</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="精密喷射">精密喷射</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="配件齐全">配件齐全</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="专业工具">专业工具</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="高端产品">高端产品</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="现货充足">现货充足</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="原厂正品">原厂正品</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="高精度">高精度</button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="长寿命">长寿命</button>
-                                </div>
-                                <input type="hidden" id="editProductFeatures" name="features">
                             </div>
-                            
-                            <!-- 其他事项 -->
-                            <div class="col-12 mb-3">
-                                <label for="editProductNotes" class="form-label">其他事项</label>
-                                <textarea class="form-control" id="editProductNotes" name="notes" rows="3" placeholder="其他需要说明的事项..." tabindex="7"></textarea>
-                            </div>
-                            
-                            <!-- SEO信息 -->
-                            <div class="col-12 mb-3">
-                                <h6 class="text-muted mb-3">SEO优化信息</h6>
-                                <div class="row">
-                                    <div class="col-12 mb-3">
-                                        <label for="editProductMetaDescription" class="form-label">SEO描述</label>
-                                        <textarea class="form-control" id="editProductMetaDescription" name="meta_description" rows="3" placeholder="用于搜索引擎显示的产品描述" tabindex="8"></textarea>
+                            <div class="card-body">
+                                <!-- 产品描述 -->
+                                <div class="mb-4">
+                                    <label for="editProductDescription" class="form-label fw-bold">
+                                        产品描述
+                                        <i class="bi bi-question-circle text-muted ms-1" title="详细描述产品的功能和特点" data-bs-toggle="tooltip"></i>
+                                    </label>
+                                    <textarea class="form-control form-control-lg" id="editProductDescription" name="description" rows="6"
+                                              placeholder="详细的产品描述..." tabindex="9"></textarea>
+                                    <div class="mt-2 d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="generateEditProductDescription()">
+                                            <i class="bi bi-robot"></i> 智能生成描述
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearEditDescription()">
+                                            <i class="bi bi-eraser"></i> 清空描述
+                                        </button>
                                     </div>
-                                    <div class="col-12 mb-3">
-                                        <label for="editProductMetaKeywords" class="form-label">SEO关键词</label>
-                                        <input type="text" class="form-control" id="editProductMetaKeywords" name="meta_keywords" placeholder="用逗号分隔的关键词" tabindex="9">
+                                    <div class="form-text">
+                                        <i class="bi bi-lightbulb text-warning me-1"></i>
+                                        详细的产品描述有助于客户了解产品特点
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <!-- 高级设置 -->
-                            <div class="col-12 mb-3">
-                                <h6 class="text-muted mb-3">库存和状态设置</h6>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <label for="editProductStock" class="form-label">库存数量</label>
-                                        <input type="number" class="form-control" id="editProductStock" name="stock" min="0" value="10">
+
+                                <!-- 产品特性选择 -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">
+                                        产品特性
+                                        <i class="bi bi-question-circle text-muted ms-1" title="选择适合的产品特性标签" data-bs-toggle="tooltip"></i>
+                                    </label>
+                                    <div class="mb-3 d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-success btn-sm" onclick="generateEditProductFeatures()">
+                                            <i class="bi bi-stars"></i> 智能推荐特性
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearEditFeatures()">
+                                            <i class="bi bi-eraser"></i> 清空特性
+                                        </button>
                                     </div>
-                                    <div class="col-md-4">
-                                        <label for="editProductStatus" class="form-label">产品状态</label>
-                                        <select class="form-select" id="editProductStatus" name="status">
+                                    <div class="feature-tags-container d-flex flex-wrap gap-2 mb-3" id="editFeatureTags">
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="OEM Quality">OEM Quality</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="Diamond Grade">Diamond Grade</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="High Power">High Power</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="Precise">Precise</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="Injection">Injection</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="Complete Kit">Complete Kit</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="Pro Tools">Pro Tools</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="Premium">Premium</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="In Stock">In Stock</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="Original">Original</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="High Precision">High Precision</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm feature-tag" data-feature="Durable">Durable</button>
+                                    </div>
+                                    <input type="hidden" id="editProductFeatures" name="features">
+                                    <div class="form-text">
+                                        <i class="bi bi-tags text-success me-1"></i>
+                                        点击特性标签进行选择，已选择的特性会高亮显示
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 步骤4: SEO优化与其他信息 -->
+                        <div class="card mb-4 form-step" data-step="4">
+                            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-search me-2"></i>步骤4: SEO优化与其他信息
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-light" onclick="clearEditSeoInfo()" title="清空SEO信息">
+                                        <i class="bi bi-eraser"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" onclick="generateEditSeoInfo()" title="智能生成SEO">
+                                        <i class="bi bi-magic"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- SEO描述 -->
+                                    <div class="col-12 mb-3">
+                                        <label for="editProductMetaDescription" class="form-label fw-bold">
+                                            SEO描述
+                                            <i class="bi bi-question-circle text-muted ms-1" title="用于搜索引擎显示的产品描述" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <textarea class="form-control form-control-lg" id="editProductMetaDescription" name="meta_description" rows="3"
+                                                  placeholder="用于搜索引擎显示的产品描述" tabindex="10"></textarea>
+                                        <div class="form-text">
+                                            <i class="bi bi-search text-info me-1"></i>
+                                            SEO描述将显示在搜索结果中，建议150字符以内
+                                        </div>
+                                    </div>
+
+                                    <!-- SEO关键词 -->
+                                    <div class="col-12 mb-3">
+                                        <label for="editProductMetaKeywords" class="form-label fw-bold">
+                                            SEO关键词
+                                            <i class="bi bi-question-circle text-muted ms-1" title="用逗号分隔的关键词" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <input type="text" class="form-control form-control-lg" id="editProductMetaKeywords" name="meta_keywords"
+                                               placeholder="用逗号分隔的关键词" tabindex="11">
+                                        <div class="form-text">
+                                            <i class="bi bi-tags text-success me-1"></i>
+                                            多个关键词请用英文逗号分隔
+                                        </div>
+                                    </div>
+
+                                    <!-- 其他事项 -->
+                                    <div class="col-12 mb-3">
+                                        <label for="editProductNotes" class="form-label fw-bold">
+                                            其他事项
+                                            <i class="bi bi-question-circle text-muted ms-1" title="其他需要说明的事项" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <textarea class="form-control form-control-lg" id="editProductNotes" name="notes" rows="3"
+                                                  placeholder="其他需要说明的事项..." tabindex="12"></textarea>
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle text-warning me-1"></i>
+                                            可以添加特殊说明、注意事项等
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 步骤5: 高级设置 -->
+                        <div class="card mb-4 form-step" data-step="5">
+                            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-gear me-2"></i>步骤5: 高级设置
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-light" onclick="clearEditAdvancedInfo()" title="重置高级设置">
+                                        <i class="bi bi-eraser"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" onclick="setEditDefaultAdvanced()" title="设置默认值">
+                                        <i class="bi bi-magic"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- 库存和状态设置 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editProductStock" class="form-label fw-bold">
+                                            库存数量
+                                            <i class="bi bi-question-circle text-muted ms-1" title="设置产品库存数量" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control form-control-lg" id="editProductStock" name="stock" min="0" value="10" tabindex="13">
+                                            <span class="input-group-text">件</span>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="bi bi-box text-info me-1"></i>
+                                            库存为0时将显示缺货状态
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="editProductStatus" class="form-label fw-bold">
+                                            产品状态
+                                            <i class="bi bi-question-circle text-muted ms-1" title="设置产品销售状态" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <select class="form-select form-select-lg" id="editProductStatus" name="status" tabindex="14">
                                             <option value="active">在售</option>
                                             <option value="inactive">停售</option>
                                         </select>
+                                        <div class="form-text">
+                                            <i class="bi bi-toggle-on text-success me-1"></i>
+                                            停售的产品不会在前台显示
+                                        </div>
+                                    </div>
+
+                                    <!-- 产品标签 -->
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label fw-bold">
+                                            产品标签
+                                            <i class="bi bi-question-circle text-muted ms-1" title="选择产品的特殊标签" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <div class="d-flex gap-4 mt-2">
+                                            <div class="form-check form-check-lg">
+                                                <input class="form-check-input" type="checkbox" id="editIsNew" name="isNew">
+                                                <label class="form-check-label fw-bold text-success" for="editIsNew">
+                                                    <i class="bi bi-star me-1"></i>New
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-lg">
+                                                <input class="form-check-input" type="checkbox" id="editIsHot" name="isHot">
+                                                <label class="form-check-label fw-bold text-danger" for="editIsHot">
+                                                    <i class="bi bi-fire me-1"></i>Hot
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-lg">
+                                                <input class="form-check-input" type="checkbox" id="editIsRecommend" name="isRecommend">
+                                                <label class="form-check-label fw-bold text-primary" for="editIsRecommend">
+                                                    <i class="bi bi-heart me-1"></i>Recommend
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="bi bi-tags text-warning me-1"></i>
+                                            标签会在产品列表中显示，帮助客户快速识别
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- 产品标签 -->
-                            <div class="col-12 mb-3">
-                                <h6 class="text-muted mb-3">产品标签</h6>
-                                <div class="d-flex gap-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="editIsNew" name="isNew">
-                                        <label class="form-check-label" for="editIsNew">新品</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="editIsHot" name="isHot">
-                                        <label class="form-check-label" for="editIsHot">热门</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="editIsRecommend" name="isRecommend">
-                                        <label class="form-check-label" for="editIsRecommend">推荐</label>
-                                    </div>
+                        </div>
+
+                        <!-- 步骤6: 图片管理 -->
+                        <div class="card mb-4 form-step" data-step="6">
+                            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-images me-2"></i>步骤6: 图片管理
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-light" onclick="clearEditImages()" title="清空所有图片">
+                                        <i class="bi bi-eraser"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" onclick="optimizeEditImages()" title="优化图片">
+                                        <i class="bi bi-magic"></i>
+                                    </button>
                                 </div>
                             </div>
-                            
-                            <!-- 产品图片管理 -->
-                            <div class="col-12">
-                                <h6 class="text-muted mb-3">产品图片管理</h6>
-                                
+                            <div class="card-body">
                                 <!-- 当前图片显示区域 -->
                                 <div id="currentImagesInfo" style="display: none;">
-                                    <div class="mb-2">
-                                        <small class="text-muted">当前图片（可拖拽排序）：</small>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">
+                                            当前图片
+                                            <i class="bi bi-question-circle text-muted ms-1" title="可拖拽排序，第一张为主图" data-bs-toggle="tooltip"></i>
+                                        </label>
+                                        <div id="currentImageContainer" class="d-flex flex-wrap gap-3 p-3 border rounded bg-light"></div>
+                                        <div class="form-text">
+                                            <i class="bi bi-arrows-move text-info me-1"></i>
+                                            可以拖拽图片调整顺序，第一张图片将作为主图显示
+                                        </div>
                                     </div>
-                                    <div id="currentImageContainer" class="d-flex flex-wrap gap-2 mb-3"></div>
                                 </div>
-                                
+
                                 <!-- 新图片上传 -->
                                 <div class="mb-3">
-                                    <label for="editProductImages" class="form-label">添加新图片</label>
-                                    <input type="file" class="form-control" id="editProductImages" name="images" multiple accept="image/*" onchange="handleEditMultipleFileSelection(this.files)">
-                                    <div class="form-text">可选择多张图片，支持拖拽排序。第一张图片将作为主图。</div>
-                                </div>
-                                
-                                <!-- 新图片预览区域 -->
-                                <div id="editImagePreviews" style="display: none;">
-                                    <div class="mb-2 mt-3">
-                                        <small class="text-muted">新添加的图片：</small>
+                                    <label for="editProductImages" class="form-label fw-bold">
+                                        添加新图片
+                                        <i class="bi bi-question-circle text-muted ms-1" title="选择要上传的产品图片" data-bs-toggle="tooltip"></i>
+                                    </label>
+                                    <input type="file" class="form-control form-control-lg" id="editProductImages" name="images" multiple accept="image/*"
+                                           onchange="handleEditMultipleFileSelection(this.files)" tabindex="15">
+                                    <div class="form-text">
+                                        <i class="bi bi-cloud-upload text-success me-1"></i>
+                                        可选择多张图片，支持JPG、PNG、GIF格式，建议图片尺寸为800x600像素
                                     </div>
-                                    <div id="editImageContainer" class="d-flex flex-wrap gap-2"></div>
+                                </div>
+
+                                <!-- 图片预览区域 -->
+                                <div id="editImagePreviews" class="mt-3" style="display: none;">
+                                    <label class="form-label fw-bold">新上传图片预览</label>
+                                    <div id="editImageContainer" class="d-flex flex-wrap gap-3 p-3 border rounded bg-light">
+                                        <!-- 图片预览卡片将在这里动态生成 -->
+                                    </div>
+                                    <div class="form-text">
+                                        <i class="bi bi-info-circle text-info me-1"></i>
+                                        新上传的图片将添加到现有图片之后
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2177,75 +2780,7 @@
         </div>
     </div>
 
-    <!-- 添加分类模态框 -->
-    <div class="modal fade" id="addCategoryModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">添加分类</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="add-category-form">
-                        <div class="mb-3">
-                            <label class="form-label">分类ID *</label>
-                            <input type="text" class="form-control" id="category-id" name="id" required 
-                                   placeholder="英文标识，如：turbocharger">
-                            <div class="form-text">只能包含字母、数字和连字符</div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">分类名称 *</label>
-                            <input type="text" class="form-control" id="category-name" name="name" required 
-                                   placeholder="显示名称，如：涡轮增压器">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">分类描述</label>
-                            <textarea class="form-control" id="category-description" name="description" rows="3"
-                                      placeholder="分类的详细描述"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="submit" form="add-category-form" class="btn btn-primary">保存分类</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- 编辑分类模态框 -->
-    <div class="modal fade" id="editCategoryModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">编辑分类</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="edit-category-form">
-                        <input type="hidden" id="edit-category-original-id">
-                        <div class="mb-3">
-                            <label class="form-label">分类ID *</label>
-                            <input type="text" class="form-control" id="edit-category-id" name="id" required>
-                            <div class="form-text">修改ID会影响相关产品的分类关联</div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">分类名称 *</label>
-                            <input type="text" class="form-control" id="edit-category-name" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">分类描述</label>
-                            <textarea class="form-control" id="edit-category-description" name="description" rows="3"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="submit" form="edit-category-form" class="btn btn-primary">保存修改</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- 批量编辑产品模态框 -->
     <div class="modal fade" id="batchEditModal" tabindex="-1">

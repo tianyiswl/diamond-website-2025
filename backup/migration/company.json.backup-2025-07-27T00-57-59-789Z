@@ -1,0 +1,25 @@
+{
+  "name": "无锡皇德国际贸易有限公司",
+  "shortName": "皇德国际",
+  "description": "专业的涡轮增压器和共轨喷油器配件供应商",
+  "established": "2010",
+  "experience": "15年",
+  "logo": "assets/images/logo/diamond-logo.png",
+  "contact": {
+    "phone": "+86 133 7622 3199",
+    "email": "sales03@diamond-auto.com",
+    "whatsapp": "+86 136 5615 7230",
+    "address": "无锡市锡山区东港镇 黄土塘村工业园区 创业路107号 邮编: 214196",
+    "website": "https://www.diamond-auto.com"
+  },
+  "social": {
+    "facebook": "https://www.facebook.com/ariel.diamond.883219",
+    "instagram": "https://www.instagram.com/diamondautopart01/",
+    "whatsapp": "https://wa.me/8613656157230",
+    "email": "mailto:sales03@diamond-auto.com"
+  },
+  "businessHours": {
+    "weekdays": "周一至周五 8:00-18:00",
+    "weekend": "周六 9:00-17:00"
+  }
+}

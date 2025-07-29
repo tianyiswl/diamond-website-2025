@@ -1,0 +1,405 @@
+{
+  "timestamp": "2025-07-20T14:18:40.643Z",
+  "summary": {
+    "total": 36,
+    "passed": 29,
+    "failed": 7,
+    "warnings": 0,
+    "successRate": "80.56"
+  },
+  "categories": {
+    "询价功能": {
+      "total": 8,
+      "passed": 7,
+      "failed": 1,
+      "warnings": 0,
+      "tests": [
+        {
+          "name": "询价DAO模块加载",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": null
+        },
+        {
+          "name": "询价服务层加载",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": null
+        },
+        {
+          "name": "询价路由模块加载",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": null
+        },
+        {
+          "name": "询价数据创建功能",
+          "status": "FAILED",
+          "message": "询价内容可能包含垃圾信息",
+          "details": {}
+        },
+        {
+          "name": "询价数据查询功能",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "count": 5
+          }
+        },
+        {
+          "name": "询价状态更新功能",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "inquiryId": "INQ1752934959302606",
+            "newStatus": "processing"
+          }
+        },
+        {
+          "name": "询价数据验证规则",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "validationErrors": [
+              "name 是必填字段"
+            ]
+          }
+        },
+        {
+          "name": "询价权限中间件配置",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "permissionMiddleware": true,
+            "authMiddleware": true
+          }
+        }
+      ]
+    },
+    "模块依赖": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "warnings": 0,
+      "tests": [
+        {
+          "name": "配置模块被正确引用",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "configLoaded": true,
+            "daoCanAccessConfig": true,
+            "servicesCanAccessConfig": true,
+            "middlewareCanAccessConfig": true
+          }
+        },
+        {
+          "name": "工具函数模块被正确引用",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "hasDateUtils": true,
+            "hasValidationUtils": true,
+            "hasCryptoUtils": true
+          }
+        },
+        {
+          "name": "数据流完整性验证",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "routesLoaded": true,
+            "servicesLoaded": true,
+            "daoLoaded": true,
+            "dataFlowWorking": true
+          }
+        },
+        {
+          "name": "循环依赖检查",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "noCyclicDependencies": true
+          }
+        }
+      ]
+    },
+    "API接口": {
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "warnings": 0,
+      "tests": [
+        {
+          "name": "auth API模块加载",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "moduleName": "auth",
+            "isExpressRouter": true
+          }
+        },
+        {
+          "name": "products API模块加载",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "moduleName": "products",
+            "isExpressRouter": true
+          }
+        },
+        {
+          "name": "categories API模块加载",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "moduleName": "categories",
+            "isExpressRouter": true
+          }
+        },
+        {
+          "name": "inquiries API模块加载",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "moduleName": "inquiries",
+            "isExpressRouter": true
+          }
+        },
+        {
+          "name": "analytics API模块加载",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "moduleName": "analytics",
+            "isExpressRouter": true
+          }
+        },
+        {
+          "name": "admin API模块加载",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "moduleName": "admin",
+            "isExpressRouter": true
+          }
+        },
+        {
+          "name": "API响应格式标准化",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "hasSuccess": true,
+            "hasTimestamp": true,
+            "hasMessage": true
+          }
+        },
+        {
+          "name": "认证中间件正确应用",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "hasAuthToken": true,
+            "hasOptionalAuth": true,
+            "hasPermissionCheck": true
+          }
+        },
+        {
+          "name": "产品API核心功能",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "listWorking": true,
+            "statsWorking": true,
+            "productCount": 4
+          }
+        },
+        {
+          "name": "分类API核心功能",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "listWorking": true,
+            "activeWorking": true,
+            "categoryCount": 5
+          }
+        }
+      ]
+    },
+    "数据一致性": {
+      "total": 4,
+      "passed": 1,
+      "failed": 3,
+      "warnings": 0,
+      "tests": [
+        {
+          "name": "数据文件完整性检查",
+          "status": "FAILED",
+          "message": "缺少数据文件: data/admins.json",
+          "details": {
+            "existingFiles": [
+              "data/products.json",
+              "data/categories.json",
+              "data/inquiries.json",
+              "data/analytics.json"
+            ],
+            "missingFiles": [
+              "data/admins.json"
+            ]
+          }
+        },
+        {
+          "name": "数据格式一致性验证",
+          "status": "FAILED",
+          "message": "分类数据缺少必要字段: status",
+          "details": null
+        },
+        {
+          "name": "数据关联完整性验证",
+          "status": "FAILED",
+          "message": "发现 4 个产品引用了不存在的分类",
+          "details": {
+            "totalProducts": 4,
+            "totalCategories": 5,
+            "orphanProducts": 4,
+            "orphanProductIds": [
+              "1752160005058",
+              "1752159819591",
+              "1752158905864",
+              "1752939200656"
+            ]
+          }
+        },
+        {
+          "name": "数据验证规则完整性",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "productValidationWorks": true,
+            "inquiryValidationWorks": true
+          }
+        }
+      ]
+    },
+    "功能回归": {
+      "total": 6,
+      "passed": 3,
+      "failed": 3,
+      "warnings": 0,
+      "tests": [
+        {
+          "name": "产品管理CRUD",
+          "status": "FAILED",
+          "message": "产品创建失败",
+          "details": null
+        },
+        {
+          "name": "分类管理功能",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": null
+        },
+        {
+          "name": "询价处理流程",
+          "status": "FAILED",
+          "message": "询价创建失败",
+          "details": null
+        },
+        {
+          "name": "用户认证授权",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "authMiddleware": true,
+            "permissionMiddleware": true
+          }
+        },
+        {
+          "name": "数据分析统计",
+          "status": "FAILED",
+          "message": "统计功能异常",
+          "details": {
+            "statsGeneration": false
+          }
+        },
+        {
+          "name": "重构前后功能对比",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "originalServerExists": true,
+            "modularServerExists": true,
+            "backwardCompatible": true
+          }
+        }
+      ]
+    },
+    "前端集成": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "warnings": 0,
+      "tests": [
+        {
+          "name": "静态文件结构完整性",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "existingDirs": [
+              "admin"
+            ],
+            "missingDirs": [
+              "public"
+            ]
+          }
+        },
+        {
+          "name": "前端页面文件检查",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "existingPages": [
+              "index.html",
+              "admin/index.html"
+            ],
+            "missingPages": [
+              "products.html",
+              "contact.html"
+            ]
+          }
+        },
+        {
+          "name": "API端点路由配置",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "setupRoutesExists": true,
+            "routeModulesCount": 4,
+            "authRoutes": true,
+            "productRoutes": true,
+            "categoryRoutes": true,
+            "inquiryRoutes": true
+          }
+        },
+        {
+          "name": "CORS和静态文件服务配置",
+          "status": "PASSED",
+          "message": "测试通过",
+          "details": {
+            "middlewareSetupExists": true
+          }
+        }
+      ]
+    }
+  },
+  "errors": [
+    "[询价功能] 询价数据创建功能: 询价内容可能包含垃圾信息",
+    "[数据一致性] 数据文件完整性检查: 缺少数据文件: data/admins.json",
+    "[数据一致性] 数据格式一致性验证: 分类数据缺少必要字段: status",
+    "[数据一致性] 数据关联完整性验证: 发现 4 个产品引用了不存在的分类",
+    "[功能回归] 产品管理CRUD: 产品创建失败",
+    "[功能回归] 询价处理流程: 询价创建失败",
+    "[功能回归] 数据分析统计: 统计功能异常"
+  ],
+  "warnings": []
+}

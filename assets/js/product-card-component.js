@@ -325,6 +325,22 @@ class ProductCardComponent {
     }
 
     /**
+     * 获取分类标识符（用于前端过滤）
+     */
+    getCategorySlug(product) {
+        const categoryMapping = {
+            '涡轮增压器': 'turbocharger',
+            '执行器': 'actuator',
+            '共轨喷油器': 'injector',
+            '涡轮配件': 'turbo-parts',
+            '其他': 'others'
+        };
+
+        const categoryName = product.category?.name || product.category || '其他';
+        return categoryMapping[categoryName] || 'others';
+    }
+
+    /**
      * 渲染产品卡片
      * @param {Object} product - 产品对象
      * @param {Object} options - 渲染选项
@@ -340,9 +356,23 @@ class ProductCardComponent {
 
         const badge = this.getProductBadge(product);
         const features = this.getProductFeatures(product);
-        const imageUrl = product.image ? 
-            (product.image.startsWith('http') ? product.image : `${imagePath}${product.image}`) : 
-            `${imagePath}assets/images/carousel/img1.jpg`;
+        // 🖼️ 获取产品图片URL - 支持新的images数组格式
+        let imageUrl = `${imagePath}assets/images/carousel/img1.jpg`; // 默认图片
+
+        if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+            // 优先使用主图，如果没有主图则使用第一张
+            const primaryImage = product.images.find(img => img.isPrimary) || product.images[0];
+            if (primaryImage && primaryImage.url) {
+                imageUrl = primaryImage.url.startsWith('http') ?
+                    primaryImage.url :
+                    `${imagePath}${primaryImage.url}`;
+            }
+        } else if (product.image) {
+            // 兼容旧的单图片格式
+            imageUrl = product.image.startsWith('http') ?
+                product.image :
+                `${imagePath}${product.image}`;
+        }
 
         const whatsappNumber = this.companyInfo?.contact?.whatsapp?.replace(/\D/g, '') || '8613656157230';
 

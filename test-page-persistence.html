@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面状态持久化测试</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="mb-4">🧪 页面状态持久化功能测试</h1>
+        <p class="text-muted mb-4">测试后台管理系统的页面状态保存和恢复功能</p>
+
+        <!-- 当前状态显示 -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">📊 当前状态</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>保存的页面:</strong>
+                        <div class="code-block" id="saved-page">检测中...</div>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>localStorage 支持:</strong>
+                        <div class="code-block" id="storage-support">检测中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能测试 -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">🔧 功能测试</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <button class="btn btn-primary w-100" onclick="testSavePage('products')">
+                            保存产品管理页面
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-info w-100" onclick="testSavePage('add-product')">
+                            保存添加产品页面
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-warning w-100" onclick="testSavePage('inquiries')">
+                            保存询价管理页面
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-secondary w-100" onclick="testGetPage()">
+                            获取保存的页面
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-danger w-100" onclick="testClearPage()">
+                            清除页面状态
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-success w-100" onclick="location.reload()">
+                            刷新页面测试
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 测试结果 -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">📋 测试结果</h5>
+            </div>
+            <div class="card-body">
+                <div id="test-results">
+                    <p class="text-muted">点击上方按钮开始测试...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">📖 使用说明</h5>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li><strong>保存页面状态</strong>: 点击"保存XXX页面"按钮模拟页面切换</li>
+                    <li><strong>查看保存状态</strong>: 点击"获取保存的页面"查看当前保存的页面</li>
+                    <li><strong>测试页面恢复</strong>: 保存页面后点击"刷新页面测试"，页面应该记住状态</li>
+                    <li><strong>清除状态</strong>: 点击"清除页面状态"重置到默认状态</li>
+                </ol>
+                <div class="alert alert-info mt-3">
+                    <strong>💡 提示</strong>: 如果功能正常，刷新页面后应该看到之前保存的页面状态。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 复制后台的页面状态管理函数
+        function saveLastVisitedPage(page) {
+            try {
+                localStorage.setItem('lastVisitedPage', page);
+                return true;
+            } catch (error) {
+                console.warn('保存页面状态失败:', error);
+                return false;
+            }
+        }
+
+        function getLastVisitedPage() {
+            try {
+                const lastPage = localStorage.getItem('lastVisitedPage');
+                const validPages = ['dashboard', 'products', 'add-product', 'inquiries', 'admin-management'];
+                if (lastPage && validPages.includes(lastPage)) {
+                    return lastPage;
+                }
+            } catch (error) {
+                console.warn('获取页面状态失败:', error);
+            }
+            return 'dashboard';
+        }
+
+        function clearLastVisitedPage() {
+            try {
+                localStorage.removeItem('lastVisitedPage');
+                return true;
+            } catch (error) {
+                console.warn('清除页面状态失败:', error);
+                return false;
+            }
+        }
+
+        // 测试函数
+        function testSavePage(page) {
+            const success = saveLastVisitedPage(page);
+            const pageNames = {
+                'dashboard': '控制台',
+                'products': '产品管理',
+                'add-product': '添加产品',
+                'inquiries': '询价管理',
+                'admin-management': '管理员管理'
+            };
+            
+            addTestResult(
+                success ? 'success' : 'error',
+                `保存页面状态: ${pageNames[page]}`,
+                success ? '✅ 保存成功' : '❌ 保存失败'
+            );
+            
+            updateCurrentStatus();
+        }
+
+        function testGetPage() {
+            const savedPage = getLastVisitedPage();
+            const pageNames = {
+                'dashboard': '控制台',
+                'products': '产品管理',
+                'add-product': '添加产品',
+                'inquiries': '询价管理',
+                'admin-management': '管理员管理'
+            };
+            
+            addTestResult(
+                'info',
+                '获取保存的页面',
+                `📄 当前保存的页面: ${pageNames[savedPage]} (${savedPage})`
+            );
+        }
+
+        function testClearPage() {
+            const success = clearLastVisitedPage();
+            addTestResult(
+                success ? 'success' : 'error',
+                '清除页面状态',
+                success ? '🗑️ 清除成功' : '❌ 清除失败'
+            );
+            
+            updateCurrentStatus();
+        }
+
+        function addTestResult(type, title, message) {
+            const resultsDiv = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.innerHTML = `
+                <strong>${title}</strong><br>
+                ${message}<br>
+                <small>时间: ${new Date().toLocaleTimeString()}</small>
+            `;
+            resultsDiv.appendChild(resultDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function updateCurrentStatus() {
+            // 更新保存的页面显示
+            const savedPage = localStorage.getItem('lastVisitedPage') || '无';
+            document.getElementById('saved-page').textContent = savedPage;
+            
+            // 检查 localStorage 支持
+            let storageSupport = '❌ 不支持';
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                storageSupport = '✅ 支持';
+            } catch (e) {
+                storageSupport = '❌ 不支持 (可能是隐私模式)';
+            }
+            document.getElementById('storage-support').textContent = storageSupport;
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentStatus();
+            
+            // 如果有保存的页面状态，显示恢复信息
+            const savedPage = localStorage.getItem('lastVisitedPage');
+            if (savedPage && savedPage !== 'dashboard') {
+                const pageNames = {
+                    'products': '产品管理',
+                    'add-product': '添加产品',
+                    'inquiries': '询价管理',
+                    'admin-management': '管理员管理'
+                };
+                
+                addTestResult(
+                    'info',
+                    '页面状态恢复',
+                    `🔄 检测到保存的页面状态: ${pageNames[savedPage] || savedPage}`
+                );
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+{
+  "company": {
+    "name": {
+      "full": "Wuxi Diamond International Trading Co., Ltd.",
+      "short": "Diamond International"
+    },
+    "about": {
+      "title": "About Us",
+      "established": "Established",
+      "experience": "Experience",
+      "certified": "Certified",
+      "certifications": "Certifications",
+      "description": "Professional supplier of turbocharger and common rail injector parts"
+    },
+    "contact": {
+      "title": "Contact Us",
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address",
+      "zipCode": "Zip Code",
+      "businessHours": "Business Hours",
+      "getInTouch": "Get In Touch",
+      "sendMessage": "Send Message"
+    },
+    "social": {
+      "title": "Follow Us",
+      "facebook": "Facebook Page",
+      "instagram": "Instagram Account",
+      "whatsapp": "WhatsApp Contact"
+    },
+    "services": {
+      "title": "Our Services",
+      "consultation": "Product Consultation & Quotation",
+      "technical": "Technical Support & Guidance",
+      "customization": "Customized Solutions",
+      "logistics": "Global Logistics & Delivery",
+      "afterSales": "After-sales Service Support"
+    },
+    "advantages": {
+      "title": "Our Advantages",
+      "experience": "15 Years Industry Experience",
+      "team": "Professional Technical Team",
+      "quality": "High-Quality Product Supply",
+      "service": "Rapid Response Service",
+      "network": "Global Customer Network"
+    },
+    "products": {
+      "title": "Main Products",
+      "turbocharger": "Turbocharger Parts",
+      "injector": "Common Rail Injector Parts",
+      "diesel": "Diesel Engine Parts",
+      "engine": "Engine Components"
+    },
+    "business": {
+      "type": "Auto Parts Trading",
+      "specialization": "Specialization",
+      "markets": "Service Markets",
+      "global": "Global Service"
+    },
+    "quality": {
+      "title": "Quality Assurance",
+      "iso9001": "ISO 9001:2015 Quality Management System",
+      "ce": "CE Certification - European Conformity",
+      "testing": "Strict Quality Testing",
+      "warranty": "Product Quality Guarantee"
+    },
+    "location": {
+      "title": "Our Location",
+      "city": "Wuxi City",
+      "district": "Xishan District",
+      "town": "Donggang Town",
+      "area": "Huangtutang Village Industrial Park",
+      "street": "No.107 Chuangye Road",
+      "directions": "View Map",
+      "nearby": "Nearby Landmarks"
+    },
+    "timeline": {
+      "title": "Company Timeline",
+      "2010": "2010 - Company Established",
+      "2015": "2015 - Business Expansion",
+      "2020": "2020 - International Development",
+      "2025": "2025 - Continuous Innovation"
+    },
+    "team": {
+      "title": "Our Team",
+      "management": "Management Team",
+      "technical": "Technical Team",
+      "sales": "Sales Team",
+      "support": "Support Team"
+    },
+    "news": {
+      "title": "Company News",
+      "latest": "Latest News",
+      "announcements": "Announcements",
+      "events": "Events"
+    },
+    "partnership": {
+      "title": "Partners",
+      "suppliers": "Suppliers",
+      "distributors": "Distributors",
+      "customers": "Customer Cases"
+    },
+    "support": {
+      "title": "Customer Support",
+      "technical": "Technical Support",
+      "warranty": "Warranty Service",
+      "training": "Training Service",
+      "documentation": "Technical Documentation"
+    },
+    "inquiry": {
+      "title": "Product Inquiry",
+      "form": "Inquiry Form",
+      "requirements": "Requirements",
+      "contact": "Contact Information",
+      "submit": "Submit Inquiry",
+      "response": "We will respond to your inquiry within 24 hours"
+    },
+    "footer": {
+      "copyright": "Copyright © 2010-2025 Wuxi Diamond International Trading Co., Ltd.",
+      "rights": "All Rights Reserved",
+      "icp": "ICP License: xxxxxxxx",
+      "address": "Address: No.107 Chuangye Road, Huangtutang Village Industrial Park, Donggang Town, Xishan District, Wuxi City",
+      "phone": "Phone: +86 136 5615 7230",
+      "email": "Email: sales03@diamond-auto.com"
+    },
+    "seo": {
+      "title": "Wuxi Diamond International Trading Co., Ltd. - Professional Turbocharger & Common Rail Injector Parts Supplier",
+      "description": "Wuxi Diamond International Trading Co., Ltd. established in 2010 with 15 years experience, professional supplier of turbocharger parts, common rail injector parts and quality auto components. Contact: +86 136 5615 7230",
+      "keywords": "Wuxi Diamond International,turbocharger parts,common rail injector parts,diesel engine parts,auto parts supplier,engine components"
+    },
+    "navigation": {
+      "home": "Home",
+      "about": "About Us",
+      "products": "Products",
+      "services": "Services",
+      "news": "News",
+      "contact": "Contact",
+      "inquiry": "Inquiry"
+    },
+    "buttons": {
+      "learnMore": "Learn More",
+      "contactUs": "Contact Us",
+      "getQuote": "Get Quote",
+      "viewProducts": "View Products",
+      "sendInquiry": "Send Inquiry",
+      "callNow": "Call Now",
+      "emailUs": "Email Us",
+      "whatsapp": "WhatsApp",
+      "viewMap": "View Map",
+      "download": "Download"
+    },
+    "messages": {
+      "welcome": "Welcome to Wuxi Diamond International Trading Co., Ltd.",
+      "thankYou": "Thank you for your attention",
+      "contactSuccess": "Message sent successfully, we will reply to you as soon as possible",
+      "contactError": "Failed to send, please try again later or contact us directly",
+      "loading": "Loading...",
+      "noData": "No data available"
+    },
+    "placeholders": {
+      "name": "Please enter your name",
+      "email": "Please enter your email",
+      "phone": "Please enter your phone number",
+      "company": "Please enter your company name",
+      "message": "Please enter your message or inquiry",
+      "subject": "Please enter subject"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format",
+      "phoneRequired": "Phone number is required",
+      "messageRequired": "Message is required",
+      "messageMinLength": "Message must be at least 10 characters"
+    }
+  }
+}

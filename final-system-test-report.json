@@ -1,0 +1,130 @@
+{
+  "timestamp": "2025-07-21T05:43:22.860Z",
+  "summary": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "successRate": "100.00%"
+  },
+  "categories": {
+    "前端": {
+      "total": 2,
+      "passed": 2
+    },
+    "后台": {
+      "total": 3,
+      "passed": 3
+    },
+    "API": {
+      "total": 4,
+      "passed": 4
+    },
+    "业务": {
+      "total": 3,
+      "passed": 3
+    },
+    "稳定性": {
+      "total": 4,
+      "passed": 4
+    }
+  },
+  "tests": [
+    {
+      "category": "前端",
+      "name": "网站首页",
+      "result": "PASS",
+      "details": "状态码: 200, 内容长度: 30288"
+    },
+    {
+      "category": "前端",
+      "name": "CSS样式文件",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "后台",
+      "name": "/admin路径访问",
+      "result": "PASS",
+      "details": "状态码: 200 (修复后应为200)"
+    },
+    {
+      "category": "后台",
+      "name": "/admin/路径访问",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "后台",
+      "name": "登录页面",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "API",
+      "name": "公开产品API",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "API",
+      "name": "公开分类API",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "API",
+      "name": "公司信息API",
+      "result": "PASS",
+      "details": "状态码: 200"
+    },
+    {
+      "category": "API",
+      "name": "用户管理API认证",
+      "result": "PASS",
+      "details": "状态码: 401 (期望401)"
+    },
+    {
+      "category": "业务",
+      "name": "Utils模块加载",
+      "result": "PASS",
+      "details": "模块加载成功"
+    },
+    {
+      "category": "业务",
+      "name": "UUID生成",
+      "result": "PASS",
+      "details": "生成的UUID: 79f1aab6-7c4d-4f5e-888c-9b7f61a352dd"
+    },
+    {
+      "category": "业务",
+      "name": "询价数据读取（修复后）",
+      "result": "PASS",
+      "details": "读取到 24 条记录"
+    },
+    {
+      "category": "稳定性",
+      "name": "数据文件./data/analytics.json",
+      "result": "PASS",
+      "details": "文件读取成功"
+    },
+    {
+      "category": "稳定性",
+      "name": "数据文件./data/inquiries.json",
+      "result": "PASS",
+      "details": "文件读取成功"
+    },
+    {
+      "category": "稳定性",
+      "name": "数据文件./data/products.json",
+      "result": "PASS",
+      "details": "文件读取成功"
+    },
+    {
+      "category": "稳定性",
+      "name": "数据文件./data/categories.json",
+      "result": "PASS",
+      "details": "文件读取成功"
+    }
+  ],
+  "systemStatus": "EXCELLENT"
+}

@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="contact.title">联系我们 - 无锡皇德国际贸易有限公司</title>
+    <meta
+      name="description"
+      content="联系无锡皇德国际贸易有限公司，获取钻石工具产品报价和技术支持。我们提供专业的B2B贸易服务，欢迎全球客户咨询合作。"
+    />
+    <meta
+      name="keywords"
+      content="联系我们,钻石工具,产品咨询,技术支持,无锡皇德国际,B2B贸易,合作洽谈"
+    />
+
+    <!-- 图标 -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../assets/images/logo/diamond-logo.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="../assets/images/logo/diamond-logo.png"
+    />
+
+    <!-- 字体图标 -->
+    <link rel="stylesheet" href="../assets/css/font-awesome.min.css" />
+
+    <!-- 样式文件 -->
+    <link rel="stylesheet" href="../assets/css/main.css" />
+
+    <!-- 国际化样式 -->
+    <link rel="stylesheet" href="../assets/css/i18n-styles.css" />
+
+
+
+    <style>
+      /* 页面专用样式 */
+      .static-page {
+        padding-top: 120px;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      }
+
+      .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .page-header {
+        text-align: center;
+        margin-bottom: 50px;
+        padding: 40px 0;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .page-title {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-weight: 700;
+      }
+
+      .page-subtitle {
+        font-size: 1.2rem;
+        color: #7f8c8d;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 50px;
+      }
+
+      .contact-info {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .contact-form {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .section-title {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #3498db;
+        font-weight: 600;
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 25px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .contact-item:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+      }
+
+      .contact-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        color: white;
+        font-size: 1.2rem;
+      }
+
+      .contact-details h4 {
+        margin: 0 0 5px 0;
+        color: #2c3e50;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .contact-details p {
+        margin: 0;
+        color: #7f8c8d;
+        font-size: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      .submit-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 40px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .business-hours {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+      }
+
+      .hours-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .hours-item {
+        text-align: center;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+      }
+
+      .hours-day {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+      }
+
+      .hours-time {
+        color: #7f8c8d;
+      }
+
+      @media (max-width: 768px) {
+        .contact-grid {
+          grid-template-columns: 1fr;
+          gap: 30px;
+        }
+        
+        .page-title {
+          font-size: 2rem;
+        }
+        
+        .contact-info,
+        .contact-form {
+          padding: 25px;
+        }
+        
+        .hours-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+
+    <!-- 页面内容 -->
+    <div class="static-page">
+      <!-- 导航栏占位 -->
+      <div id="header-placeholder"></div>
+
+      <div class="page-container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="contact.title">联系我们</h1>
+          <p class="page-subtitle" data-i18n="contact.subtitle">
+            我们随时准备为您提供专业的产品咨询和技术支持服务
+          </p>
+        </div>
+
+        <!-- 联系方式和表单 -->
+        <div class="contact-grid">
+          <!-- 联系信息 -->
+          <div class="contact-info">
+            <h2 class="section-title" data-i18n="contact.info.title">联系信息</h2>
+            
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fa fa-map-marker"></i>
+              </div>
+              <div class="contact-details">
+                <h4 data-i18n="contact.info.address.title">公司地址</h4>
+                <p data-i18n="contact.info.address.detail">中国江苏省无锡市新吴区</p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fa fa-phone"></i>
+              </div>
+              <div class="contact-details">
+                <h4 data-i18n="contact.info.phone.title">联系电话</h4>
+                <p data-i18n="contact.info.phone.detail">+86-510-XXXXXXX</p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fa fa-envelope"></i>
+              </div>
+              <div class="contact-details">
+                <h4 data-i18n="contact.info.email.title">电子邮箱</h4>
+                <p data-i18n="contact.info.email.detail">info@diamond-tools.com</p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon">
+                <i class="fa fa-globe"></i>
+              </div>
+              <div class="contact-details">
+                <h4 data-i18n="contact.info.website.title">官方网站</h4>
+                <p data-i18n="contact.info.website.detail">www.diamond-tools.com</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 联系表单 -->
+          <div class="contact-form">
+            <h2 class="section-title" data-i18n="contact.form.title">发送消息</h2>
+            
+            <form id="contactForm" action="/api/inquiries" method="POST">
+              <div class="form-group">
+                <label for="name" data-i18n="contact.form.name">姓名 *</label>
+                <input type="text" id="name" name="name" required>
+              </div>
+
+              <div class="form-group">
+                <label for="email" data-i18n="contact.form.email">邮箱 *</label>
+                <input type="email" id="email" name="email" required>
+              </div>
+
+              <div class="form-group">
+                <label for="phone" data-i18n="contact.form.phone">电话</label>
+                <input type="tel" id="phone" name="phone">
+              </div>
+
+              <div class="form-group">
+                <label for="company" data-i18n="contact.form.company">公司名称</label>
+                <input type="text" id="company" name="company">
+              </div>
+
+              <div class="form-group">
+                <label for="subject" data-i18n="contact.form.subject">咨询类型</label>
+                <select id="subject" name="subject">
+                  <option value="product" data-i18n="contact.form.subject.product">产品咨询</option>
+                  <option value="technical" data-i18n="contact.form.subject.technical">技术支持</option>
+                  <option value="cooperation" data-i18n="contact.form.subject.cooperation">合作洽谈</option>
+                  <option value="other" data-i18n="contact.form.subject.other">其他</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="message" data-i18n="contact.form.message">详细信息 *</label>
+                <textarea id="message" name="message" placeholder="请详细描述您的需求..." required></textarea>
+              </div>
+
+              <button type="submit" class="submit-btn" data-i18n="contact.form.submit">
+                发送消息
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- 营业时间 -->
+        <div class="business-hours">
+          <h2 class="section-title" data-i18n="contact.hours.title">营业时间</h2>
+          <div class="hours-grid">
+            <div class="hours-item">
+              <div class="hours-day" data-i18n="contact.hours.weekdays">工作日</div>
+              <div class="hours-time">09:00 - 18:00</div>
+            </div>
+            <div class="hours-item">
+              <div class="hours-day" data-i18n="contact.hours.saturday">周六</div>
+              <div class="hours-time">09:00 - 17:00</div>
+            </div>
+            <div class="hours-item">
+              <div class="hours-day" data-i18n="contact.hours.sunday">周日</div>
+              <div class="hours-time" data-i18n="contact.hours.closed">休息</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 页脚占位 -->
+      <div id="footer-placeholder"></div>
+    </div>
+
+    <!-- JavaScript文件 -->
+    <!-- 🚨 双重刷新修复脚本 - 防止重复执行 -->
+    <script src="../double-refresh-fix.js"></script>
+
+    <!-- 🚨 页面跳转修复脚本 - 防止LOGO页面显示 -->
+    <script src="../page-transition-fix.js"></script>
+
+    <script src="../assets/js/i18n.js"></script>
+    <script src="../assets/js/header-footer-components.js"></script>
+
+    <script>
+      // 页面初始化
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('📄 联系我们页面加载完成');
+        
+        // 确保页面渲染协调器正常工作
+        if (window.PageRenderCoordinator) {
+          window.PageRenderCoordinator.init();
+        }
+
+        // 联系表单处理
+        const contactForm = document.getElementById('contactForm');
+        if (contactForm) {
+          contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(contactForm);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+              const response = await fetch('/api/inquiries', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+              });
+              
+              const result = await response.json();
+              
+              if (result.success) {
+                alert('消息发送成功！我们会尽快与您联系。');
+                contactForm.reset();
+              } else {
+                alert('发送失败，请稍后重试。');
+              }
+            } catch (error) {
+              console.error('发送失败:', error);
+              alert('发送失败，请检查网络连接。');
+            }
+          });
+        }
+      });
+    </script>
+
+    <!-- 🚀 轻量级搜索修复脚本 (解决回车键搜索问题) -->
+    <script src="../lightweight-search-fix.js" async defer></script>
+  </body>
+</html>

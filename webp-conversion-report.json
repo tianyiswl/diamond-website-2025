@@ -1,0 +1,68 @@
+{
+  "conversionTime": "2025-07-20T11:51:38.020Z",
+  "sourceDirectory": "./uploads/products",
+  "targetDirectory": "./assets/images-webp/products",
+  "totalFiles": 6,
+  "successCount": 6,
+  "errorCount": 0,
+  "successRate": "100.0%",
+  "results": [
+    {
+      "originalFile": "1752939200611-38879355.jpg",
+      "webpFile": "1752939200611-38879355.webp",
+      "originalSize": 704798,
+      "webpSize": 168166,
+      "compressionRatio": 76.1,
+      "conversionTime": 205,
+      "success": true
+    },
+    {
+      "originalFile": "1752939200626-246380395.jpg",
+      "webpFile": "1752939200626-246380395.webp",
+      "originalSize": 586942,
+      "webpSize": 124718,
+      "compressionRatio": 78.8,
+      "conversionTime": 194,
+      "success": true
+    },
+    {
+      "originalFile": "1752939200629-256410535.jpg",
+      "webpFile": "1752939200629-256410535.webp",
+      "originalSize": 1572695,
+      "webpSize": 473588,
+      "compressionRatio": 69.9,
+      "conversionTime": 314,
+      "success": true
+    },
+    {
+      "originalFile": "1752939200633-646887524.jpg",
+      "webpFile": "1752939200633-646887524.webp",
+      "originalSize": 627505,
+      "webpSize": 142022,
+      "compressionRatio": 77.4,
+      "conversionTime": 191,
+      "success": true
+    },
+    {
+      "originalFile": "1752939200635-334821784.jpg",
+      "webpFile": "1752939200635-334821784.webp",
+      "originalSize": 568717,
+      "webpSize": 115624,
+      "compressionRatio": 79.7,
+      "conversionTime": 185,
+      "success": true
+    },
+    {
+      "originalFile": "1752939200638-769435788.jpg",
+      "webpFile": "1752939200638-769435788.webp",
+      "originalSize": 688698,
+      "webpSize": 164430,
+      "compressionRatio": 76.1,
+      "conversionTime": 199,
+      "success": true
+    }
+  ],
+  "totalOriginalSize": 4749355,
+  "totalWebpSize": 1188548,
+  "overallCompressionRatio": "75.0%"
+}

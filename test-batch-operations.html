@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量操作测试</title>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding: 20px; }
+        .test-section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .result { margin-top: 10px; padding: 10px; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>询价批量操作测试</h1>
+        
+        <div class="test-section">
+            <h3>1. 获取询价列表</h3>
+            <button class="btn btn-primary" onclick="testGetInquiries()">获取询价列表</button>
+            <div id="inquiries-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. 批量更新状态测试</h3>
+            <input type="text" id="batch-ids" placeholder="输入询价ID，用逗号分隔" class="form-control mb-2">
+            <select id="batch-status" class="form-select mb-2">
+                <option value="pending">待处理</option>
+                <option value="processing">处理中</option>
+                <option value="completed">已完成</option>
+                <option value="cancelled">已取消</option>
+            </select>
+            <button class="btn btn-warning" onclick="testBatchStatusUpdate()">批量更新状态</button>
+            <div id="batch-status-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. 批量删除测试</h3>
+            <input type="text" id="delete-ids" placeholder="输入要删除的询价ID，用逗号分隔" class="form-control mb-2">
+            <button class="btn btn-danger" onclick="testBatchDelete()">批量删除</button>
+            <div id="batch-delete-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟登录token（实际使用中需要真实的token）
+        const token = 'test-token';
+
+        async function testGetInquiries() {
+            try {
+                const response = await fetch('/api/inquiries', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                
+                const resultDiv = document.getElementById('inquiries-result');
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>成功获取询价列表：</strong><br>
+                        总数：${data.length}<br>
+                        前5条ID：${data.slice(0, 5).map(item => item.id).join(', ')}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>获取失败：</strong>${data.message}`;
+                }
+            } catch (error) {
+                const resultDiv = document.getElementById('inquiries-result');
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>请求错误：</strong>${error.message}`;
+            }
+        }
+
+        async function testBatchStatusUpdate() {
+            const idsInput = document.getElementById('batch-ids').value;
+            const status = document.getElementById('batch-status').value;
+            
+            if (!idsInput.trim()) {
+                alert('请输入询价ID');
+                return;
+            }
+
+            const inquiryIds = idsInput.split(',').map(id => id.trim());
+
+            try {
+                const response = await fetch('/api/inquiries/batch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        action: 'updateStatus',
+                        inquiryIds: inquiryIds,
+                        data: {
+                            status: status,
+                            notes: '批量测试更新'
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                const resultDiv = document.getElementById('batch-status-result');
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>批量更新成功：</strong><br>
+                        成功：${data.data.successCount}<br>
+                        失败：${data.data.errorCount}<br>
+                        详情：${JSON.stringify(data.data.results, null, 2)}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>批量更新失败：</strong>${data.message}`;
+                }
+            } catch (error) {
+                const resultDiv = document.getElementById('batch-status-result');
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>请求错误：</strong>${error.message}`;
+            }
+        }
+
+        async function testBatchDelete() {
+            const idsInput = document.getElementById('delete-ids').value;
+            
+            if (!idsInput.trim()) {
+                alert('请输入询价ID');
+                return;
+            }
+
+            if (!confirm('确定要删除这些询价记录吗？')) {
+                return;
+            }
+
+            const inquiryIds = idsInput.split(',').map(id => id.trim());
+
+            try {
+                const response = await fetch('/api/inquiries/batch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        action: 'delete',
+                        inquiryIds: inquiryIds,
+                        data: {}
+                    })
+                });
+
+                const data = await response.json();
+                const resultDiv = document.getElementById('batch-delete-result');
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>批量删除成功：</strong><br>
+                        成功：${data.data.successCount}<br>
+                        失败：${data.data.errorCount}<br>
+                        详情：${JSON.stringify(data.data.results, null, 2)}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>批量删除失败：</strong>${data.message}`;
+                }
+            } catch (error) {
+                const resultDiv = document.getElementById('batch-delete-result');
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>请求错误：</strong>${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

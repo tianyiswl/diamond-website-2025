@@ -1,0 +1,158 @@
+/* 🔧 页脚白色条修复专用样式文件 */
+/* 解决主页页尾底部出现白色条的问题 */
+
+/* 🎯 核心修复：确保页面高度100%填充 */
+html, body {
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 🎯 使用Flexbox布局确保页脚贴底 */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 🎯 让主要内容区域占据剩余空间 */
+main {
+    flex: 1 0 auto;
+    /* 🔧 重要：不要给main设置flex布局，保持原有的block布局 */
+    display: block !important;
+}
+
+/* 🎯 页脚固定在底部 */
+.footer {
+    flex-shrink: 0;
+    margin-top: 0 !important; /* 覆盖原有的margin-top */
+}
+
+/* 🎯 页脚容器也要参与Flexbox布局 */
+#footer-container {
+    flex-shrink: 0;
+    margin-top: 0;
+}
+
+/* 🔧 清除可能的浮动影响 */
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* 🔧 确保所有section正确参与布局 */
+section {
+    flex-shrink: 0;
+}
+
+/* 🎯 修复hero-section与product-tags-bar之间的空白问题 */
+.hero-section {
+    margin-top: 120px !important; /* 减少margin-top，因为现在使用flex布局 */
+}
+
+/* 🎯 确保product-tags-bar的定位不受flex布局影响 */
+.product-tags-bar {
+    position: fixed !important;
+    top: 80px !important;
+    z-index: 999 !important;
+}
+
+/* 🎯 移动端hero-section调整 */
+@media (max-width: 768px) {
+    .hero-section {
+        margin-top: 100px !important; /* 移动端进一步减少间距 */
+    }
+}
+
+/* 🔧 防止页面底部出现意外空白 */
+body::after {
+    content: "";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+/* 🔧 移动端特殊处理 */
+@media (max-width: 768px) {
+    body {
+        min-height: 100vh;
+    }
+    
+    main {
+        flex: 1 0 auto;
+    }
+    
+    .footer {
+        margin-top: 0 !important;
+    }
+}
+
+/* 🔧 确保页面内容不会产生垂直滚动条时的额外空白 */
+@media (min-height: 100vh) {
+    body {
+        height: 100vh;
+        overflow-x: hidden;
+    }
+}
+
+/* 🎯 特殊情况：当内容不足一屏时确保页脚在底部 */
+@supports (display: flex) {
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    main {
+        flex: 1;
+        display: block !important; /* 保持main内部为正常文档流 */
+    }
+
+    #footer-container {
+        flex-shrink: 0;
+    }
+}
+
+/* 🔧 兼容性回退方案 */
+@supports not (display: flex) {
+    html, body {
+        height: 100%;
+    }
+    
+    body {
+        position: relative;
+    }
+    
+    main {
+        min-height: calc(100vh - 200px); /* 预留页脚空间 */
+        padding-bottom: 200px;
+    }
+    
+    .footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+}
+
+/* 🎯 调试模式：取消注释以下代码可以看到布局边界 */
+/*
+body {
+    border: 2px solid red !important;
+}
+
+main {
+    border: 2px solid blue !important;
+}
+
+.footer {
+    border: 2px solid green !important;
+}
+
+#footer-container {
+    border: 2px solid orange !important;
+}
+*/

@@ -1,0 +1,177 @@
+{
+  "company": {
+    "name": {
+      "full": "无锡皇德国际贸易有限公司",
+      "short": "皇德国际"
+    },
+    "about": {
+      "title": "关于我们",
+      "established": "成立年份",
+      "experience": "行业经验", 
+      "certified": "资质认证",
+      "certifications": "认证资质",
+      "description": "专业的涡轮增压器和共轨喷油器配件供应商"
+    },
+    "contact": {
+      "title": "联系我们",
+      "phone": "联系电话",
+      "email": "电子邮箱",
+      "address": "公司地址",
+      "zipCode": "邮政编码",
+      "businessHours": "营业时间",
+      "getInTouch": "立即联系",
+      "sendMessage": "发送消息"
+    },
+    "social": {
+      "title": "关注我们",
+      "facebook": "Facebook主页",
+      "instagram": "Instagram账号",
+      "whatsapp": "WhatsApp联系"
+    },
+    "services": {
+      "title": "服务项目",
+      "consultation": "产品咨询与报价",
+      "technical": "技术支持与指导",
+      "customization": "定制化解决方案",
+      "logistics": "全球物流配送",
+      "afterSales": "售后服务支持"
+    },
+    "advantages": {
+      "title": "公司优势",
+      "experience": "15年行业经验",
+      "team": "专业技术团队",
+      "quality": "优质产品供应",
+      "service": "快速响应服务",
+      "network": "全球客户网络"
+    },
+    "products": {
+      "title": "主营产品",
+      "turbocharger": "涡轮增压器配件",
+      "injector": "共轨喷油器配件",
+      "diesel": "柴油机配件",
+      "engine": "发动机配件"
+    },
+    "business": {
+      "type": "汽车配件贸易",
+      "specialization": "专业领域",
+      "markets": "服务市场",
+      "global": "全球服务"
+    },
+    "quality": {
+      "title": "质量保证",
+      "iso9001": "ISO 9001:2015 质量管理体系认证",
+      "ce": "CE认证 - 欧盟合格认证",
+      "testing": "严格质量检测",
+      "warranty": "产品质量保证"
+    },
+    "location": {
+      "title": "公司位置",
+      "city": "无锡市",
+      "district": "锡山区",
+      "town": "东港镇",
+      "area": "黄土塘村工业园区",
+      "street": "创业路107号",
+      "directions": "查看地图",
+      "nearby": "附近地标"
+    },
+    "timeline": {
+      "title": "发展历程",
+      "2010": "2010年 - 公司成立",
+      "2015": "2015年 - 业务扩展",
+      "2020": "2020年 - 国际化发展",
+      "2025": "2025年 - 持续创新"
+    },
+    "team": {
+      "title": "团队介绍",
+      "management": "管理团队",
+      "technical": "技术团队",
+      "sales": "销售团队",
+      "support": "客服团队"
+    },
+    "news": {
+      "title": "公司动态",
+      "latest": "最新动态",
+      "announcements": "公司公告",
+      "events": "活动资讯"
+    },
+    "partnership": {
+      "title": "合作伙伴",
+      "suppliers": "供应商",
+      "distributors": "分销商",
+      "customers": "客户案例"
+    },
+    "support": {
+      "title": "客户支持",
+      "technical": "技术支持",
+      "warranty": "质保服务",
+      "training": "培训服务",
+      "documentation": "技术文档"
+    },
+    "inquiry": {
+      "title": "产品询价",
+      "form": "询价表单",
+      "requirements": "需求描述",
+      "contact": "联系方式",
+      "submit": "提交询价",
+      "response": "我们将在24小时内回复您的询价"
+    },
+    "footer": {
+      "copyright": "版权所有 © 2010-2025 无锡皇德国际贸易有限公司",
+      "rights": "保留所有权利",
+      "icp": "苏ICP备xxxxxxxx号",
+      "address": "地址：无锡市锡山区东港镇黄土塘村工业园区创业路107号",
+      "phone": "电话：+86 136 5615 7230",
+      "email": "邮箱：sales03@diamond-auto.com"
+    },
+    "seo": {
+      "title": "无锡皇德国际贸易有限公司 - 专业涡轮增压器和共轨喷油器配件供应商",
+      "description": "无锡皇德国际贸易有限公司成立于2010年，拥有15年行业经验，专业供应涡轮增压器配件、共轨喷油器配件等优质汽车配件。联系电话：+86 136 5615 7230",
+      "keywords": "无锡皇德国际,涡轮增压器配件,共轨喷油器配件,柴油机配件,汽车配件供应商,发动机配件"
+    },
+    "navigation": {
+      "home": "首页",
+      "about": "关于我们",
+      "products": "产品中心",
+      "services": "服务项目",
+      "news": "新闻动态",
+      "contact": "联系我们",
+      "inquiry": "在线询价"
+    },
+    "buttons": {
+      "learnMore": "了解更多",
+      "contactUs": "联系我们",
+      "getQuote": "获取报价",
+      "viewProducts": "查看产品",
+      "sendInquiry": "发送询价",
+      "callNow": "立即致电",
+      "emailUs": "发送邮件",
+      "whatsapp": "WhatsApp联系",
+      "viewMap": "查看地图",
+      "download": "下载资料"
+    },
+    "messages": {
+      "welcome": "欢迎访问无锡皇德国际贸易有限公司",
+      "thankYou": "感谢您的关注",
+      "contactSuccess": "消息发送成功，我们将尽快回复您",
+      "contactError": "发送失败，请稍后重试或直接联系我们",
+      "loading": "加载中...",
+      "noData": "暂无数据"
+    },
+    "placeholders": {
+      "name": "请输入您的姓名",
+      "email": "请输入您的邮箱",
+      "phone": "请输入您的电话",
+      "company": "请输入您的公司名称",
+      "message": "请输入您的留言或询价内容",
+      "subject": "请输入主题"
+    },
+    "validation": {
+      "nameRequired": "请输入姓名",
+      "emailRequired": "请输入邮箱",
+      "emailInvalid": "邮箱格式不正确",
+      "phoneRequired": "请输入电话号码",
+      "messageRequired": "请输入留言内容",
+      "messageMinLength": "留言内容至少10个字符"
+    }
+  }
+}

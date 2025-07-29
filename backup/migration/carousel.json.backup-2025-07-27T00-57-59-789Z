@@ -1,0 +1,40 @@
+{
+  "slides": [
+    {
+      "id": 1,
+      "image": "assets/images/carousel/img1.jpg",
+      "title": "专业涡轮增压器配件",
+      "description": "15年行业经验，为全球客户提供高品质的涡轮增压器配件和解决方案",
+      "buttonText": "了解产品",
+      "buttonLink": "#products",
+      "alt": "涡轮增压器"
+    },
+    {
+      "id": 2,
+      "image": "assets/images/carousel/img2.jpg",
+      "title": "精密执行器系统",
+      "description": "精密制造，严格质控，确保每一个部件都符合国际标准",
+      "buttonText": "联系我们",
+      "buttonLink": "#contact",
+      "alt": "执行器"
+    },
+    {
+      "id": 3,
+      "image": "assets/images/carousel/img3.jpg",
+      "title": "先进柴油喷射技术",
+      "description": "遍布世界各地的合作伙伴，为您提供快速可靠的供应服务",
+      "buttonText": "成为合作伙伴",
+      "buttonLink": "#contact",
+      "alt": "柴油喷射系统"
+    },
+    {
+      "id": 4,
+      "image": "assets/images/carousel/img4.jpg",
+      "title": "技术创新引领",
+      "description": "持续的技术创新和产品研发，为客户创造更大价值",
+      "buttonText": "创新产品",
+      "buttonLink": "#products",
+      "alt": "涡轮配件"
+    }
+  ]
+} 
